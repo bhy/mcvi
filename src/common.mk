@@ -4,6 +4,8 @@ PROB ?= ./
 
 VPATH = $(SRC) $(PROB)
 
+CXXFLAGS ?= -Wall -O2 -fopenmp
+
 SOLVERMAIN ?= Solver.cc
 SIMULATORMAIN ?= Simulator.cc
 

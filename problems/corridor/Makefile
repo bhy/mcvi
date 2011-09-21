@@ -14,4 +14,7 @@ SOLVERMAIN = $(PROB)Solver.cc
 # Main file of simulator
 SIMULATORMAIN = $(PROB)CorridorSimulator.cc
 
+# Set compiler options for debugging etc.
+# CXXFLAGS = -Wall -g -O2 -fopenmp
+
 include $(SRC)common.mk
