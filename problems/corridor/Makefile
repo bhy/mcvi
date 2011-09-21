@@ -1,10 +1,17 @@
+# Path to the solver source code
+SRC = ../../src/
+# Path to the problem source code
 PROB = ./
-PROBHDR =	$(PROB)CorridorModel.h
 
-PROBSRCS =	$(PROB)CorridorModel.cc
+# Header and souce for the model
+MODELHDR =	$(PROB)CorridorModel.h
 
+MODELSRC =	$(PROB)CorridorModel.cc
+
+# Main file of solver
 SOLVERMAIN = $(PROB)Solver.cc
 
+# Main file of simulator
 SIMULATORMAIN = $(PROB)CorridorSimulator.cc
 
-include ../../src/common.mk
+include $(SRC)common.mk
