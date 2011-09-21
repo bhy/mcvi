@@ -39,7 +39,8 @@ SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)PolicyGraph.h \
 		$(SRC)RandSource.h \
 		$(SRC)Simulator.h \
-		$(SRC)ValueIteration.h
+		$(SRC)ValueIteration.h \
+		$(SRC)Solver.h
 
 SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)Obs.cc \
@@ -52,7 +53,8 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)Bounds.cc \
 		$(SRC)PolicyGraph.cc \
 		$(SRC)Simulator.cc \
-		$(SRC)ValueIteration.cc
+		$(SRC)ValueIteration.cc \
+		$(SRC)Solver.cc
 
 # targets
 .PHONY : all clean
