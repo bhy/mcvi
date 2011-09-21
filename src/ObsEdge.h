@@ -1,0 +1,65 @@
+#ifndef __OBSEDGE_H
+#define __OBSEDGE_H
+
+#include "Belief.h"
+#include "PolicyGraph.h"
+#include "RandSource.h"
+#include "Simulator.h"
+#include <limits>
+#include <vector>
+#include <cmath>
+
+class Bounds;
+
+class ObsEdge {
+  public:
+    ObsEdge(const Obs obs, Bounds* bounds)
+            :obs(obs), bounds(bounds),
+             count(0),
+             bestPolicyNode(NULL),
+             bestPolicyVal(NegInf),
+             nextBelief(NULL),
+             cachedParticles(NULL),
+             lastUpdated(Never)
+    {
+        cachedParticles = new ParticleStore();
+        cachedParticles->currSum = 0;
+        cachedParticles->particles.clear();
+    }
+
+    ObsEdge() {}
+
+    ~ObsEdge()
+    {
+        // probably have to switch to smart pointer (reference counting) in the future
+        clearParticles();
+    }
+
+    void backup();
+    void backupFromPolicyGraph();
+    void backupFromNextBelief();
+    void addPolicyNodes();
+    double findInitUpper();
+
+    void addParticle(const State& state, long pathLength, double immediateReward);
+    void clearParticles();
+    void addNode(PolicyGraph::Node* node);
+
+    // The observation that generated this ObsEdge
+    const Obs obs;
+    Bounds* bounds;
+
+    double upper;
+    double lower;
+    // store number of particles since we will delete all particles
+    // after back up
+    long count;
+    std::vector<PolicyGraph::Node* > nodes;
+    PolicyGraph::Node* bestPolicyNode;
+    double bestPolicyVal;
+    Belief *nextBelief; // next child belief
+    ParticleStore *cachedParticles; // particles stored, used for backup
+    long lastUpdated;
+};
+
+#endif

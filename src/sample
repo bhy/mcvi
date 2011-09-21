@@ -1,0 +1,10 @@
+Action.cc:65:    if (actNum - model->getNumInitPolicies() - model->getNumMacroActs() >=0)
+Action.cc:67:    else if (actNum - model->getNumInitPolicies() >= 0)
+ParticlesBelief.cc:19:    State avg(beliefNode->model->getNumStateVar(),0);
+ParticlesBelief.cc:23:        for(int i = 0; i < beliefNode->model->getNumStateVar(); i++) {
+ParticlesBelief.cc:27:    for(int i = 0; i < beliefNode->model->getNumStateVar(); i++) {
+ParticlesBelief.cc:70:    long obsGrp = beliefNode->model->getObsGrpFromObs(obs);
+ParticlesBelief.cc:71:    State currState(beliefNode->model->getNumStateVar(),0), nextState(beliefNode->model->getNumStateVar(),0);
+ParticlesBelief.cc:105:        Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
+ParticlesBelief.cc:108:            beliefNode->model->sample(currState, action, nextState, currObs, *randSource);
+ParticlesBelief.cc:116:            double obsProb = beliefNode->model->getObsProb(action,
