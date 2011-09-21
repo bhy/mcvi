@@ -15,13 +15,14 @@ INCDIR = -I$(SRC) -I$(PROB)
 CXX = g++ -Wall  -g $(INCDIR)
 
 # files
-TARGETS = Solver Simulator
+TARGETS ?= Solver Simulator
 
 SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=%.o)
-PROBOBJ = $(PROBSRCS:$(PROB)%.cc=%.o)
+PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
 
-HDRS = $(SOLVERHDR) $(PROBHDR)
-SRCS = $(SOLVERSRCS) $(PROBSRCS)
+HDRS = $(SOLVERHDR) $(MODELHDR)
+SRCS = $(SOLVERSRCS) $(MODELSRCS)
+ALLSRCS = $(SRCS) $(SOLVERMAIN) $(SIMULATORMAIN)
 
 SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)Obs.h \
@@ -54,7 +55,7 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)ValueIteration.cc
 
 # targets
-.PHONY : all
+.PHONY : all clean
 
 all: $(TARGETS)
 

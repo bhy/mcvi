@@ -6,7 +6,7 @@ PROB = ./
 # Header and souce for the model
 MODELHDR =	$(PROB)CorridorModel.h
 
-MODELSRC =	$(PROB)CorridorModel.cc
+MODELSRCS =	$(PROB)CorridorModel.cc
 
 # Main file of solver
 SOLVERMAIN = $(PROB)Solver.cc
