@@ -1,10 +1,8 @@
-
-# name of dependency file
-DEPFILE = Makefile.dep
-
 # solver and problem directories
 SRC ?= ../../src/
 PROB ?= ./
+
+VPATH = $(SRC) $(PROB)
 
 SOLVERMAIN ?= Solver.cc
 SIMULATORMAIN ?= Simulator.cc
@@ -12,17 +10,17 @@ SIMULATORMAIN ?= Simulator.cc
 # include directories
 INCDIR = -I$(SRC) -I$(PROB)
 
-CXX = g++ -Wall  -g $(INCDIR)
-
 # files
 TARGETS ?= Solver Simulator
 
 SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=%.o)
 PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
 
+SOLVERMAINOBJ = $(SOLVERMAIN:%.cc=%.o)
+SIMULATORMAINOBJ = $(SIMULATORMAIN:%.cc=%.o)
+
 HDRS = $(SOLVERHDR) $(MODELHDR)
 SRCS = $(SOLVERSRCS) $(MODELSRCS)
-ALLSRCS = $(SRCS) $(SOLVERMAIN) $(SIMULATORMAIN)
 
 SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)Obs.h \
@@ -62,16 +60,27 @@ all: $(TARGETS)
 clean:
 	rm -f *~ *.o *.obj $(TARGETS)
 
-Solver: $(PROB)$(SOLVERMAIN) $(SOLVEROBJ) $(PROBOBJ)
-	$(CXX) -o $@ $< $(SOLVEROBJ) $(PROBOBJ)
+Solver: $(SOLVERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
+	$(LINK.cc) -o $@ $^
 
-Simulator: $(PROB)$(SIMULATORMAIN) $(SOLVEROBJ) $(PROBOBJ)
-	$(CXX) -o $@ $< $(SOLVEROBJ) $(PROBOBJ)
+Simulator: $(SIMULATORMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
+	$(LINK.cc) -o $@ $^
 
-depend:
-	g++ -MM $(INCDIR) $(SRCS) > $(DEPFILE)
 
-%.o:
-	$(CXX) -o $@ -c $<
+# Automatic Dependency Generation
+# see  http://mad-scientist.net/make/autodep.html
 
-include $(DEPFILE)
+DEPDIR = .deps
+df = $(DEPDIR)/$(*F)
+
+%.o : %.cc
+	@mkdir -p $(DEPDIR);
+	$(COMPILE.cc) -MMD $(INCDIR) -o $@ $<
+	@cp $*.d $(df).P; \
+	 sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	 -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $(df).P; \
+	 rm -f $*.d
+
+ALLSRCS = $(notdir $(SOLVERMAIN) $(SIMULATORMAIN) $(SRCS))
+
+-include $(ALLSRCS:%.cc=$(DEPDIR)/%.P)
