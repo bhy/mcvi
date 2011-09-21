@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 
     message << "-m <mapfile> as the first arguments\n";
 
-    if (argc == 0 || argv[1][0] != '-' || argv[1][1] != 'm') {
+    if (argc < 2 || argv[1][0] != '-' || argv[1][1] != 'm') {
         cout << message.str() << "\n";
         exit(1);
     }
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
     Solver solver;
 
-    solver.input(argc,argv,2);
+    solver.input(argc,argv,4);
 
     UnderwaterProblem currProblem;
     currProblem.discount = solver.discount;

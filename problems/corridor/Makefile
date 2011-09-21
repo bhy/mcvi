@@ -9,7 +9,7 @@ MODELHDR =	$(PROB)CorridorModel.h
 MODELSRCS =	$(PROB)CorridorModel.cc
 
 # Main file of solver
-SOLVERMAIN = $(PROB)Solver.cc
+SOLVERMAIN = $(PROB)CorridorSolver.cc
 
 # Main file of simulator
 SIMULATORMAIN = $(PROB)CorridorSimulator.cc
