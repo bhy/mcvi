@@ -3,6 +3,12 @@
 #include <iostream>
 #include <sstream>
 
+#ifdef DEBUG
+#define DEBUGMSG 1
+#else
+#define DEBUGMSG 0
+#endif
+
 using namespace std;
 
 BeliefTree::BeliefTree(Model& model, BeliefSet& beliefSet, Belief *root, PolicyGraph& policyGraph, Bounds& bounds, RandSource& randSource, long numRandBackupStreams, long numRandBeliefStreams): model(model), beliefSet(beliefSet), root(root), policyGraph(policyGraph), bounds(bounds), randSource(randSource), numRandBackupStreams(numRandBackupStreams), numRandBeliefStreams(numRandBeliefStreams)
@@ -32,7 +38,7 @@ void BeliefTree::search(double targetGap, unsigned maxTime, double targetMultipl
         expandNodes(currTarget);
         backUpNodes();
         time(&curr);
-        {
+        if (DEBUGMSG) {
             // dump policy
             std::ostringstream fn;
             fn << policy_filename << '_' << int(difftime(curr,start));
