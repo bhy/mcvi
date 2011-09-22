@@ -74,15 +74,12 @@ void BeliefTree::expandNodes(double target)
         cout<<"cachedParticles = NULL? "<<((it->second).cachedParticles == NULL)<<endl;
     }
 
-    map<Obs,ObsEdge>::iterator iter;
+    map<Obs,ObsEdge>::iterator iter = findBestObs(currNode, currTarget, excessUncertainty);
 
-    int i = 0;
     while (excessUncertainty > 0){
         Action act = currNode->beliefNode->bestUBoundAct;
-        iter = findBestObs(currNode, currTarget, excessUncertainty);
 
         if (debug) {
-            cout<<"BeliefTree::expandNodes "<<i<<"\n";
             cout<<"obsChildren size = "<<currNode->beliefNode->actNodes[act.actNum]->obsChildren.size()<<"\n";
         }
 
@@ -99,6 +96,7 @@ void BeliefTree::expandNodes(double target)
                 // Cannot sample next belief for this observation, which means the obs is almost not possible, remove it
                 cerr << "No next belief for act=" << act.actNum << " obs=" << iter->first.obs[0] << endl;
                 currNode->beliefNode->actNodes[act.actNum]->obsChildren.erase(iter);
+                iter = findBestObs(currNode, currTarget, excessUncertainty);
                 continue;
             }
 
@@ -113,12 +111,11 @@ void BeliefTree::expandNodes(double target)
         currNode = nextNode;
         beliefStack.push_back(currNode);
         bounds.backUp(*currNode);
+        iter = findBestObs(currNode, currTarget, excessUncertainty);
 
         if (debug) {
             cout<<"BeliefTree:expandNodes after nextBelief\n";
         }
-
-        i++;
     }
 
 }
