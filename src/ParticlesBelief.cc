@@ -101,6 +101,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         cout<<endl;
     }
 
+    #pragma omp parallel for schedule(guided)
     for (long i = 0; i < numRandStreams; i++){
         randSource->startStream(i);
 
@@ -147,7 +148,11 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
             //}
             weight_sum += new_weight;
             Particle tmp(nextState, currPathLength, new_weight);
-            belief_tmp.push_back(tmp);
+
+            #pragma omp critical
+            {
+                belief_tmp.push_back(tmp);
+            }
         } else {
             cerr << "Illegal actType in ParticlesBeliefSet::nextBelief. actType = " << action.type << "\n";
             exit(EXIT_FAILURE);

@@ -35,6 +35,7 @@ void ObsEdge::backupFromPolicyGraph()
          it != nodes.end(); it++) {
         double sumPolicyValue = cachedParticles->currSum;
 
+        #pragma omp parallel for schedule(guided) reduction(+:sumPolicyValue)
         for (long k = 0; k < count; k++) {
             double sumDiscounted;
             Particle& particle = cachedParticles->particles[k];
