@@ -15,7 +15,7 @@ int rand_range(int low, int high) {
     return low + uniform_deviate(rand()) * (high-low);
 }
 
-#define NOISY(v) (v ^ (randSouce.getf() < Noise))
+#define NOISY(v) (v ^ (randStream.getf() < Noise))
 
 CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount) {};
 
@@ -52,10 +52,10 @@ double CorridorModel::sample(const State& currState, const Action& action, State
         bool moveDir = (action.actNum == ActLeft);
         long nxtIndex;
 
-        // if NOISY(moveDir) nxtIndex = 1;
-        // else nxtIndex = -1;
-        if (moveDir) nxtIndex = -1;
-        else nxtIndex = 1;
+        if NOISY(moveDir) nxtIndex = 1;
+        else nxtIndex = -1;
+        // if (moveDir) nxtIndex = -1;
+        // else nxtIndex = 1;
 
         long nxtPos = currState[1] + nxtIndex;
         if (nxtPos < 0 || nxtPos > 3) nxtPos -= nxtPos / abs(nxtPos);
@@ -97,10 +97,10 @@ double CorridorModel::initPolicy(const State& currState, const Action& initActio
 }
 
 State CorridorModel::sampleInitState() {
-    double p = rand_range(0,2);
+    double p = rand_range(0,4);
 //    cout << p << endl;
     State st(getNumStateVar(), 0);
-    st[1] = 3;
+    st[1] = p;
     return st;
 }
 

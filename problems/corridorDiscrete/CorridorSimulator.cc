@@ -72,6 +72,8 @@ int main(int argc, char **argv) {
 
     CorridorModel currModel;
 
+    Action::initStatic(&currModel);
+
     RandSource currRandSource(numTrials);
 
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
