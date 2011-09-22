@@ -2,7 +2,7 @@
 #define __SOLVER_H
 
 #include "Model.h"
-#include "ParticlesBeliefSet.h"
+#include "BeliefSet.h"
 #include "BeliefTree.h"
 #include "RandSource.h"
 #include "PolicyGraph.h"
@@ -23,6 +23,7 @@ class Solver {
 
     void input(int argc, char **argv, int noRequiredArgs);
     void solve(Model& currModel, std::vector<State> initialBeliefStates, std::vector<long> pathLength);
+    void solve(Model& currModel, BeliefSet& currSet, Belief* root);
 
     std::ostringstream message;
     std::string policy_file;

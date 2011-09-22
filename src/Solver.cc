@@ -1,4 +1,5 @@
 #include "Solver.h"
+#include "ParticlesBeliefSet.h"
 using namespace std;
 
 void Solver::input(int argc, char **argv, int noRequiredArgs)
@@ -68,6 +69,17 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
 
 void Solver::solve(Model& currModel, vector<State> initialBeliefStates, vector<long> pathLength)
 {
+    ParticlesBeliefSet currSet;
+
+    Obs obs(vector<long>(currModel.getNumObsVar(),0));
+    obs.obs[1] = -1;
+    Belief* root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
+
+    Solver::solve(currModel, currSet, root);
+}
+
+void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
+{
     // Current code may not work if the following is not true
     if (numBackUpStreams > numNextBeliefStreams) {
         cout << "Number of next belief stream need to be larger than backup streams\n";
@@ -82,33 +94,15 @@ void Solver::solve(Model& currModel, vector<State> initialBeliefStates, vector<l
     // HUY note - 3. Set random source, which stores streams of random numbers to be reused
     RandSource currRandSource(numNextBeliefStreams);
 
-    Action::initStatic(&currModel); ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,0);
+    Action::initStatic(&currModel);
+    ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,0);
     BeliefNode::initStatic(&currModel);
 
-    // HUY note - 4. Set ParticlesBeliefSet
-    ParticlesBeliefSet currSet;
-
-    // HUY note - 5.
-    long obsGrp = 0;
-    Obs obs(vector<long>(currModel.getNumObsVar(),0));
-    obs.obs[1] = -1;
-    Belief *root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
-
-    // HUY note - 6.
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
-
-    // HUY note - 7.
     Simulator currSim(currModel, policyGraph, maxSimulLength);
-
-    // HUY note - 8. Running maxSimulLength to get the upper and lower bounds for V function?
     Bounds bounds(currModel, policyGraph, currSim, currRandSource, numBackUpStreams, maxSimulLength);
-
-    // HUY note - 9.
     BeliefTree currTree(currModel, currSet, root, policyGraph, bounds, currRandSource, numBackUpStreams, numNextBeliefStreams);
-
-    // HUY note - 10.
     currTree.search(targetPrecision, maxTime, iterDeepMult, displayInterval, policy_file);
 
-    // HUY note - 11. Write policy graph to file
     policyGraph.write(policy_file);
 }
