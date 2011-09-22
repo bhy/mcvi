@@ -69,13 +69,15 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
 
 void Solver::solve(Model& currModel, vector<State> initialBeliefStates, vector<long> pathLength)
 {
+    Action::initStatic(&currModel);
+
     ParticlesBeliefSet currSet;
 
     Obs obs(vector<long>(currModel.getNumObsVar(),0));
     obs.obs[1] = -1;
     Belief* root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
 
-    Solver::solve(currModel, currSet, root);
+    this->solve(currModel, currSet, root);
 }
 
 void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
@@ -91,12 +93,11 @@ void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
     else
         srand ( seed);
 
-    // HUY note - 3. Set random source, which stores streams of random numbers to be reused
+    // Set random source, which stores streams of random numbers to be reused
     RandSource currRandSource(numNextBeliefStreams);
 
-    Action::initStatic(&currModel);
-    ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,0);
     BeliefNode::initStatic(&currModel);
+    ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,0);
 
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     Simulator currSim(currModel, policyGraph, maxSimulLength);
