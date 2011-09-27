@@ -22,7 +22,13 @@ class Solver {
     {}
 
     void input(int argc, char **argv, int noRequiredArgs);
-    void solve(Model& currModel, std::vector<State> initialBeliefStates, std::vector<long> pathLength);
+
+    void solve(Model& currModel, std::vector<State> &initialBeliefStates, std::vector<long> &pathLength);
+    void solve(Model& currModel, std::vector<State> &initialBeliefStates, Obs& obs, std::vector<long> &pathLength);
+
+    void solve(Model& currModel, State& initialBeliefState, long pathLength);
+    void solve(Model& currModel, State& initialBeliefState, Obs& obs, long pathLength);
+
     void solve(Model& currModel, BeliefSet& currSet, Belief* root);
 
     std::ostringstream message;

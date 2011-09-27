@@ -67,15 +67,42 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
     }
 }
 
-void Solver::solve(Model& currModel, vector<State> initialBeliefStates, vector<long> pathLength)
+void Solver::solve(Model& currModel, vector<State> &initialBeliefStates, vector<long> &pathLength)
+{
+    Obs obs(vector<long>(currModel.getNumObsVar(),0));
+    obs.obs[1] = -1;
+
+    this->solve(currModel, initialBeliefStates, obs, pathLength);
+}
+
+void Solver::solve(Model& currModel, vector<State> &initialBeliefStates, Obs& obs, vector<long> &pathLength)
 {
     Action::initStatic(&currModel);
 
     ParticlesBeliefSet currSet;
 
+    Belief* root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
+
+    this->solve(currModel, currSet, root);
+}
+
+void Solver::solve(Model& currModel, State& initialBeliefState, long pathLength)
+{
     Obs obs(vector<long>(currModel.getNumObsVar(),0));
     obs.obs[1] = -1;
-    Belief* root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
+
+    this->solve(currModel, initialBeliefState, obs, pathLength);
+}
+
+void Solver::solve(Model& currModel, State& initialBeliefState, Obs& obs, long pathLength)
+{
+    Action::initStatic(&currModel);
+
+    ParticlesBeliefSet currSet;
+
+    Belief* root = ParticlesBelief::beliefFromState(initialBeliefState,
+                                                    obs,
+                                                    pathLength);
 
     this->solve(currModel, currSet, root);
 }
