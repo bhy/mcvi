@@ -40,14 +40,14 @@ class CorridorModel : public Model
     State sampleInitState();
     ParticlesBelief* getInitBelief(int numStates);
 
-    double getObsProb(Action action, const State& state, const Obs& obs);
+    double getObsProb(const Action& action, const State& state, const Obs& obs);
 
     double upperBound(const State& state);
 
     double getMaxReward() { return EnterReward; }
     double getMinReward() { return WrongPenalty; }
 
-    bool allowableAct(const Belief& belief, Action action);
+    bool allowableAct(const Belief& belief, const Action& action);
 
     inline obsType getObsType(const Obs& obs) { return OtherObs; }
 

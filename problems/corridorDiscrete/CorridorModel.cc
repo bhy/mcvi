@@ -15,11 +15,11 @@ int rand_range(int low, int high) {
     return low + uniform_deviate(rand()) * (high-low);
 }
 
-#define NOISY(v) (v ^ (randStream.getf() < Noise))
+#define NOISY(v) ((v) ^ (randStream.getf() < Noise))
 
 CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount) {};
 
-bool CorridorModel::allowableAct(const Belief& belief, Action action) {
+bool CorridorModel::allowableAct(const Belief& belief, const Action& action) {
     if (action.type == Macro) return false;
 
     return true;
@@ -128,7 +128,7 @@ double CorridorModel::upperBound(const State& state) {
     return reward;
 }
 
-double CorridorModel::getObsProb(Action action, const State& nextState, const Obs& obs) {
+double CorridorModel::getObsProb(const Action& action, const State& nextState, const Obs& obs) {
     bool debug = false;
 
     double nxtPos = nextState[1];
