@@ -102,9 +102,10 @@ int main(int argc, char **argv)
 
     Simulator currSim(currModel, policyGraph, maxSimulLength);
     double avgReward, avgDiscounted;
-    vector<State > trace;
-    //vector<PolicyGraph::TypeActPair> actTrace;
+    // vector<State > trace;
+    // vector<PolicyGraph::TypeActPair> actTrace;
     string str = "tracefile";
+
     if (numTrials == 1){
         for(long k=0;k<currProblem.initialBeliefStates.size();k++){
             trace.clear();
