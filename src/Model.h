@@ -86,7 +86,7 @@ class Model
        Restricts allowable actions given an observation
        Override this function if restriction is required.
     */
-    virtual bool allowableAct(const Belief& belief, Action act) = 0;
+    virtual bool allowableAct(const Belief& belief, const Action& act) = 0;
 
     /**
        Action sampler.
@@ -148,7 +148,7 @@ class Model
        @param[out] nextControllerState Controller transitions to this state. To be used for the next controller action.
        @param[in] randSource Source of random numbers
     */
-    virtual double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randSource) = 0;
+    virtual double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
 
     /**
        Upper bound to the value of \a state. The value of a state is
@@ -160,7 +160,7 @@ class Model
     /**
      * Probability for seeing observation obs when arrived state nextState.
      */
-    virtual double getObsProb(Action act, const State& nextState, const Obs& obs) = 0;
+    virtual double getObsProb(const Action& act, const State& nextState, const Obs& obs) = 0;
 
     /**
        Maximum value that the reward can take in any state.
