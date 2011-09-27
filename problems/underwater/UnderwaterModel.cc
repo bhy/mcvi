@@ -12,7 +12,7 @@ UnderwaterModel::UnderwaterModel(UnderwaterProblem& problem, bool useMacro): use
     numStates = xSize * ySize + 1;
 };
 
-bool UnderwaterModel::allowableAct(const Belief& belief, Action action)
+bool UnderwaterModel::allowableAct(const Belief& belief, const Action& action)
 {
     actType type = action.type;
     long actNum = action.actNum;
@@ -85,7 +85,7 @@ double UnderwaterModel::beliefTransition(const State& currState, long actnum, St
     return reward;
 }
 
-double UnderwaterModel::getObsProb(Action act, const State& nextState, const Obs& obs)
+double UnderwaterModel::getObsProb(const Action& act, const State& nextState, const Obs& obs)
 {
     if((nextState[local] == 1 && nextState[rx] == obs.obs[1] && nextState[ry] == obs.obs[2])  || obs.obs[1] == ObsOutView)
         return 1.0;

@@ -57,14 +57,14 @@ class UnderwaterModel : public Model
 	double getMaxReward() { return TerminalReward;};
 
 	//return the probability of receiving observation, given next state and action
-	double getObsProb(Action act, const State& nextstate, const Obs& obs);
+	double getObsProb(const Action& act, const State& nextstate, const Obs& obs);
 
 	//return the next belief vector (via nextState) given current belief, obs and action
 	double beliefTransition(const State& currState, long act, State& nextState, Obs& obs);
 
 	double getMinReward() { return HitRockPenalty;};
 
-	bool allowableAct(const Belief& belief, Action action );
+	bool allowableAct(const Belief& belief, const Action& action );
 
 	long getObsGrpFromState(const State& state) {return 0;};
 
