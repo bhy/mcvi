@@ -68,7 +68,7 @@ public:
 
 
     /* actually do not need to be real prob, any kind of weight is ok */
-    double getObsProb(Action action, const State& state, const Obs& obs);
+    double getObsProb(const Action& action, const State& state, const Obs& obs);
 
     double upperBound(const State& state);
 
@@ -76,7 +76,7 @@ public:
 
     double getMinReward() { return WrongPenalty;};
 
-    bool allowableAct(const Belief& belief, Action action);
+    bool allowableAct(const Belief& belief, const Action& action);
 
     //inline long getObsGrpFromObs(const Obs& obs) { return obs[1]; };
 

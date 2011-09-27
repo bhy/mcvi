@@ -27,21 +27,21 @@ int indoor(double pos) {
 //this is correct
 inline bool noisy(bool v)
 {
-    return v ^ (randf()<Noise);
+    return (v ^ (randf()<Noise));
 }
 
-#define NOISY(v) (v ^ (randStream.getf()<Noise))
+#define NOISY(v) ((v) ^ (randStream.getf()<Noise))
 
 CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount)
 {
-};
+}
 
-bool CorridorModel::allowableAct(const Belief& belief, Action action)
+bool CorridorModel::allowableAct(const Belief& belief, const Action& action)
 {
     if (action.type == Macro) return false;
 
     return true;
-};
+}
 
 double CorridorModel::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream  )
 {
@@ -106,14 +106,14 @@ double CorridorModel::sample(const State& currState, const Action& action, State
     }
 
     return reward;
-};
+}
 
 double CorridorModel::sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream)
 {
     // should never reach here
     assert(false);
     return 0;
-};
+}
 
 
 double CorridorModel::initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& dummy, RandStream& randStream)
@@ -125,7 +125,7 @@ double CorridorModel::initPolicy(const State& currState, const Action& initActio
     };
 
     return sample(currState, Action(ActRight), nextState, obs, randStream);
-};
+}
 
 State CorridorModel::sampleInitState()
 {
@@ -157,9 +157,9 @@ double CorridorModel::upperBound(const State& state)
     double minSteps = fabs(state[1] - DoorPositions[0]);
     double reward = pow(discount, minSteps) * EnterReward;
     return reward;
-};
+}
 
-double CorridorModel::getObsProb(Action action, const State& nextState, const Obs& obs)
+double CorridorModel::getObsProb(const Action& action, const State& nextState, const Obs& obs)
 {
     double nxtPos = nextState[1];
     int ndoor = indoor(nxtPos);
@@ -201,10 +201,9 @@ double CorridorModel::getObsProb(Action action, const State& nextState, const Ob
         else
             return 1.0;
     }
-};
+}
 
 void CorridorModel::displayState(State state, long type)
 {
     cout << state[1] << endl;
-};
-
+}
