@@ -80,7 +80,7 @@ void BeliefForest::expandNodes(double target, long currRoot)
 {
     double currTarget = target;
     Belief *currNode = roots[currRoot];
-    double excessUncertainty;
+    double excessUncertainty = 0.0;
 
     beliefStack.push_back(currNode);
     bounds.backUp(*currNode);

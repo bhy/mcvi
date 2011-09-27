@@ -58,7 +58,7 @@ void BeliefTree::expandNodes(double target)
 
     double currTarget = target;
     Belief *currNode = root;
-    double excessUncertainty;
+    double excessUncertainty = 0.0;
 
     beliefStack.push_back(currNode);
 
