@@ -15,6 +15,6 @@ SOLVERMAIN = $(PROB)HerdingSolver.cc
 SIMULATORMAIN = $(PROB)HerdingSimulator.cc
 
 # Set compiler options for debugging etc.
-CXXFLAGS = -Wall -g -O2
+CXXFLAGS = -Wall -g -O0 -fopenmp
 
 include $(SRC)common.mk

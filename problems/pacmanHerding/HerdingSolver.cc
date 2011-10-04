@@ -13,17 +13,19 @@ int main(int argc, char **argv)
 {
     ostringstream message;
 
-    message << "-m <mapfile> as the first arguments\n";
+    message << "-m <mapfile> as the first arguments\n-g <obsgroupfile> as the secon arguments\n";
 
-    if (argc < 2 || argv[1][0] != '-' || argv[1][1] != 'm') {
+    if (argc < 4 ||
+        argv[1][0] != '-' || argv[1][1] != 'm' ||
+        argv[3][0] != '-' || argv[3][1] != 'g') {
         cout << message.str() << "\n";
         exit(1);
     }
-    string map_file = argv[2];
+    string map_file = argv[2], obsGroup_file = argv[4];
 
     Solver solver;
 
-    solver.input(argc,argv,4);
+    solver.input(argc,argv,6);
 
     HerdingProblem currProblem;
     currProblem.discount = solver.discount;
@@ -40,4 +42,5 @@ int main(int argc, char **argv)
     obs.obs[1] = obsGrp;
 
     solver.solve(currModel, currProblem.initState, obs, 0);
+    currModel.writeMapping(obsGroup_file);
 }

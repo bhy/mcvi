@@ -115,10 +115,10 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
     for (long i = 0; i< problem.xSize; i++)
         problem.grid[i].resize(problem.ySize);
 
-    for (long i = 0; i< problem.ySize; i++){
-        for (long j = 0; j < problem.xSize; j++){
+    for (long i = 0; i< problem.xSize; i++){
+        for (long j = 0; j < problem.ySize; j++){
             fp >> tmp;
-            problem.grid[j][problem.ySize-i-1] = tmp-1;
+            problem.grid[i][j] = tmp-1;
             if (tmp > num)
                 num = tmp;
         }
@@ -127,6 +127,15 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
     problem.numRegionPerAgent = num;
 
     fp.close();
+}
+
+bool Herding::checkSquare(std::vector<std::vector<long> > g, long x, long y, long min) {
+    if (!((x >= 0 && x < g.size()) &&
+        (y >= 0 && y < g[0].size())))
+        cout<<x<<" "<<y<<"\n";
+    return ((x >= 0 && x < g.size()) &&
+            (y >= 0 && y < g[0].size()) &&
+            g[x][y] >= min);
 }
 
 double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream)
@@ -149,13 +158,14 @@ double Herding::sample(const State& currState, const Action& action, State& next
             tempReward += Caught;
             nextState[gx + 2*i] = -1;
             nextState[gy + 2*i] = -1;
-        } else
+        } else {
             if (currState[gx + 2*i] != -1)
                 ghostRemain = true;
             else{
                 nextState[gx + 2*i] = -1;
                 nextState[gy + 2*i] = -1;
             }
+        }
     }
     if (ghostRemain == false){
         for (long i=0; i < numStateVars; i++)
@@ -173,17 +183,22 @@ double Herding::sample(const State& currState, const Action& action, State& next
     long act2 = act % NumActsPerAgent;
 
     // change agent 1 position if possible
-    if (grid[currState[a1x] + RelativeDirX[act1]][currState[a1y] + RelativeDirY[act1]] >= 0){
-        nextState[a1x] = currState[a1x] + RelativeDirX[act1];
-        nextState[a1y] = currState[a1y] + RelativeDirY[act1];
+    long next_x = currState[a1x] + RelativeDirX[act1],
+         next_y = currState[a1y] + RelativeDirY[act1];
+    if (grid[next_x][next_y] >= 0) {
+        nextState[a1x] = next_x;
+        nextState[a1y] = next_y;
     }else{
         nextState[a1x] = currState[a1x];
         nextState[a1y] = currState[a1y];
     }
+
     // change agent 2 position if possible
-    if (grid[currState[a2x] + RelativeDirX[act2]][currState[a2y] + RelativeDirY[act2]] >= 0){
-        nextState[a2x] = currState[a2x] + RelativeDirX[act2];
-        nextState[a2y] = currState[a2y] + RelativeDirY[act2];
+    next_x = currState[a2x] + RelativeDirX[act2];
+    next_y = next_y;
+    if (grid[next_x][next_y] >= 0) {
+        nextState[a2x] = next_x;
+        nextState[a2y] = next_y;
     }else{
         nextState[a2x] = currState[a2x];
         nextState[a2y] = currState[a2y];
@@ -198,20 +213,22 @@ double Herding::sample(const State& currState, const Action& action, State& next
             long legalDirs[NumActsPerAgent];
             long costs[NumActsPerAgent];
             long bestCost = -1;
-            for (long i = east; i<= unchanged; i++){
-                if ((currState[gx + 2*k] + RelativeDirX[i] >= 0) &&
-                    (currState[gx + 2*k] + RelativeDirX[i] <= grid.size()) &&
-                    (currState[gy + 2*k] + RelativeDirY[i] >= 0) &&
-                    (currState[gy + 2*k] + RelativeDirY[i] <= grid[0].size()) &&
 
-                    (grid[currState[gx + 2*k] + RelativeDirX[i]][currState[gy + 2*k] + RelativeDirY[i]] >= 0) &&
-                    ((currState[gx + 2*k] + RelativeDirX[i] != currState[a1x])||(currState[gy + 2*k] + RelativeDirY[i] != currState[a1y])) &&                                                                                                                                                   ((currState[gx + 2*k] + RelativeDirX[i] != currState[a2x])||(currState[gy + 2*k] + RelativeDirY[i] != currState[a2y]))){
+            for (long i = east; i<= unchanged; i++){
+                next_x = currState[gx + 2*k] + RelativeDirX[i];
+                next_y = currState[gy + 2*k] + RelativeDirY[i];
+                if (checkSquare(grid, next_x, next_y, 0) &&
+                    grid[next_x][next_y] >= 0 &&
+                    ((next_x != currState[a1x]) ||
+                     (next_y != currState[a1y])) &&
+                    ((next_x != currState[a2x]) ||
+                     (next_y != currState[a2y]))){
 
                     long a1Node = gridNodeLabel[currState[a1x]][currState[a1y]];
                     long a2Node = gridNodeLabel[currState[a2x]][currState[a2y]];
 
                     long gNode = gridNodeLabel[currState[gx + 2*k]][currState[gy + 2*k]];
-                    long gNodeNext = gridNodeLabel[currState[gx + 2*k] + RelativeDirX[i]][currState[gy + 2*k] + RelativeDirY[i]];
+                    long gNodeNext = gridNodeLabel[next_x][next_y];
                     long cost = (shortestPath[a1Node][gNode] < shortestPath[a2Node][gNode]) ? (shortestPath[a1Node][gNodeNext]*gridNodeLabel.size() + shortestPath[a2Node][gNodeNext]) : (shortestPath[a2Node][gNodeNext]*gridNodeLabel.size() + shortestPath[a1Node][gNodeNext]);
 
                     if (cost > bestCost)
@@ -544,6 +561,8 @@ void Herding::calcShortestPath(long i, long j)
     fifo_i.push_back(i); fifo_j.push_back(j); dist.push_back(0);
     found[sourceNode] = true;
 
+    long next_x, next_y;
+
     while (!fifo_i.empty()){
         long curr_i = fifo_i.front(); fifo_i.pop_front();
         long curr_j = fifo_j.front(); fifo_j.pop_front();
@@ -551,12 +570,14 @@ void Herding::calcShortestPath(long i, long j)
         long currDist = dist.front(); dist.pop_front();
         shortestPath[sourceNode][currNode] = currDist;
         for (long k = 0; k < 4; k++){
-            if (gridNodeLabel[curr_i+RelativeDirX[k]][curr_j+RelativeDirY[k]] >= 0){
-                long neighbour = gridNodeLabel[curr_i+RelativeDirX[k]][curr_j + RelativeDirY[k]];
+            next_x = curr_i + RelativeDirX[k];
+            next_y = curr_j + RelativeDirY[k];
+            if (gridNodeLabel[next_x][next_y] >= 0) {
+                long neighbour = gridNodeLabel[next_x][next_y];
                 if (!found[neighbour]){
                     found[neighbour] = true;
-                    fifo_i.push_back(curr_i+RelativeDirX[k]);
-                    fifo_j.push_back(curr_j+RelativeDirY[k]);
+                    fifo_i.push_back(next_x);
+                    fifo_j.push_back(next_y);
                     dist.push_back(currDist+1);
                 }
             }
