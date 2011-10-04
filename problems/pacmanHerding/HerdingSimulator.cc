@@ -89,6 +89,7 @@ int main(int argc, char **argv)
 
     Herding currModel(currProblem);
     currModel.readMapping(macroStateGroup_file);
+    Action::initStatic(&currModel);
 
     RandSource currRandSource(numTrials);
 
