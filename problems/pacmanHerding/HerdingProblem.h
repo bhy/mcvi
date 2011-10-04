@@ -22,7 +22,7 @@ const long NumActs = 25;
 
 // Same as actions but repeat action till macro states change.
 const long NumMacroActs = 0;
-const long NumInitPolicies = 0;
+const long NumInitPolicies = 1;
 const long GhostCtQuant = 5;
 const long GhostCtLevels = 6;
 const long TermState = LONG_MIN; // indicates state is at terminal state
