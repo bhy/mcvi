@@ -165,6 +165,7 @@ void Bounds::backUpActions(Belief& belief)
     //long currMacroActState, nextMacroActState;
     Obs obs(vector<long>(model.getNumObsVar(),0));
 
+    #pragma omp parallel for schedule(guided)
     for (long i = model.getNumInitPolicies();
          i < model.getNumInitPolicies() + model.getNumActs();
          i++){

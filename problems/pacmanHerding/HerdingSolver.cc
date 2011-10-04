@@ -13,10 +13,9 @@ int main(int argc, char **argv)
 {
     ostringstream message;
 
-    message << "-m <mapfile> as the first arguments\n-g <obsgroupfile> as the secon arguments\n";
+    message << "-m <mapfile> as the first argument\n-g <obsgroupfile> as the second argument\n";
 
-    if (argc < 4 ||
-        argv[1][0] != '-' || argv[1][1] != 'm' ||
+    if (argc < 5 || argv[1][0] != '-' || argv[1][1] != 'm' ||
         argv[3][0] != '-' || argv[3][1] != 'g') {
         cout << message.str() << "\n";
         exit(1);

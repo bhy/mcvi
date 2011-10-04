@@ -105,7 +105,10 @@ void ObsEdge::addParticle(const State& state, long pathLength, double immediateR
         cachedParticles = new ParticleStore();
     }
     // weight = 1
-    cachedParticles->particles.push_back(Particle(state, pathLength, 1));
+    #pragma omp critical
+    {
+        cachedParticles->particles.push_back(Particle(state, pathLength, 1));
+    }
 
     if (lastUpdated == Never) {
         count++;
