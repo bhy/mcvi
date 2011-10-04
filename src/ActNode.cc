@@ -58,14 +58,12 @@ void ActNode::generateObsPartitions()
         cout<<"ActNode::generateObsPartitions\n";
     }
 
-    RandStream randStream = RandStream();
-    randStream.initseed(randSeed);
-
     // reinit observation related storage
 
     // Don't use parallel here since we need randStream to be used in
     // a sequential manner
     for (long j=0; j < bounds->numRandStreams; j++){
+        RandStream randStream = bounds->randSource.getStream(j,0);
         Particle currParticle = belief.sample(j, randStream);
         State currState = currParticle.state;
         State nextState(bounds->model.getNumStateVar(),0);

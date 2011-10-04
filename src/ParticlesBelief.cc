@@ -102,7 +102,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
 
     #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
     for (long i = 0; i < numRandStreams; i++){
-        RandStream randStream = randSource->getStream(i);
+        RandStream randStream = randSource->getStream(i,0);
 
         //XXX use random sampling at here will cause belief variation!!!
         //Belief::particle currParticle = this->sample(randSource);
