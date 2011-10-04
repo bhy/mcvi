@@ -81,7 +81,6 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     //long obsGrp = beliefNode->model->getObsGrpFromObs(obs);
-    State currState(beliefNode->model->getNumStateVar(),0);
     nxt = new ParticlesBelief(new BeliefNode(obs));
 
     double weight_sum = 0.0;
@@ -112,7 +111,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         //     (so can cause "no next belief" error)
         Particle currParticle = this->getParticle(i);
         State nextState(beliefNode->model->getNumStateVar(),0);
-        currState = currParticle.state;
+        State currState = currParticle.state;
 
         long currPathLength = currParticle.pathLength;
         Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
