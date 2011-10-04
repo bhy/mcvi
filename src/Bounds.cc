@@ -36,7 +36,7 @@ void Bounds::backUp(Belief& belief)
             if (debug) {
                 cout<<"Bounds::backUp Change bestLBoundAct to "<<i<<"\n";
             }
-            beliefNode.bestLBoundAct(i);
+            beliefNode.bestLBoundAct.setActNum(i);
         }
 
         if (beliefNode.uBound < beliefNode.actNodes[i]->avgUpper){
@@ -45,7 +45,7 @@ void Bounds::backUp(Belief& belief)
             if (debug) {
                 cout<<"Bounds::backUp Change bestUBoundAct to "<<i<<"\n";
             }
-            beliefNode.bestUBoundAct(i);
+            beliefNode.bestUBoundAct.setActNum(i);
         }
     }
 

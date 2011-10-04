@@ -38,7 +38,7 @@ PolicyGraph::PolicyGraph(long numInitPolicies, long numObsVar, long numRoots): n
     // insert all the initial policies
     for (long i = 0; i < numInitPolicies; i++){
         PolicyGraph::Node *tempNode = new PolicyGraph::Node;
-        tempNode->action(i, Initial);
+        tempNode->action.setActNum(i);
         PolicyGraph::Edge tempEdge(numObsVar);
         tempEdge.obs.obs[0] = LoopObs;
         tempEdge.nextNode = tempNode; // loop back

@@ -8,11 +8,11 @@ enum actType{None, Initial, Macro, Act}; // types of actions
 class Action
 {
   public:
-    int actNum;
+    long actNum, actNumUser;
     actType type;
     static Model* model;
 
-    explicit Action(int actNum, actType type = None);
+    explicit Action(int actNum);
     Action();
     virtual ~Action() {}
 
@@ -20,12 +20,14 @@ class Action
 
     static int compare(const Action& a, const Action& b);
 
-    void operator()(int actNum, actType type = None);
+    void setActNum(long actNum);
 
     /**
        Get the type of action given its index in the \a actEdges
     */
     actType getActType();
+
+    long getActNumUser() const;
 
     void computeType();
 

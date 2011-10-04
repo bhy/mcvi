@@ -9,10 +9,9 @@ void Action::initStatic(Model* model)
     Action::model = model;
 }
 
-Action::Action(int actNum, actType type): actNum(actNum), type(type)
+Action::Action(int actNum): actNum(actNum)
 {
-    if (type == None)
-        this->computeType();
+    computeType();
 }
 
 Action::Action()
@@ -37,13 +36,12 @@ int Action::compare(const Action& a, const Action& b)
     return 0;
 }
 
-void Action::operator()(int actNum, actType type)
+void Action::setActNum(long actNum)
 {
     this->actNum = actNum;
-    this->type   = type;
+    this->actNumUser = actNum;
 
-    if (type == None)
-        this->computeType();
+    computeType();
 }
 
 actType Action::getActType()
@@ -55,6 +53,10 @@ actType Action::getActType()
     return type;
 }
 
+long Action::getActNumUser() const {
+    return actNumUser;
+}
+
 void Action::computeType()
 {
     if (model == NULL) {
@@ -62,10 +64,15 @@ void Action::computeType()
         exit(1);
     }
 
-    if (actNum - model->getNumInitPolicies() - model->getNumMacroActs() >=0)
+    actNumUser = actNum;
+    if (actNum - model->getNumInitPolicies() - model->getNumMacroActs() >=0) {
         type = Act; // simple action
-    else if (actNum - model->getNumInitPolicies() >= 0)
+        actNumUser -= (model->getNumInitPolicies() + model->getNumMacroActs());
+    }
+    else if (actNum - model->getNumInitPolicies() >= 0) {
         type = Macro; // macro action
+        actNumUser -= model->getNumInitPolicies();
+    }
     else type = Initial; // initial action
 }
 
