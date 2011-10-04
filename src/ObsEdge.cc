@@ -35,11 +35,13 @@ void ObsEdge::backupFromPolicyGraph()
          it != nodes.end(); ++it) {
         double sumPolicyValue = cachedParticles->currSum;
 
+        #pragma omp parallel for reduction(+:sumPolicyValue)
         for (long k = 0; k < count; k++) {
             double sumDiscounted;
             Particle& particle = cachedParticles->particles[k];
-            RandStream randStream = bounds->randSource.getStream(k,0);
-            bounds->simulator.runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randStream);
+            RandSource randSourceCopy(bounds->randSource);
+            randSourceCopy.startStream(k);
+            bounds->simulator.runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randSourceCopy);
             double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
             sumPolicyValue += currValue;
         }
