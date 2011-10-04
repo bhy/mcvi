@@ -18,7 +18,7 @@ void ActNode::backup()
     }
 
     for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin();
-         currIt != obsChildren.end(); currIt++){
+         currIt != obsChildren.end(); ++currIt){
         // backup for each observation
         ObsEdge& obsEdge = currIt->second;
         obsEdge.backup();
@@ -29,7 +29,7 @@ void ActNode::backup()
     double upper = 0;
     long count = 0;
 
-    for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin(); currIt != obsChildren.end(); currIt++) {
+    for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin(); currIt != obsChildren.end(); ++currIt) {
         lower += currIt->second.lower;
         upper += currIt->second.upper;
         count += currIt->second.count;
@@ -45,7 +45,7 @@ void ActNode::backup()
 
 void ActNode::clearObsPartitions()
 {
-    for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin(); currIt != obsChildren.end(); currIt++){
+    for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin(); currIt != obsChildren.end(); ++currIt){
         currIt->second.clearParticles();
     }
 }

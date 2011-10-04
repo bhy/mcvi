@@ -62,7 +62,7 @@ void Bounds::backUp(Belief& belief)
     // construct policy node observation edges
     for (map<Obs,ObsEdge>::iterator iter = beliefNode.actNodes[actIndex]->obsChildren.begin();
          iter != beliefNode.actNodes[actIndex]->obsChildren.end();
-         iter++){
+         ++iter){
         if (debug) {
             cout<<"Bounds::backUp temp"<<"\n";
         }

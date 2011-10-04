@@ -38,7 +38,7 @@ class ParticlesBeliefSet: public BeliefSet
     ~ParticlesBeliefSet()
     {
         for (std::set<ParticlesBelief*, beliefComp>::iterator it = pBSet.begin();
-             it != pBSet.end(); it++)
+             it != pBSet.end(); ++it)
             delete *it;
         pBSet.clear();
     }

@@ -32,7 +32,7 @@ void ObsEdge::backup()
 void ObsEdge::backupFromPolicyGraph()
 {
     for (vector<PolicyGraph::Node*>::iterator it = nodes.begin();
-         it != nodes.end(); it++) {
+         it != nodes.end(); ++it) {
         double sumPolicyValue = cachedParticles->currSum;
 
         #pragma omp parallel for schedule(guided) reduction(+:sumPolicyValue)
@@ -68,7 +68,7 @@ void ObsEdge::backupFromNextBelief()
         lower = nextLower;
         bestPolicyVal = nextLower;
         bestPolicyNode = nextBelief->beliefNode->bestPolicyNode;
-        //lastUpdated = nextBelief->beliefNode->lastUpdated;
+        // lastUpdated = nextBelief->beliefNode->lastUpdated;
     }
 
     if (nextUpper < upper)
@@ -79,7 +79,7 @@ void ObsEdge::addPolicyNodes()
 {
     if (lastUpdated == Never) {
         PolicyGraph& policyGraph = bounds->policyGraph;
-        for (long j=0; j< policyGraph.getNumInitPolicies(); j++){
+        for (long j=0; j < policyGraph.getNumInitPolicies(); j++){
             PolicyGraph::Node* node = policyGraph.getInitPolicy(j);
             addNode(node);
         }

@@ -120,7 +120,7 @@ inline map<Obs,ObsEdge>::iterator BeliefForest::findBestObs(Belief *currNode, do
             currBestObs = iter;
             excessUncertainty = diff;
         }
-        iter++;
+        ++iter;
     }
     return currBestObs;
 }

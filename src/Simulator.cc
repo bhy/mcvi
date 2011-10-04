@@ -38,7 +38,7 @@ void Simulator::runSingle(long length, double& sumReward,
 
     // Run simulation
     for (long t=0; t< length; t++){
-        for(State::iterator it=currState.begin();it!=currState.end();it++)
+        for(State::iterator it=currState.begin(); it != currState.end(); ++it)
             fp << *it << " ";
         fp<<endl;
         fp << action.type << " " << action.actNum << endl;

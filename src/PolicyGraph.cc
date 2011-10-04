@@ -139,7 +139,7 @@ void PolicyGraph::write(std::string filename)
         fp << "\n";
     }
 
-    for (MSPit iter = obsPolicies.begin(); iter != obsPolicies.end(); iter++){
+    for (MSPit iter = obsPolicies.begin(); iter != obsPolicies.end(); ++iter){
         fp << iter->first << " ";
         fp <<  iter->second.policyVec.size() << " ";
         for (long j = 0; j < (long)iter->second.policyVec.size(); j++){
