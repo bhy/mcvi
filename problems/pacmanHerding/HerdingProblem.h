@@ -13,15 +13,15 @@ const double MovementCost = 0; // Cost of any other actions
 enum regionType{junction, nonjunction}; // Region type
 enum stateVars{a1x, a1y, a2x, a2y, gx, gy}; // State variable names
 enum directions {east, south, west, north, unchanged}; // Action names
-const long RelativeDirX[] = {1, 0, -1, 0, 0}; // Relative x movement for each aciton
-const long RelativeDirY[] = {0, -1, 0, 1, 0}; // Relative y movement for each aciton
+const long RelativeDirX[] = {0, 1, 0, -1, 0}; // Relative x movement for each aciton
+const long RelativeDirY[] = {1, 0, -1, 0, 0}; // Relative y movement for each aciton
 
 const long NumActsPerAgent = 5; // Number of actions for each agent
 // Number of possible actions (two agents).
 const long NumActs = 25;
 
 // Same as actions but repeat action till macro states change.
-const long NumMacroActs = 2;
+const long NumMacroActs = 0;
 const long NumInitPolicies = 0;
 const long GhostCtQuant = 5;
 const long GhostCtLevels = 6;

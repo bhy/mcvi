@@ -1,4 +1,5 @@
 #include "Herding.h"
+#include <cassert>
 #include <cstdlib>
 #include <deque>
 
@@ -129,15 +130,6 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
     fp.close();
 }
 
-bool Herding::checkSquare(std::vector<std::vector<long> > g, long x, long y, long min) {
-    if (!((x >= 0 && x < g.size()) &&
-        (y >= 0 && y < g[0].size())))
-        cout<<x<<" "<<y<<"\n";
-    return ((x >= 0 && x < g.size()) &&
-            (y >= 0 && y < g[0].size()) &&
-            g[x][y] >= min);
-}
-
 double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream)
 {
     long act = action.actNum;
@@ -147,7 +139,6 @@ double Herding::sample(const State& currState, const Action& action, State& next
         return 0;
     };
 
-//    cout<<"Test\n";
     nextState.resize(numStateVars,0);
     double tempReward = 0;
     bool ghostRemain = false;
@@ -177,7 +168,6 @@ double Herding::sample(const State& currState, const Action& action, State& next
         return tempReward;
     }
 
-//    cout<<"Test1\n";
     // action of each agent
     long act1 = act/NumActsPerAgent;
     long act2 = act % NumActsPerAgent;
@@ -195,7 +185,7 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
     // change agent 2 position if possible
     next_x = currState[a2x] + RelativeDirX[act2];
-    next_y = next_y;
+    next_y = currState[a2y] + RelativeDirY[act2];
     if (grid[next_x][next_y] >= 0) {
         nextState[a2x] = next_x;
         nextState[a2y] = next_y;
@@ -203,9 +193,21 @@ double Herding::sample(const State& currState, const Action& action, State& next
         nextState[a2x] = currState[a2x];
         nextState[a2y] = currState[a2y];
     }
-//    cout<<"Test2\n";
+
     for (long k = 0; k < numGhosts; k++){
         if (nextState[gx + 2*k] != -1){
+            // if (!(currState[gx + 2*k] > 0 && currState[gx + 2*k] < grid.size()-1 &&
+            //       currState[gy + 2*k] > 0 && currState[gy + 2*k] < grid[0].size()-1 &&
+            //       grid[currState[gx + 2*k]][currState[gy + 2*k]] >= 0)) {
+            //     cout<<"CurrState assert\n"; cout<<"grid["<<currState[gx+2*k]<<"]["<<currState[gy+2*k]<<"] = "<<grid[currState[gx+2*k]][currState[gy+2*k]]<<"\n";
+
+            //     fflush(stdout);
+            // }
+
+            // assert(currState[gx + 2*k] > 0 && currState[gx + 2*k] < grid.size()-1);
+            // assert(currState[gy + 2*k] > 0 && currState[gy + 2*k] < grid[0].size()-1);
+            // assert(grid[currState[gx + 2*k]][currState[gy + 2*k]] >= 0);
+
             // Store legal ghost actions
             // cannot move into walls, cannot move to position currently occupied by agent
             // Compute the ghost move that moves furthest from the closest agent
@@ -217,8 +219,7 @@ double Herding::sample(const State& currState, const Action& action, State& next
             for (long i = east; i<= unchanged; i++){
                 next_x = currState[gx + 2*k] + RelativeDirX[i];
                 next_y = currState[gy + 2*k] + RelativeDirY[i];
-                if (checkSquare(grid, next_x, next_y, 0) &&
-                    grid[next_x][next_y] >= 0 &&
+                if (grid[next_x][next_y] >= 0 &&
                     ((next_x != currState[a1x]) ||
                      (next_y != currState[a1y])) &&
                     ((next_x != currState[a2x]) ||
@@ -267,9 +268,37 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
             nextState[gx + 2*k] = currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]];
             nextState[gy + 2*k] = currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]];
+
+            // if (nextState[gx+2*k] != currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]] ||
+            //     nextState[gy+2*k] != currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]]) {
+            //     cout<<"WTF\n";
+            //     cout<<"("<<RelativeDirX[legalDirs[ghostDir]]<<", "<<RelativeDirY[legalDirs[ghostDir]]<<")\n";
+            //     cout<<"("<<currState[gx+2*k]+RelativeDirX[legalDirs[ghostDir]]<<", "<<
+            //             currState[gy+2*k]+RelativeDirY[legalDirs[ghostDir]]<< ") => ("<<nextState[gx+2*k]<<", "<<nextState[gy+2*k]<<")\n";
+            //     fflush(stdout);
+            // }
+            // assert(nextState[gx+2*k] == currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]] &&
+            //        nextState[gy+2*k] == currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]]);
+
+            // if (!(nextState[gx + 2*k] > 0 && nextState[gx + 2*k] < grid.size()-1 &&
+            //       nextState[gy + 2*k] > 0 && nextState[gy + 2*k] < grid[0].size()-1 &&
+            //       grid[nextState[gx + 2*k]][nextState[gy + 2*k]] >= 0)) {
+            //     cout<<"NextState assert\n";
+            //     cout<<"Dirs = "<<legalDirs[ghostDir]<<"\n";
+            //     cout<<"("<<RelativeDirX[legalDirs[ghostDir]]<<", "<<RelativeDirY[legalDirs[ghostDir]]<<")\n";
+            //     cout<<"("<<currState[gx+2*k]+RelativeDirX[legalDirs[ghostDir]]<<", "<<
+            //             currState[gy+2*k]+RelativeDirY[legalDirs[ghostDir]]<<")\n";
+            //     cout<<"grid["<<nextState[gx+2*k]<<"]["<<nextState[gy+2*k]<<"] = "<<grid[nextState[gx+2*k]][nextState[gy+2*k]]<<"\n";
+            //     cout<<"grid["<<currState[gx+2*k]<<"]["<<currState[gy+2*k]<<"] = "<<grid[currState[gx+2*k]][currState[gy+2*k]]<<"\n";
+            //     fflush(stdout);
+            // }
+
+            // assert(nextState[gx + 2*k] > 0 && nextState[gx + 2*k] < grid.size()-1);
+            // assert(nextState[gy + 2*k] > 0 && nextState[gy + 2*k] < grid[0].size()-1);
+            // assert(grid[nextState[gx + 2*k]][nextState[gy + 2*k]] >= 0);
         }
     }
-//    cout<<"Test3\n";
+
     obs.obs[0] = OtherObs;
     obs.obs[1] = getObsGrpFromState(nextState);
     if (this->getNumObsVar()==3)
