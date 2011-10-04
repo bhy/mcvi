@@ -15,12 +15,18 @@ class RandStream
     {}
 
     void initseed(unsigned int num) {
-        seed=num;
+        #pragma omp critical
+        {
+            seed=num;
+        }
     }
 
     unsigned int get()
     {
-        return rand_r(&seed);
+        unsigned int result;
+        #pragma omp critical
+        result = rand_r(&seed);
+        return result;
     }
 
     inline double getf()
@@ -55,6 +61,7 @@ class RandSource
 
     void initseed(unsigned int seed)
     {
+        #pragma omp parallel for
         for(unsigned int i=0; i<numStream; ++i) {
             sources[i].initseed(seed ^ i);
         }
@@ -76,14 +83,20 @@ class RandSource
 
     inline void startStream(long streamNum)
     {
-        currNum = 0;
-        currStream = streamNum;
+        #pragma omp critical
+        {
+            currNum = 0;
+            currStream = streamNum;
+        }
     };
 
     inline void setStreamPos(long streamNum, long pos)
     {
-        currNum = pos;
-        currStream = streamNum;
+        #pragma omp critical
+        {
+            currNum = pos;
+            currStream = streamNum;
+        }
     };
 
     inline long getStreamNum() { return currStream; };
@@ -101,8 +114,11 @@ class RandSource
 
     inline void reset()
     {
-        currStream = 0;
-        currNum = 0;
+        #pragma omp critical
+        {
+            currStream = 0;
+            currNum = 0;
+        }
     };
     friend class RandStream;
   private:
