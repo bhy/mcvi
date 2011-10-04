@@ -68,7 +68,7 @@ void ObsEdge::backupFromNextBelief()
         lower = nextLower;
         bestPolicyVal = nextLower;
         bestPolicyNode = nextBelief->beliefNode->bestPolicyNode;
-        // lastUpdated = nextBelief->beliefNode->lastUpdated;
+        lastUpdated = nextBelief->beliefNode->lastUpdated;
     }
 
     if (nextUpper < upper)
