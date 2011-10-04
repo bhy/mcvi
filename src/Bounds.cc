@@ -15,8 +15,10 @@ void Bounds::backUp(Belief& belief)
         cout<<"Bounds::backUp\n";
     }
 
-    if (beliefNode.lastUpdated == Never)
+    if (beliefNode.lastUpdated == Never) {
         initBeliefForBackUp(belief);
+        backUpInitPolicies(belief);
+    }
     backUpActions(belief);
 
     // find best bounds at the belief
@@ -87,61 +89,62 @@ void Bounds::backUp(Belief& belief)
     }
 }
 
-// void Bounds::backUpInitPolicies(Belief& belief)
-// {
-//     bool debug = false;
+void Bounds::backUpInitPolicies(Belief& belief)
+{
+    bool debug = false;
 
-//     if (debug) {
-//         cout<<"Bounds::backUpInitPolicies\n";
-//     }
+    if (debug) {
+        cout<<"Bounds::backUpInitPolicies\n";
+    }
 
-//     BeliefNode& beliefNode = *(belief.beliefNode);
+    BeliefNode& beliefNode = *(belief.beliefNode);
 
-//     for (long i = 0; i < model.getNumInitPolicies(); i++){
-//         double policyValue = 0;
-//         // run simulation
-//         for (long j = 0; j < numRandStreams; j++){
-//             RandStream randStream = randSource.getStream(j, 0);
-//             Particle currParticle = belief.sample(randStream);
-//             State currState = currParticle.state;
-//             State nextState(model.getNumStateVar(),0);
-//             long currMacroActState = InitMacroActState;
-//             long nextMacroActState;
-//             double currDiscount = 1;
-//             double sumDiscounted = 0;
-//             double currReward;
-//             for (long k = 0; k <  maxSimulLength; k++){
-//                 // Check for terminal state
-//                 if (model.isTermState(currState)){
-//                     break;
-//                 }
-//                 currReward = model.initPolicy(currState, i, currMacroActState, nextState, nextMacroActState, randStream);
-//                 currMacroActState = nextMacroActState;
-//                 sumDiscounted += currDiscount * currReward;
-//                 currDiscount *= model.getDiscount();
-//                 currState = nextState;
-//             }
-//             double currWeight = power(model.getDiscount(),currParticle.pathLength);
-//             policyValue += currWeight*sumDiscounted;
-//         }
+    for (long i = 0; i < model.getNumInitPolicies(); i++){
+        double policyValue = 0;
+        // run simulation
+        for (long j = 0; j < numRandStreams; j++){
+            RandStream randStream = randSource.getStream(j, 0);
+            Particle currParticle = belief.sample(randStream);
+            State currState = currParticle.state;
+            State nextState(model.getNumStateVar(),0);
+            long currMacroActState = InitMacroActState;
+            long nextMacroActState;
+            double currDiscount = 1;
+            double sumDiscounted = 0;
+            double currReward;
+            for (long k = 0; k <  maxSimulLength; k++){
+                // Check for terminal state
+                if (model.isTermState(currState)){
+                    break;
+                }
+                Obs obs(vector<long>(model.getNumObsVar(),0));
+                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
+                currMacroActState = nextMacroActState;
+                sumDiscounted += currDiscount * currReward;
+                currDiscount *= model.getDiscount();
+                currState = nextState;
+            }
+            double currWeight = power(model.getDiscount(),currParticle.pathLength);
+            policyValue += currWeight*sumDiscounted;
+        }
 
-//         // compute averages
-//         beliefNode.actNodes[i]->avgLower = beliefNode.actNodes[i]->avgUpper = policyValue/numRandStreams;
+        // compute averages
+        beliefNode.actNodes[i]->avgLower = beliefNode.actNodes[i]->avgUpper = policyValue/numRandStreams;
 
-//         // construct observation edge
-//         Obs tempObs(vector<long>(model.getNumObsVar(),0));
-//         model.setObsType(tempObs,LoopObs);
-//         pair<map<Obs,ObsEdge>::iterator, bool> ret =
-//                 beliefNode.actNodes[i]->obsChildren.insert(pair<Obs,ObsEdge >(tempObs,ObsEdge(tempObs, this)));
-//         ObsEdge& insertedEdge = ret.first->second;
-//         insertedEdge.lower = insertedEdge.upper = policyValue;
-//         insertedEdge.bestPolicyNode = policyGraph.getInitPolicy(i);
-//     }
+        // construct observation edge
+        Obs tempObs(vector<long>(model.getNumObsVar(),0));
+        model.setObsType(tempObs,LoopObs);
+        pair<map<Obs,ObsEdge>::iterator, bool> ret =
+                beliefNode.actNodes[i]->obsChildren.insert(pair<Obs,ObsEdge >(tempObs,ObsEdge(tempObs, this)));
+        ObsEdge& insertedEdge = ret.first->second;
+        insertedEdge.lower = insertedEdge.upper = policyValue;
+        insertedEdge.bestPolicyNode = policyGraph.getInitPolicy(i);
+    }
 
-//     if (debug) {
-//         cout<<"Leaving Bounds::backUpInitPolicies\n";
-//     }
-// }
+    if (debug) {
+        cout<<"Leaving Bounds::backUpInitPolicies\n";
+    }
+}
 
 void Bounds::buildActNodes(Belief& belief)
 {
