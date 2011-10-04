@@ -62,7 +62,9 @@ void ActNode::generateObsPartitions()
     randStream.initseed(randSeed);
 
     // reinit observation related storage
-    #pragma omp parallel for schedule(guided)
+
+    // Don't use parallel here since we need randStream to be used in
+    // a sequential manner
     for (long j=0; j < bounds->numRandStreams; j++){
         Particle currParticle = belief.sample(j, randStream);
         State currState = currParticle.state;
@@ -79,11 +81,7 @@ void ActNode::generateObsPartitions()
         if (obsIt == obsChildren.end()) {
             // init observations if not seen before
             pair<map<Obs,ObsEdge>::iterator, bool> ret;
-            #pragma omp critical
-            {
-                ret = obsChildren.insert(pair<Obs,ObsEdge>(obs,ObsEdge(obs,bounds)));
-            }
-
+            ret = obsChildren.insert(pair<Obs,ObsEdge>(obs,ObsEdge(obs,bounds)));
             obsIt = ret.first;
         }
 
