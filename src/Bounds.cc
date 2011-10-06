@@ -103,8 +103,9 @@ void Bounds::backUpInitPolicies(Belief& belief)
         double policyValue = 0;
         // run simulation
         for (long j = 0; j < numRandStreams; j++){
-            RandStream randStream = randSource.getStream(j, 0);
-            Particle currParticle = belief.sample(randStream);
+            RandSource randSourceCopy(randSource);
+            randSourceCopy.startStream(j);
+            Particle currParticle = belief.sample(randSource);
             State currState = currParticle.state;
             State nextState(model.getNumStateVar(),0);
             long currMacroActState = InitMacroActState;
@@ -118,7 +119,7 @@ void Bounds::backUpInitPolicies(Belief& belief)
                     break;
                 }
                 Obs obs(vector<long>(model.getNumObsVar(),0));
-                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
+                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randSource);
                 currMacroActState = nextMacroActState;
                 sumDiscounted += currDiscount * currReward;
                 currDiscount *= model.getDiscount();

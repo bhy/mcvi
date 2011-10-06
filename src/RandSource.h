@@ -49,9 +49,18 @@ class RandSource
             }
         currStream = 0;
         currNum = 0;
-    };
+    }
 
-    static void init(unsigned seed) { srand(seed); };
+    RandSource(const RandSource& copy):
+            blockSize(copy.blockSize),
+            numStream(copy.numStream),
+            currStream(copy.currStream),
+            currNum(copy.currNum),
+            sources(copy.sources),
+            tempStream(*this,currStream,currNum,true)
+    {}
+
+    static void init(unsigned seed) { srand(seed); }
 
     inline unsigned get()
     {
@@ -61,7 +70,7 @@ class RandSource
         unsigned out = sources[currStream][currNum];
         currNum++;
         return out;
-    };
+    }
 
     inline void extend(long iStream)
     {
@@ -77,16 +86,16 @@ class RandSource
     {
         currNum = 0;
         currStream = streamNum;
-    };
+    }
 
     inline void setStreamPos(long streamNum, long pos)
     {
         currNum = pos;
         currStream = streamNum;
-    };
+    }
 
-    inline long getStreamNum() { return currStream; };
-    inline long getPosInStream() { return currNum; };
+    inline long getStreamNum() { return currStream; }
+    inline long getPosInStream() { return currNum; }
 
     inline RandStream getStream(long numStream, long numPos = 0)
     {
@@ -110,7 +119,7 @@ class RandSource
             }
         currStream = 0;
         currNum = 0;
-    };
+    }
 
  friend class RandStream;
  private:
@@ -135,6 +144,6 @@ unsigned RandStream::get()
         randSource.setStreamPos(currStream, currPos);
     }
     return out;
-};
+}
 
 #endif //  __RANDSOURCE_H
