@@ -102,7 +102,8 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
 
     #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
     for (long i = 0; i < numRandStreams; i++){
-        RandStream randStream = randSource->getStream(i);
+        RandStream randStream;
+        randStream.initseed(randSource->getStream(i).get());
 
         //XXX use random sampling at here will cause belief variation!!!
         //Belief::particle currParticle = this->sample(randSource);
@@ -117,7 +118,16 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
 
         if (action.type == Act){
-            double re = beliefNode->model->sample(currState, action, nextState, currObs, randStream);
+            long tried = 0;
+            double obsProb = 0.0, re;
+            do {
+                re = beliefNode->model->sample(currState, action, nextState, currObs, randStream);
+                double prob = beliefNode->model->getObsProb(action,
+                                                            nextState,
+                                                            obs);
+                if (prob > obsProb)
+                    obsProb = prob;
+            } while (++tried < 100);
 
             if (debug) {
                 cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<" "<<re<<"\n";
@@ -130,9 +140,6 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
                 cout<<"xt_weight = "<<xt_weight<<"\n";
             }
 
-            double obsProb = beliefNode->model->getObsProb(action,
-                                                           nextState,
-                                                           obs);
             double new_weight = xt_weight*obsProb;
 
             if (debug) {

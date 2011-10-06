@@ -61,11 +61,12 @@ void ActNode::generateObsPartitions()
     // reinit observation related storage
 
     // Use the randSeed
+    RandStream randStream;
+    randStream.initseed(randSeed);
 
     // Don't use parallel here since we need randStream to be used in
     // a sequential manner??? Is it true?
     for (long j=0; j < bounds->numRandStreams; j++){
-        RandStream randStream = bounds->randSource.getStream(j);
         Particle currParticle = belief.sample(j,randStream);
         State currState = currParticle.state;
         State nextState(bounds->model.getNumStateVar(),0);

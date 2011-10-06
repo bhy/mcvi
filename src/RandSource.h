@@ -3,147 +3,146 @@
 
 #include <cstdlib>
 #include <vector>
+#include <iostream>
 
 class RandSource;
 
 class RandStream
 {
-public:
-    RandStream(RandSource& randSource, long currStream, size_t currPos, bool sync=false):
-        randSource(randSource), currStream(currStream), currPos(currPos), sync(sync)
+  public:
+    RandStream() :
+            seed(0), pos(0)
     {}
 
-    inline unsigned get();
+    void initseed(unsigned int num) {
+        #pragma omp critical
+        {
+            seed=num;
+            pos = 0;
+        }
+    }
+
+    unsigned int get()
+    {
+        unsigned int result;
+        #pragma omp critical
+        {
+            result = rand_r(&seed);
+            ++pos;
+        }
+        return result;
+    }
 
     inline double getf()
     {
         return ((double)get() / RAND_MAX);
     }
     friend class RandSource;
-private:
-    RandSource& randSource;
-    long currStream;
-    size_t currPos;
-    bool sync;
+
+    long pos;
+  private:
+    unsigned int seed;
 };
-
-
 
 /**
    @class RandSource
    @brief Source of random numbers
-   @details Generates streams of random numbers that are then reused.
+   @details Streams of random numbers.
 
-   @author Wee Sun Lee
-   @date 26 October 2009
+   @author Haoyu Bai
+   @date 1 January 2011
 */
 class RandSource
 {
- public:
-    RandSource(long numStream, long blockSize = 100):blockSize(blockSize), numStream(numStream), tempStream(*this, 0,0, true)
+  public:
+    RandSource(long numStream, long blockSize = 100):
+            numStream(numStream)
     {
-        sources.resize(numStream);
-        for (long j = 0; j < numStream; j++)
-            for (long i=0; i< blockSize; i++){
-                sources[j].push_back(rand());
-            }
+        seeds.resize(numStream);
+        for(int i=0; i < numStream; ++i)
+            sources.push_back(RandStream());
         currStream = 0;
         currNum = 0;
+        initseed(std::rand());
+    };
+
+    void initseed(unsigned int seed)
+    {
+        #pragma omp parallel for
+        for(unsigned int i=0; i<numStream; ++i) {
+            seeds[i] = (seed ^ i);
+            sources[i].initseed(seeds[i]);
+        }
+    };
+
+    void sizeStat()
+    {
     }
-
-    RandSource(const RandSource& copy):
-            blockSize(copy.blockSize),
-            numStream(copy.numStream),
-            currStream(copy.currStream),
-            currNum(copy.currNum),
-            sources(copy.sources),
-            tempStream(*this,currStream,currNum,true)
-    {}
-
-    static void init(unsigned seed) { srand(seed); }
 
     inline unsigned get()
     {
-        if (currNum >= sources[currStream].size()) {
-            extend(currStream);
-        }
-        unsigned out = sources[currStream][currNum];
-        currNum++;
-        return out;
-    }
-
-    inline void extend(long iStream)
-    {
-        for (long i=0; i < blockSize; i++) sources[iStream].push_back(rand());
-    }
+        return sources[currStream].get();
+    };
 
     inline double getf()
     {
-        return ((double)get() / RAND_MAX);
+        return (double(get()) / RAND_MAX);
     }
 
     inline void startStream(long streamNum)
     {
-        currNum = 0;
-        currStream = streamNum;
-    }
+        #pragma omp critical
+        {
+            currNum = 0;
+            currStream = streamNum;
+        }
+    };
 
     inline void setStreamPos(long streamNum, long pos)
     {
-        currNum = pos;
-        currStream = streamNum;
-    }
+        #pragma omp critical
+        {
+            currNum = pos;
+            currStream = streamNum;
+        }
+    };
 
-    inline long getStreamNum() { return currStream; }
-    inline long getPosInStream() { return currNum; }
+    inline long getStreamNum() { return currStream; };
+    inline long getPosInStream() { return currNum; };
 
-    inline RandStream getStream(long numStream, long numPos = 0)
+    inline RandStream& getStream(long numStream, long numPos)
     {
-        return RandStream(*this, numStream, numPos);
+        sources[numStream].initseed(seeds[numStream]);
+        for (long i = 0; i < numPos; i++)
+            sources[numStream].get();
+        return sources[numStream];
     }
+
+    inline RandStream& getStream(long numStream)
+    {
+        return sources[numStream];
+    }
+
 
     inline operator RandStream&()
     {
-        tempStream.currStream = currStream;
-        tempStream.currPos = currNum;
-        return tempStream;
+        return sources[currStream];
     }
 
     inline void reset()
     {
-        for (long i=0; i< numStream; i++)
-            sources[i].resize(0);
-        for (long j = 0; j < numStream; j++)
-            for (long i=0; i< blockSize; i++){
-                sources[j].push_back(rand());
-            }
-        currStream = 0;
-        currNum = 0;
-    }
-
- friend class RandStream;
- private:
-    long blockSize;
+        #pragma omp critical
+        {
+            currStream = 0;
+            currNum = 0;
+        }
+    };
+    friend class RandStream;
+  private:
     long numStream;
     long currStream;
     size_t currNum;
-    std::vector<std::vector<unsigned> > sources;
-    RandStream tempStream;
+    std::vector<RandStream> sources;
+    std::vector<unsigned> seeds;
 };
-
-unsigned RandStream::get()
-{
-    if (currPos >= randSource.sources[currStream].size()) {
-        #pragma omp critical
-        randSource.extend(currStream);
-    }
-
-    unsigned out = randSource.sources[currStream][currPos];
-    currPos++;
-    if (sync) {
-        randSource.setStreamPos(currStream, currPos);
-    }
-    return out;
-}
-
 #endif //  __RANDSOURCE_H

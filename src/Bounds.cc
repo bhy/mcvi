@@ -25,7 +25,7 @@ void Bounds::backUp(Belief& belief)
     beliefNode.lBound = NegInf;
     beliefNode.uBound = NegInf;
 
-    for (long i = model.getNumInitPolicies();
+    for (long i = 0;
          i < model.getNumInitPolicies() + model.getNumActs(); i++) {
 
         if (debug) {
@@ -103,7 +103,8 @@ void Bounds::backUpInitPolicies(Belief& belief)
         double policyValue = 0;
         // run simulation
         for (long j = 0; j < numRandStreams; j++){
-            RandStream randStream = randSource.getStream(j);
+            RandStream randStream;
+            randStream.initseed(randSource.getStream(j).get());
             Particle currParticle = belief.sample(j,randStream);
             State currState = currParticle.state;
             State nextState(model.getNumStateVar(),0);
@@ -112,7 +113,7 @@ void Bounds::backUpInitPolicies(Belief& belief)
             double currDiscount = 1;
             double sumDiscounted = 0;
             double currReward;
-            for (long k = 0; k <  maxSimulLength; k++){
+            for (long k = 0; k < maxSimulLength; k++){
                 // Check for terminal state
                 if (model.isTermState(currState)){
                     break;
@@ -146,15 +147,6 @@ void Bounds::backUpInitPolicies(Belief& belief)
     }
 }
 
-void Bounds::buildActNodes(Belief& belief)
-{
-    BeliefNode& beliefNode = *(belief.beliefNode);
-    for (long i = 0; i < model.getNumInitPolicies() + model.getNumActs(); i++) {
-        Action* act = new Action(i);
-        beliefNode.actNodes.push_back(new ActNode(*act, belief, this));
-    }
-}
-
 void Bounds::backUpActions(Belief& belief)
 {
     bool debug = false;
@@ -177,12 +169,20 @@ void Bounds::backUpActions(Belief& belief)
             beliefNode.actNodes[i]->generateObsPartitions();
             beliefNode.actNodes[i]->backup();
             beliefNode.actNodes[i]->clearObsPartitions();
-
         }
     }
 
     if (debug) {
         cout<<"Leaving Bounds::backUpActions\n";
+    }
+}
+
+void Bounds::buildActNodes(Belief& belief)
+{
+    BeliefNode& beliefNode = *(belief.beliefNode);
+    for (long i = 0; i < model.getNumInitPolicies() + model.getNumActs(); i++) {
+        Action* act = new Action(i);
+        beliefNode.actNodes.push_back(new ActNode(*act, belief, this));
     }
 }
 
