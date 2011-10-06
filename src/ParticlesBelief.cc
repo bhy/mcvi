@@ -111,7 +111,8 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         //     do not see the same random stream as in here
         //     (so can cause "no next belief" error)
         Particle currParticle = this->getParticle(i);
-        State nextState(beliefNode->model->getNumStateVar(),0);
+        State nextState(beliefNode->model->getNumStateVar(),0),
+                nextStateTemp = nextState;
         State currState = currParticle.state;
 
         long currPathLength = currParticle.pathLength;
@@ -121,12 +122,19 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
             long tried = 0;
             double obsProb = 0.0, re;
             do {
-                re = beliefNode->model->sample(currState, action, nextState, currObs, randStream);
-                double prob = beliefNode->model->getObsProb(action,
-                                                            nextState,
-                                                            obs);
-                if (prob > obsProb)
+                re = beliefNode->model->sample(currState,
+                                               action,
+                                               nextStateTemp,
+                                               currObs,
+                                               randStream);
+                double prob =
+                        beliefNode->model->getObsProb(action,
+                                                      nextStateTemp,
+                                                      obs);
+                if (prob > obsProb) {
+                    nextState = nextStateTemp;
                     obsProb = prob;
+                }
             } while (++tried < 100);
 
             if (debug) {
