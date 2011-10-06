@@ -103,9 +103,8 @@ void Bounds::backUpInitPolicies(Belief& belief)
         double policyValue = 0;
         // run simulation
         for (long j = 0; j < numRandStreams; j++){
-            RandSource randSourceCopy(randSource);
-            randSourceCopy.startStream(j);
-            Particle currParticle = belief.sample(randSource);
+            RandStream randStream = randSource.getStream(j);
+            Particle currParticle = belief.sample(j,randStream);
             State currState = currParticle.state;
             State nextState(model.getNumStateVar(),0);
             long currMacroActState = InitMacroActState;
@@ -119,7 +118,7 @@ void Bounds::backUpInitPolicies(Belief& belief)
                     break;
                 }
                 Obs obs(vector<long>(model.getNumObsVar(),0));
-                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randSource);
+                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
                 currMacroActState = nextMacroActState;
                 sumDiscounted += currDiscount * currReward;
                 currDiscount *= model.getDiscount();
@@ -176,15 +175,9 @@ void Bounds::backUpActions(Belief& belief)
         if (model.allowableAct(belief, Action(i))){
             // generate partitions of states at observation children of this action
             beliefNode.actNodes[i]->generateObsPartitions();
-        }
-    }
-
-    for (long i = model.getNumInitPolicies();
-         i < model.getNumInitPolicies() + model.getNumActs();
-         i++){
-        if (model.allowableAct(belief, Action(i))){
             beliefNode.actNodes[i]->backup();
             beliefNode.actNodes[i]->clearObsPartitions();
+
         }
     }
 

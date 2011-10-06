@@ -39,9 +39,8 @@ void ObsEdge::backupFromPolicyGraph()
         for (long k = 0; k < count; k++) {
             double sumDiscounted;
             Particle& particle = cachedParticles->particles[k];
-            RandSource randSourceCopy(bounds->randSource);
-            randSourceCopy.startStream(k);
-            bounds->simulator.runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randSourceCopy);
+            RandStream randStream = bounds->randSource.getStream(k);
+            bounds->simulator.runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randStream);
             double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
             sumPolicyValue += currValue;
         }
@@ -106,10 +105,7 @@ void ObsEdge::addParticle(const State& state, long pathLength, double immediateR
         cachedParticles = new ParticleStore();
     }
     // weight = 1
-    #pragma omp critical
-    {
-        cachedParticles->particles.push_back(Particle(state, pathLength, 1));
-    }
+cachedParticles->particles.push_back(Particle(state, pathLength, 1));
 
     if (lastUpdated == Never) {
         count++;

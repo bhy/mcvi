@@ -60,20 +60,20 @@ void ActNode::generateObsPartitions()
 
     // reinit observation related storage
 
+    // Use the randSeed
+
     // Don't use parallel here since we need randStream to be used in
     // a sequential manner??? Is it true?
     for (long j=0; j < bounds->numRandStreams; j++){
-        RandSource randSourceCopy(bounds->randSource);
-        randSourceCopy.startStream(j);
-        Particle currParticle = belief.sample(randSourceCopy);
+        RandStream randStream = bounds->randSource.getStream(j);
+        Particle currParticle = belief.sample(j,randStream);
         State currState = currParticle.state;
         State nextState(bounds->model.getNumStateVar(),0);
 
         Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
 
-        double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randSourceCopy);
+        double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randStream);
         double discounted = pow(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
-        currState = nextState;
 
         map<Obs,ObsEdge>::iterator obsIt = obsChildren.find(obs);
 

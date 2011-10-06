@@ -108,6 +108,8 @@ void BeliefTree::expandNodes(double target)
             nextNode = ret.first;
         }
 
+        // currTarget /= model.getDiscount();
+
         currNode = nextNode;
         beliefStack.push_back(currNode);
         bounds.backUp(*currNode);
