@@ -25,7 +25,7 @@ const long NumMacroActs = 0;
 const long NumInitPolicies = 1;
 const long GhostCtQuant = 5;
 const long GhostCtLevels = 6;
-const long TermState = LONG_MIN; // indicates state is at terminal state
+const long TermState = -1; // indicates state is at terminal state
 
 /**
    @brief This structure is used to read in parameters to be passed to HerdingModel.
