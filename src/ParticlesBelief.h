@@ -49,7 +49,27 @@ class ParticlesBelief : public Belief
 
 inline Particle ParticlesBelief::sample(RandStream& randStream) const
 {
-    return belief[randStream.get() % belief.size()];
+    double totalWeight = 0.0;
+    for(std::vector<Particle>::const_iterator it=belief.begin();it!=belief.end();it++)
+    {
+        totalWeight += it->weight;
+    }
+    long temp = static_cast<long>(totalWeight * 100000.0);
+    long randNum = randStream.get() % temp;
+
+    std::vector<Particle>::const_iterator iter=belief.begin();
+    long count = static_cast<long>( iter->weight * 100000.0);
+    while(iter!=belief.end()-1) {
+        if(count < randNum){
+            count += static_cast<long>( iter->weight * 100000.0);
+            iter++;
+        }
+        else{
+            return *iter;
+        }
+
+    }
+    return *iter;
 }
 
 inline Particle ParticlesBelief::getParticle(long i) const

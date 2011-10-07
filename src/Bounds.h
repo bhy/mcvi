@@ -58,6 +58,7 @@ class Bounds
        @param belief Belief to be backed up.
     */
     void backUp(Belief& belief);
+    void updateBestActions(Belief& belief);
 
     /** Backup operations for each type of actions. Reset the count (number of particles) to 0
      */

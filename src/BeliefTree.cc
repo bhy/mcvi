@@ -1,7 +1,9 @@
 #include "BeliefTree.h"
 #include <time.h>
 #include <iostream>
+#include <cstdio>
 #include <sstream>
+#include <cassert>
 
 #ifdef DEBUG
 #define DEBUGMSG 1
@@ -78,9 +80,33 @@ void BeliefTree::expandNodes(double target)
 
     while (excessUncertainty > 0){
         Action act = currNode->beliefNode->bestUBoundAct;
+        assert(act.actNum != -1);
+
+        if (currNode->beliefNode->actNodes[act.actNum] == NULL) {
+            bounds.updateBestActions(*currNode);
+            act = currNode->beliefNode->bestUBoundAct;
+        }
 
         if (debug) {
             cout<<"obsChildren size = "<<currNode->beliefNode->actNodes[act.actNum]->obsChildren.size()<<"\n";
+        }
+
+        while (iter == currNode->beliefNode->actNodes[act.actNum]->obsChildren.end()) {
+            cerr<<"No nextBelief for bestUBoundAct = "<<act.actNum<<"\n";
+            // memory leaks here!!
+            currNode->beliefNode->actNodes[act.actNum] = NULL;
+            cerr<<"Try to find another action that can generate nextBelief since all the \
+obs of this action is deleted\n";
+            bounds.updateBestActions(*currNode);
+            act = currNode->beliefNode->bestUBoundAct;
+            while (act.actNum == -1) {
+                cerr<<"Try to backUp again since all the actions fail\n";
+                bounds.backUp(*currNode);
+                act = currNode->beliefNode->bestUBoundAct;
+            }
+            cerr<<"bestUBoundAct = "<<currNode->beliefNode->bestUBoundAct.actNum<<"\n";
+            fflush(stdout);
+            iter = findBestObs(currNode, currTarget, excessUncertainty);
         }
 
         Belief *nextNode = iter->second.nextBelief;
@@ -94,7 +120,7 @@ void BeliefTree::expandNodes(double target)
 
             if (nextNode==NULL) {
                 // Cannot sample next belief for this observation, which means the obs is almost not possible, remove it
-                cerr << "No next belief for act=" << act.actNum << " obs=" << iter->first.obs[0] << endl;
+                cerr << "No next belief for act=" << act.actNum << " obs=" << iter->first.obs[1] << endl;
                 currNode->beliefNode->actNodes[act.actNum]->obsChildren.erase(iter);
                 iter = findBestObs(currNode, currTarget, excessUncertainty);
                 continue;
@@ -131,9 +157,15 @@ inline map<Obs,ObsEdge>::iterator BeliefTree::findBestObs(Belief *currNode, doub
     }
 
     long actIndex = currNode->beliefNode->bestUBoundAct.actNum;
+
+    if (currNode->beliefNode->actNodes[actIndex] == NULL) {
+        cerr<<"bestUBoundAct is NULL\n";
+        exit(1);
+    }
+
     map<Obs,ObsEdge>::iterator iter = currNode->beliefNode->actNodes[actIndex]->obsChildren.begin();
     double currBest = NegInf;
-    map<Obs,ObsEdge>::iterator currBestObs;
+    map<Obs,ObsEdge>::iterator currBestObs = currNode->beliefNode->actNodes[actIndex]->obsChildren.end();
     while (iter !=  currNode->beliefNode->actNodes[actIndex]->obsChildren.end()){
 
         if (debug) {

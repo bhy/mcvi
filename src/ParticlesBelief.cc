@@ -110,62 +110,61 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         //TODO there is still problem since Bounds::generateActPartitions
         //     do not see the same random stream as in here
         //     (so can cause "no next belief" error)
-        Particle currParticle = this->getParticle(i);
-        State nextState(beliefNode->model->getNumStateVar(),0),
-                nextStateTemp = nextState;
+        Particle currParticle;
+        if(belief.size() == numRandStreams){
+	    currParticle = belief[i];
+	}
+	else{
+	    currParticle = this->sample(randStream);
+	}
+
+        State nextState(beliefNode->model->getNumStateVar(),0);
         State currState = currParticle.state;
 
         long currPathLength = currParticle.pathLength;
         Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
 
         if (action.type == Act){
-            long tried = 0;
-            double obsProb = 0.0, re;
-            do {
-                re = beliefNode->model->sample(currState,
-                                               action,
-                                               nextStateTemp,
-                                               currObs,
-                                               randStream);
-                double prob =
-                        beliefNode->model->getObsProb(action,
-                                                      nextStateTemp,
-                                                      obs);
-                if (prob > obsProb) {
-                    nextState = nextStateTemp;
-                    obsProb = prob;
+            double re = beliefNode->model->sample(currState,
+                                                  action,
+                                                  nextState,
+                                                  currObs,
+                                                  randStream),
+                    obsProb = beliefNode->model->getObsProb(action,
+                                                            nextState,
+                                                            obs);
+
+            if (obsProb != 0.0) {
+                if (debug) {
+                    cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<" "<<re<<"\n";
                 }
-            } while (++tried < 100);
 
-            if (debug) {
-                cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<" "<<re<<"\n";
-            }
+                currPathLength++;
+                double xt_weight = currParticle.weight;
 
-            currPathLength++;
-            double xt_weight = currParticle.weight;
+                if (debug) {
+                    cout<<"xt_weight = "<<xt_weight<<"\n";
+                }
 
-            if (debug) {
-                cout<<"xt_weight = "<<xt_weight<<"\n";
-            }
+                double new_weight = xt_weight*obsProb;
 
-            double new_weight = xt_weight*obsProb;
+                if (debug) {
+                    cout<<"obsProb = "<<obsProb<<"\n";
+                    cout<<"new_weight = "<<new_weight<<"\n";
+                }
 
-            if (debug) {
-                cout<<"obsProb = "<<obsProb<<"\n";
-                cout<<"new_weight = "<<new_weight<<"\n";
-            }
+                //if(DEBUG) {
+                //for(int kk=0; kk<nextState.size(); ++kk)
+                //cout << nextState[kk] << " ";
+                //cout << new_weight << endl;
+                //}
+                weight_sum += new_weight;
+                Particle tmp(nextState, currPathLength, new_weight);
 
-            //if(DEBUG) {
-            //for(int kk=0; kk<nextState.size(); ++kk)
-            //cout << nextState[kk] << " ";
-            //cout << new_weight << endl;
-            //}
-            weight_sum += new_weight;
-            Particle tmp(nextState, currPathLength, new_weight);
-
-            #pragma omp critical
-            {
-                belief_tmp.push_back(tmp);
+                #pragma omp critical
+                {
+                    belief_tmp.push_back(tmp);
+                }
             }
         } else {
             cerr << "Illegal actType in ParticlesBeliefSet::nextBelief. actType = " << action.type << "\n";
@@ -173,7 +172,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         }
     }
 
-    if (weight_sum==0) {
+    if (weight_sum == 0.0) {
         if (debug) {
             cerr<<"action = "<<action.actNum<<" "<<action.type<<" / obs\n";
             print(obs.obs);
@@ -189,26 +188,28 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     // normalize
-    for(int i=0; i<numRandStreams; i++)
+    for(int i=0; i < belief_tmp.size(); i++)
         belief_tmp[i].weight /= weight_sum;
 
-    // resampling
-    int cum_idx = 0;
-    double cum_weight = belief_tmp[cum_idx].weight;
-    double weight_interval = 1.0 / numRandStreams;
-    double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
-    for(int i = 0; i < numRandStreams; i++) {
-        while (cum_weight < sample_weight) {
-            cum_idx++;
-            cum_weight += belief_tmp[cum_idx].weight;
-        }
+    nxt->belief = belief_tmp;
 
-        Particle newParticle = belief_tmp[cum_idx];
-        newParticle.weight = weight_interval;
-        nxt->belief.push_back(newParticle);
+    // // resampling
+    // int cum_idx = 0;
+    // double cum_weight = belief_tmp[cum_idx].weight;
+    // double weight_interval = 1.0 / numRandStreams;
+    // double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
+    // for(int i = 0; i < numRandStreams; i++) {
+    //     while (cum_weight < sample_weight) {
+    //         cum_idx++;
+    //         cum_weight += belief_tmp[cum_idx].weight;
+    //     }
 
-        sample_weight += weight_interval;
-    }
+    //     Particle newParticle = belief_tmp[cum_idx];
+    //     newParticle.weight = weight_interval;
+    //     nxt->belief.push_back(newParticle);
+
+    //     sample_weight += weight_interval;
+    // }
 
     // if(DEBUG) {
     //     cout << nxt->belief[0].state[1] << "\t";

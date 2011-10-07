@@ -3,6 +3,59 @@
 
 using namespace std;
 
+void Bounds::updateBestActions(Belief& belief)
+{
+    bool debug = false;
+
+    if (debug) {
+        cout<<"Bounds::updateBestActions\n";
+    }
+
+    BeliefNode& beliefNode = *(belief.beliefNode);
+
+    // find best bounds at the belief
+    beliefNode.lBound = NegInf;
+    beliefNode.uBound = NegInf;
+
+    beliefNode.bestLBoundAct.setActNum(-1);
+    beliefNode.bestUBoundAct.setActNum(-1);
+
+    for (long i = 0;
+         i < model.getNumInitPolicies() + model.getNumActs();
+         i++)
+        if (beliefNode.actNodes[i] != NULL) {
+            if (debug) {
+                cout<<"Bounds::updateBestActions "<<i<<" => "<<beliefNode.actNodes[i]->avgLower<<"\n";
+            }
+
+            if (beliefNode.lBound < beliefNode.actNodes[i]->avgLower){
+                beliefNode.lBound = beliefNode.actNodes[i]->avgLower;
+
+                if (debug) {
+                    cout<<"Bounds::updateBestActions Change bestLBoundAct to "<<i<<"\n";
+                }
+                beliefNode.bestLBoundAct.setActNum(i);
+            }
+
+            if (debug) {
+                cout<<"Bounds::updateBestActions "<<i<<" => "<<beliefNode.actNodes[i]->avgUpper<<"\n";
+            }
+
+            if (beliefNode.uBound < beliefNode.actNodes[i]->avgUpper){
+                beliefNode.uBound = beliefNode.actNodes[i]->avgUpper;
+
+                if (debug) {
+                    cout<<"Bounds::updateBestActions Change bestUBoundAct to "<<i<<"\n";
+                }
+                beliefNode.bestUBoundAct.setActNum(i);
+            }
+        }
+
+    if (debug) {
+        cout<<"Leaving Bounds::updateBestActions\n";
+    }
+}
+
 void Bounds::backUp(Belief& belief)
 {
     bool debug = false;
@@ -21,35 +74,7 @@ void Bounds::backUp(Belief& belief)
     }
     backUpActions(belief);
 
-    // find best bounds at the belief
-    beliefNode.lBound = NegInf;
-    beliefNode.uBound = NegInf;
-
-    for (long i = 0;
-         i < model.getNumInitPolicies() + model.getNumActs(); i++) {
-
-        if (debug) {
-            cout<<"Bounds::backUp "<<i<<" => "<<beliefNode.actNodes[i]->avgLower<<"\n";
-        }
-
-        if (beliefNode.lBound < beliefNode.actNodes[i]->avgLower){
-            beliefNode.lBound = beliefNode.actNodes[i]->avgLower;
-
-            if (debug) {
-                cout<<"Bounds::backUp Change bestLBoundAct to "<<i<<"\n";
-            }
-            beliefNode.bestLBoundAct.setActNum(i);
-        }
-
-        if (beliefNode.uBound < beliefNode.actNodes[i]->avgUpper){
-            beliefNode.uBound = beliefNode.actNodes[i]->avgUpper;
-
-            if (debug) {
-                cout<<"Bounds::backUp Change bestUBoundAct to "<<i<<"\n";
-            }
-            beliefNode.bestUBoundAct.setActNum(i);
-        }
-    }
+    updateBestActions(belief);
 
     // construct new policy node and try to insert
     PolicyGraph::Node *tempNode = new PolicyGraph::Node;
@@ -100,12 +125,16 @@ void Bounds::backUpInitPolicies(Belief& belief)
     BeliefNode& beliefNode = *(belief.beliefNode);
 
     for (long i = 0; i < model.getNumInitPolicies(); i++){
+        if (beliefNode.actNodes[i] == NULL)
+            beliefNode.actNodes[i] = new ActNode(*(new Action(i)),
+                                                 belief,
+                                                 this);
         double policyValue = 0;
         // run simulation
         for (long j = 0; j < numRandStreams; j++){
             RandStream randStream;
             randStream.initseed(randSource.getStream(j).get());
-            Particle currParticle = belief.sample(j,randStream);
+            Particle currParticle = belief.sample(randStream);
             State currState = currParticle.state;
             State nextState(model.getNumStateVar(),0);
             long currMacroActState = InitMacroActState;
@@ -165,6 +194,11 @@ void Bounds::backUpActions(Belief& belief)
          i < model.getNumInitPolicies() + model.getNumActs();
          i++){
         if (model.allowableAct(belief, Action(i))){
+
+            if (beliefNode.actNodes[i] == NULL)
+                beliefNode.actNodes[i] = new ActNode(*(new Action(i)),
+                                                     belief,
+                                                     this);
             // generate partitions of states at observation children of this action
             beliefNode.actNodes[i]->generateObsPartitions();
             beliefNode.actNodes[i]->backup();

@@ -11,14 +11,13 @@ class RandStream
 {
   public:
     RandStream() :
-            seed(0), pos(0)
+            seed(0)
     {}
 
     void initseed(unsigned int num) {
         #pragma omp critical
         {
             seed=num;
-            pos = 0;
         }
     }
 
@@ -28,7 +27,6 @@ class RandStream
         #pragma omp critical
         {
             result = rand_r(&seed);
-            ++pos;
         }
         return result;
     }
@@ -39,7 +37,6 @@ class RandStream
     }
     friend class RandSource;
 
-    long pos;
   private:
     unsigned int seed;
 };

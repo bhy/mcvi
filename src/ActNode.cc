@@ -67,7 +67,7 @@ void ActNode::generateObsPartitions()
     // Don't use parallel here since we need randStream to be used in
     // a sequential manner??? Is it true?
     for (long j=0; j < bounds->numRandStreams; j++){
-        Particle currParticle = belief.sample(j,randStream);
+        Particle currParticle = belief.sample(randStream);
         State currState = currParticle.state;
         State nextState(bounds->model.getNumStateVar(),0);
 
