@@ -74,7 +74,7 @@ bool Herding::allowableAct(const Belief& belief, const Action& action)
     bool ok = false;
     long temp = belief.beliefNode->obs.obs[1] %  agentMStateCt;
     for (long i=0; i< constraints[temp].size(); i++){
-        if (constraints[temp][i] == action.actNum){
+        if (constraints[temp][i] == action.getActNumUser()){
             ok = true;
             break;
         }
@@ -129,7 +129,8 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
 
 double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream  )
 {
-    long act = action.actNum;
+    long act = action.getActNumUser();
+
     if (currState[0] == TermState){ // terminal state
         obs.obs[0] = TermObs;
         nextState = currState;
@@ -256,7 +257,7 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
 double Herding::sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream  )
 {
-    long macroAct = macroAction.actNum;
+    long macroAct = macroAction.getActNumUser();
     if (currState[0] < 0){
         obs.obs[0] = TermObs;
         nextState = currState;
@@ -382,7 +383,7 @@ void Herding::findConstraints(std::vector<std::vector<long> >& constraints)
 
 double Herding::initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream  )
 {
-    long policyIndex = initAction.actNum;
+    long policyIndex = initAction.getActNumUser();
     if (currState[0] == TermState){
         nextState = currState;
         return 0;
@@ -469,7 +470,7 @@ double Herding::initPolicy(const State& currState, const Action& initAction, lon
 
     act = act1 * NumActsPerAgent + act2;
 
-    return sample(currState, Action(act), nextState, obs, randStream);
+    return sample(currState, Action(Act,act), nextState, obs, randStream);
 }
 
 inline double Herding::upperBound(const State& state)
@@ -649,7 +650,6 @@ void Herding::readMapping(std::string filename)
 }
 
 inline double Herding::getObsProb(const Action& action, const State& nextState, const Obs& obs){
-    long actnum = action.actNum;
     if(nextState[0] == TermState) return obs.obs[0] == TermObs;
     else if(obs.obs[0] == LoopObs) { return 0.0; cerr << "shouldn't end with LoopObs" <<endl;}
     if(obs.obs[1] != getObsGrpFromState(nextState))
