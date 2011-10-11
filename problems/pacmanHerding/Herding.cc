@@ -1,6 +1,5 @@
 
 #include "Herding.h"
-#include <cassert>
 #include <cstdlib>
 #include <deque>
 
@@ -114,10 +113,10 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
     for (long i = 0; i< problem.xSize; i++)
         problem.grid[i].resize(problem.ySize);
 
-    for (long i = 0; i< problem.xSize; i++){
-        for (long j = 0; j < problem.ySize; j++){
+    for (long i = 0; i< problem.ySize; i++){
+        for (long j = 0; j < problem.xSize; j++){
             fp >> tmp;
-            problem.grid[i][j] = tmp-1;
+            problem.grid[j][problem.ySize-i-1] = tmp-1;
             if (tmp > num)
                 num = tmp;
         }
@@ -128,7 +127,7 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
     fp.close();
 }
 
-double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream)
+double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream  )
 {
     long act = action.actNum;
     if (currState[0] == TermState){ // terminal state
@@ -147,14 +146,13 @@ double Herding::sample(const State& currState, const Action& action, State& next
             tempReward += Caught;
             nextState[gx + 2*i] = -1;
             nextState[gy + 2*i] = -1;
-        } else {
+        } else
             if (currState[gx + 2*i] != -1)
                 ghostRemain = true;
             else{
                 nextState[gx + 2*i] = -1;
                 nextState[gy + 2*i] = -1;
             }
-        }
     }
     if (ghostRemain == false){
         for (long i=0; i < numStateVars; i++)
@@ -166,27 +164,23 @@ double Herding::sample(const State& currState, const Action& action, State& next
         return tempReward;
     }
 
+
     // action of each agent
     long act1 = act/NumActsPerAgent;
     long act2 = act % NumActsPerAgent;
 
     // change agent 1 position if possible
-    long next_x = currState[a1x] + RelativeDirX[act1],
-         next_y = currState[a1y] + RelativeDirY[act1];
-    if (grid[next_x][next_y] >= 0) {
-        nextState[a1x] = next_x;
-        nextState[a1y] = next_y;
+    if (grid[currState[a1x] + RelativeDirX[act1]][currState[a1y] + RelativeDirY[act1]] >= 0){
+        nextState[a1x] = currState[a1x] + RelativeDirX[act1];
+        nextState[a1y] = currState[a1y] + RelativeDirY[act1];
     }else{
         nextState[a1x] = currState[a1x];
         nextState[a1y] = currState[a1y];
     }
-
     // change agent 2 position if possible
-    next_x = currState[a2x] + RelativeDirX[act2];
-    next_y = currState[a2y] + RelativeDirY[act2];
-    if (grid[next_x][next_y] >= 0) {
-        nextState[a2x] = next_x;
-        nextState[a2y] = next_y;
+    if (grid[currState[a2x] + RelativeDirX[act2]][currState[a2y] + RelativeDirY[act2]] >= 0){
+        nextState[a2x] = currState[a2x] + RelativeDirX[act2];
+        nextState[a2y] = currState[a2y] + RelativeDirY[act2];
     }else{
         nextState[a2x] = currState[a2x];
         nextState[a2y] = currState[a2y];
@@ -194,18 +188,6 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
     for (long k = 0; k < numGhosts; k++){
         if (nextState[gx + 2*k] != -1){
-            // if (!(currState[gx + 2*k] > 0 && currState[gx + 2*k] < grid.size()-1 &&
-            //       currState[gy + 2*k] > 0 && currState[gy + 2*k] < grid[0].size()-1 &&
-            //       grid[currState[gx + 2*k]][currState[gy + 2*k]] >= 0)) {
-            //     cout<<"CurrState assert\n"; cout<<"grid["<<currState[gx+2*k]<<"]["<<currState[gy+2*k]<<"] = "<<grid[currState[gx+2*k]][currState[gy+2*k]]<<"\n";
-
-            //     fflush(stdout);
-            // }
-
-            // assert(currState[gx + 2*k] > 0 && currState[gx + 2*k] < grid.size()-1);
-            // assert(currState[gy + 2*k] > 0 && currState[gy + 2*k] < grid[0].size()-1);
-            // assert(grid[currState[gx + 2*k]][currState[gy + 2*k]] >= 0);
-
             // Store legal ghost actions
             // cannot move into walls, cannot move to position currently occupied by agent
             // Compute the ghost move that moves furthest from the closest agent
@@ -214,19 +196,15 @@ double Herding::sample(const State& currState, const Action& action, State& next
             long costs[NumActsPerAgent];
             long bestCost = -1;
             for (long i = east; i<= unchanged; i++){
-                next_x = currState[gx + 2*k] + RelativeDirX[i];
-                next_y = currState[gy + 2*k] + RelativeDirY[i];
-                if (grid[next_x][next_y] >= 0 &&
-                    ((next_x != currState[a1x]) ||
-                     (next_y != currState[a1y])) &&
-                    ((next_x != currState[a2x]) ||
-                     (next_y != currState[a2y]))){
+                if ((grid[currState[gx + 2*k] + RelativeDirX[i]][currState[gy + 2*k] + RelativeDirY[i]] >= 0) &&
+                    ((currState[gx + 2*k] + RelativeDirX[i] != currState[a1x])||(currState[gy + 2*k] + RelativeDirY[i] != currState[a1y])) &&
+                    ((currState[gx + 2*k] + RelativeDirX[i] != currState[a2x])||(currState[gy + 2*k] + RelativeDirY[i] != currState[a2y]))){
 
                     long a1Node = gridNodeLabel[currState[a1x]][currState[a1y]];
                     long a2Node = gridNodeLabel[currState[a2x]][currState[a2y]];
 
                     long gNode = gridNodeLabel[currState[gx + 2*k]][currState[gy + 2*k]];
-                    long gNodeNext = gridNodeLabel[next_x][next_y];
+                    long gNodeNext = gridNodeLabel[currState[gx + 2*k] + RelativeDirX[i]][currState[gy + 2*k] + RelativeDirY[i]];
                     long cost = (shortestPath[a1Node][gNode] < shortestPath[a2Node][gNode]) ? (shortestPath[a1Node][gNodeNext]*gridNodeLabel.size() + shortestPath[a2Node][gNodeNext]) : (shortestPath[a2Node][gNodeNext]*gridNodeLabel.size() + shortestPath[a1Node][gNodeNext]);
 
                     if (cost > bestCost)
@@ -265,34 +243,6 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
             nextState[gx + 2*k] = currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]];
             nextState[gy + 2*k] = currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]];
-
-            // if (nextState[gx+2*k] != currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]] ||
-            //     nextState[gy+2*k] != currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]]) {
-            //     cout<<"WTF\n";
-            //     cout<<"("<<RelativeDirX[legalDirs[ghostDir]]<<", "<<RelativeDirY[legalDirs[ghostDir]]<<")\n";
-            //     cout<<"("<<currState[gx+2*k]+RelativeDirX[legalDirs[ghostDir]]<<", "<<
-            //             currState[gy+2*k]+RelativeDirY[legalDirs[ghostDir]]<< ") => ("<<nextState[gx+2*k]<<", "<<nextState[gy+2*k]<<")\n";
-            //     fflush(stdout);
-            // }
-            // assert(nextState[gx+2*k] == currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]] &&
-            //        nextState[gy+2*k] == currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]]);
-
-            // if (!(nextState[gx + 2*k] > 0 && nextState[gx + 2*k] < grid.size()-1 &&
-            //       nextState[gy + 2*k] > 0 && nextState[gy + 2*k] < grid[0].size()-1 &&
-            //       grid[nextState[gx + 2*k]][nextState[gy + 2*k]] >= 0)) {
-            //     cout<<"NextState assert\n";
-            //     cout<<"Dirs = "<<legalDirs[ghostDir]<<"\n";
-            //     cout<<"("<<RelativeDirX[legalDirs[ghostDir]]<<", "<<RelativeDirY[legalDirs[ghostDir]]<<")\n";
-            //     cout<<"("<<currState[gx+2*k]+RelativeDirX[legalDirs[ghostDir]]<<", "<<
-            //             currState[gy+2*k]+RelativeDirY[legalDirs[ghostDir]]<<")\n";
-            //     cout<<"grid["<<nextState[gx+2*k]<<"]["<<nextState[gy+2*k]<<"] = "<<grid[nextState[gx+2*k]][nextState[gy+2*k]]<<"\n";
-            //     cout<<"grid["<<currState[gx+2*k]<<"]["<<currState[gy+2*k]<<"] = "<<grid[currState[gx+2*k]][currState[gy+2*k]]<<"\n";
-            //     fflush(stdout);
-            // }
-
-            // assert(nextState[gx + 2*k] > 0 && nextState[gx + 2*k] < grid.size()-1);
-            // assert(nextState[gy + 2*k] > 0 && nextState[gy + 2*k] < grid[0].size()-1);
-            // assert(grid[nextState[gx + 2*k]][nextState[gy + 2*k]] >= 0);
         }
     }
 
@@ -587,8 +537,6 @@ void Herding::calcShortestPath(long i, long j)
     fifo_i.push_back(i); fifo_j.push_back(j); dist.push_back(0);
     found[sourceNode] = true;
 
-    long next_x, next_y;
-
     while (!fifo_i.empty()){
         long curr_i = fifo_i.front(); fifo_i.pop_front();
         long curr_j = fifo_j.front(); fifo_j.pop_front();
@@ -596,14 +544,12 @@ void Herding::calcShortestPath(long i, long j)
         long currDist = dist.front(); dist.pop_front();
         shortestPath[sourceNode][currNode] = currDist;
         for (long k = 0; k < 4; k++){
-            next_x = curr_i + RelativeDirX[k];
-            next_y = curr_j + RelativeDirY[k];
-            if (gridNodeLabel[next_x][next_y] >= 0) {
-                long neighbour = gridNodeLabel[next_x][next_y];
+            if (gridNodeLabel[curr_i+RelativeDirX[k]][curr_j+RelativeDirY[k]] >= 0){
+                long neighbour = gridNodeLabel[curr_i+RelativeDirX[k]][curr_j + RelativeDirY[k]];
                 if (!found[neighbour]){
                     found[neighbour] = true;
-                    fifo_i.push_back(next_x);
-                    fifo_j.push_back(next_y);
+                    fifo_i.push_back(curr_i+RelativeDirX[k]);
+                    fifo_j.push_back(curr_j+RelativeDirY[k]);
                     dist.push_back(currDist+1);
                 }
             }
