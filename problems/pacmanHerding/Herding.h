@@ -111,6 +111,7 @@ class Herding : public Model
 
     // Find allowable actions in each macrostate
     void findConstraints(std::vector<std::vector<long> >& constraints);
+    bool checkSquare(std::vector<std::vector<long> > g, long x, long y, long min);
 
     // for computing shortest path
     std::vector<std::vector <long> > gridNodeLabel; // label of accessible locs
