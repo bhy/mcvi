@@ -15,7 +15,7 @@ UnderwaterModel::UnderwaterModel(UnderwaterProblem& problem, bool useMacro): use
 bool UnderwaterModel::allowableAct(const Belief& belief, const Action& action)
 {
     actType type = action.type;
-    long actNum = action.actNum;
+    long actNum = action.getActNumUser();
     const Obs& obs = belief.beliefNode->obs;
     if (useMacro && type == Macro){
         return (actNum ==stay || obs.obs[1] == ObsOutView); //only can move to goal if localised
@@ -153,7 +153,8 @@ void UnderwaterModel::readProblem(std::string filename, UnderwaterProblem& probl
 
 double UnderwaterModel::sample(const State& currState, const Action& act, State& nextState, Obs& obs, RandStream& randStream  )
 {
-    long actnum = act.actNum;
+    long actnum = act.getActNumUser();
+
     double reward = 0;
     nextState = currState;
     if (isTermState(currState)){ // terminal state
@@ -222,7 +223,7 @@ double UnderwaterModel::sample(const State& currState, const Action& act, State&
 
 double UnderwaterModel::sample(const State& currState, const Action& act, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream  )
 {
-    long macroAct = act.actNum;
+    long macroAct = act.getActNumUser();
     if (currState[0] < 0){
 	obs.obs[0] = TermObs;
 	nextState = currState;
@@ -283,7 +284,7 @@ double UnderwaterModel::sample(const State& currState, const Action& act, long c
 
 double UnderwaterModel::initPolicy(const State& currState, const Action& act, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream)
 {
-    long policyIndex = act.actNum;
+    long policyIndex = act.getActNumUser();
     if (isTermState(currState)){
 	nextState = currState;
 	obs.obs.resize(this->getNumObsVar(),0);
@@ -291,7 +292,7 @@ double UnderwaterModel::initPolicy(const State& currState, const Action& act, lo
 	return 0;
     }
     //always move east towards the terminal state
-    return sample(currState, Action(e), nextState, obs, randStream);
+    return sample(currState, Action(Act,e), nextState, obs, randStream);
 };
 
 double UnderwaterModel::upperBound(const State& state)

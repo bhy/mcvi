@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 
     if (numTrials == 1){
         for(long k=0;k<currProblem.initialBeliefStates.size();k++){
-            trace.clear();
+            //trace.clear();
             //actTrace.clear();
             currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, str, currProblem.initialBeliefStates[k], currRandSource);
             cout << "Average Reward: " << avgReward << "   Average Discounted Reward: " << avgDiscounted << "\n";

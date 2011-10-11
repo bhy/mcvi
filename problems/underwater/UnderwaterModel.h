@@ -26,7 +26,7 @@ const long ObsOutView = -1; //null observation
 const long NumObsVars = 3; // only observe x, y coordinate
 const long NumMacroActions = 6; //n, s, e, ne, se, move to goal
 const long NumActions = 5; //n, s, e, ne, se
-const long NumInitPolicies = 0;
+const long NumInitPolicies = 1;
 enum actions {n, s, e, ne, se, stay}; // Action names
 enum stateVar {rx, ry, local};
 const long RelativeDirX[] = {0, 0, 1, 1, 1, 0}; // Relative x movement for each aciton
