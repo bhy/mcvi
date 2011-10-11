@@ -195,51 +195,23 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     for(int i=0; i < belief_tmp.size(); i++)
         belief_tmp[i].weight /= weight_sum;
 
-    nxt->belief = belief_tmp;
+    // resampling
+    int cum_idx = 0;
+    double cum_weight = belief_tmp[cum_idx].weight;
+    double weight_interval = 1.0 / numRandStreams;
+    double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
+    for(int i = 0; i < numRandStreams; i++) {
+        while (cum_weight < sample_weight) {
+            cum_idx++;
+            cum_weight += belief_tmp[cum_idx].weight;
+        }
 
-    // // resampling
-    // int cum_idx = 0;
-    // double cum_weight = belief_tmp[cum_idx].weight;
-    // double weight_interval = 1.0 / numRandStreams;
-    // double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
-    // for(int i = 0; i < numRandStreams; i++) {
-    //     while (cum_weight < sample_weight) {
-    //         cum_idx++;
-    //         cum_weight += belief_tmp[cum_idx].weight;
-    //     }
+        Particle newParticle = belief_tmp[cum_idx];
+        newParticle.weight = weight_interval;
+        nxt->belief.push_back(newParticle);
 
-    //     Particle newParticle = belief_tmp[cum_idx];
-    //     newParticle.weight = weight_interval;
-    //     nxt->belief.push_back(newParticle);
-
-    //     sample_weight += weight_interval;
-    // }
-
-    // if(DEBUG) {
-    //     cout << nxt->belief[0].state[1] << "\t";
-    //     cout << nxt->belief[0].state[2] << "\n";
-    //     for(int kk = 0; kk < this->belief[0].state.size()-3; kk++) {
-    //         double c=0;
-    //         for(int jj = 0; jj < numRandStreams; jj++) {
-    //             double t = this->belief[jj].state[3+kk];
-    //             //cout << t << " ";
-    //             c += t;
-    //         }
-    //         cout << c/numRandStreams << "\t";
-    //     }
-    //     cout << endl;
-    //     for(int kk = 0; kk < nxt->belief[0].state.size()-3; kk++) {
-    //         double c=0;
-    //         for(int jj = 0; jj < numRandStreams; jj++) {
-    //             double t = nxt->belief[jj].state[3+kk];
-    //             //cout << t << " ";
-    //             c += t;
-    //         }
-    //         cout << c/numRandStreams << "\t";
-    //     }
-    //     cout << endl;
-    // }
-
+        sample_weight += weight_interval;
+    }
 
     if (nxt->belief.size() == 0){
         delete nxt;

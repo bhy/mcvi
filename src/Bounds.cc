@@ -77,8 +77,8 @@ void Bounds::backUp(Belief& belief)
     updateBestActions(belief);
 
     // construct new policy node and try to insert
-    PolicyGraph::Node *tempNode = new PolicyGraph::Node;
-    tempNode->action = beliefNode.bestLBoundAct;
+    PolicyGraph::Node *tempNode = new PolicyGraph::Node(beliefNode.bestLBoundAct);
+
     long actIndex = beliefNode.bestLBoundAct.actNum;
 
     if (debug) {
@@ -194,7 +194,6 @@ void Bounds::backUpActions(Belief& belief)
          i < model.getNumInitPolicies() + model.getNumActs();
          i++){
         if (model.allowableAct(belief, Action(i))){
-
             if (beliefNode.actNodes[i] == NULL)
                 beliefNode.actNodes[i] = new ActNode(*(new Action(i)),
                                                      belief,
