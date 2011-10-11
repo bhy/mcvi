@@ -37,8 +37,7 @@ PolicyGraph::PolicyGraph(long numInitPolicies, long numObsVar, long numRoots): n
 {
     // insert all the initial policies
     for (long i = 0; i < numInitPolicies; i++){
-        PolicyGraph::Node *tempNode = new PolicyGraph::Node;
-        tempNode->action.setActNum(i);
+        PolicyGraph::Node *tempNode = new PolicyGraph::Node(Action(i));
         PolicyGraph::Edge tempEdge(numObsVar);
         tempEdge.obs.obs[0] = LoopObs;
         tempEdge.nextNode = tempNode; // loop back
@@ -167,7 +166,7 @@ void PolicyGraph::read(std::string filename)
 
     // alloc memory first
     for (long i = 0; i< numNodes; i++){
-        PolicyGraph::Node * tempNode = new Node;
+        PolicyGraph::Node * tempNode = new Node(Action(-1));
         allNodes.push_back(tempNode);
     }
 
@@ -180,11 +179,13 @@ void PolicyGraph::read(std::string filename)
         initActionNode[i] = allNodes[tempIndex];
     }
 
+    long actNum;
     for (long i = 0; i < numNodes; i++){
         long temptype;
         fp >> temptype;
         allNodes[i]->action.type = actType(temptype);
-        fp >> allNodes[i]->action.actNum;
+        fp >> actNum;
+        allNodes[i]->action.setActNum(actNum);
         long numChildren;
         fp >> numChildren;
         for (long j = 0; j < numChildren; j++){

@@ -12,8 +12,8 @@ class Action
     actType type;
     static Model* model;
 
-    explicit Action(int actNum);
-    Action();
+    explicit Action(long actNum);
+    Action(actType type, long actNumUser);
     virtual ~Action() {}
 
     bool operator==(const Action& action) const;

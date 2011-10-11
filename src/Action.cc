@@ -9,14 +9,16 @@ void Action::initStatic(Model* model)
     Action::model = model;
 }
 
-Action::Action(int actNum): actNum(actNum)
+Action::Action(long actNum): actNum(actNum)
 {
     computeType();
 }
 
-Action::Action()
+Action::Action(actType type, long actNumUser)
 {
-    type = None;
+    actNum = Action::getBeliefAct(*model,type,actNumUser);
+    // be consistent, don't belief the user
+    computeType();
 }
 
 bool Action::operator==(const Action& action) const
@@ -39,7 +41,6 @@ int Action::compare(const Action& a, const Action& b)
 void Action::setActNum(long actNum)
 {
     this->actNum = actNum;
-    this->actNumUser = actNum;
 
     computeType();
 }

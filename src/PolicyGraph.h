@@ -74,6 +74,8 @@ class PolicyGraph
     {
         Action action;
         std::vector<Edge> edges;
+
+        Node(Action action): action(action) {}
     };
 
 
@@ -112,12 +114,12 @@ class PolicyGraph
     inline Action getAction(Node *ptr)
     {
         return ptr->action;
-    };
+    }
 
     inline Action getAction(long i)
     {
         return allNodes[i]->action;
-    };
+    }
 
     /**
        Returns the next graph node given the current graph node and observation.
@@ -125,17 +127,20 @@ class PolicyGraph
     inline Node *getNextState(Node *ptr, const Obs& obs)
     {
         return find(obs,ptr->edges);
-    };
+    }
 
     inline long getNextNodeIndex(long curr, Obs obs)
     {
         return nodeSet.find(find(obs,allNodes[curr]->edges))->second;
-    };
+    }
 
     /**
        Change the initial graph node to a different one.
     */
-    inline void updateInitNode(Node *ptr, long i = 0) { initActionNode[i] = ptr;};
+    inline void updateInitNode(Node *ptr, long i = 0)
+    {
+        initActionNode[i] = ptr;
+    }
 
     /**
        Insert a node to the \a obs group of the graph.
@@ -154,12 +159,18 @@ class PolicyGraph
        Initial policies are maintained separately from other graph nodes
        as they are sink nodes. this routine returns the i-th initial policy.
     */
-    inline Node *getInitPolicy(long i) { return initialPolicies[i]; };
+    inline Node *getInitPolicy(long i)
+    {
+        return initialPolicies[i];
+    }
 
     /**
        Returns the number of initial policies (sink nodes)
     */
-    inline long getNumInitPolicies() { return numInitPolicies; };
+    inline long getNumInitPolicies()
+    {
+        return numInitPolicies;
+    }
 
     /**
        @return pointer to node
@@ -167,27 +178,32 @@ class PolicyGraph
        @param[in] index The index within the group. The index is ordered
        according to insertion time.
     */
-    inline Node *getPolicy(long obsGrp, long index) {
+    inline Node *getPolicy(long obsGrp, long index)
+    {
         std::map<long, uniquePolicySet >::iterator iter = obsPolicies.find(obsGrp);
         return iter->second.policyVec[index];
-    };
+    }
 
     /**
        @return the size of the group of nodes corresponding to \a obs
     */
-    inline long getSize(long obsGrp) {
+    inline long getSize(long obsGrp)
+    {
         std::map<long, uniquePolicySet >::iterator iter = obsPolicies.find(obsGrp);
         if (iter == obsPolicies.end())
             return 0;
         else
             return iter->second.policyVec.size();
-    };
+    }
 
     /**
        @return the total number of policy nodes.
     */
 
-    long getNumPolicyNodes() { return allNodes.size(); };
+    inline long getNumPolicyNodes()
+    {
+        return allNodes.size();
+    }
 
     /**
        Write out the policy graph to \a filename
@@ -201,7 +217,8 @@ class PolicyGraph
 
   private:
     // This function object compares Node objects. Used in map.
-    class nodeComparator {
+    class nodeComparator
+    {
       public:
         bool operator()(const Node *node1, const Node *node2) const;
     };
