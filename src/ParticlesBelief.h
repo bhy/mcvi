@@ -31,6 +31,8 @@ class ParticlesBelief : public Belief
 
     Particle getParticle(long i) const;
 
+    void compute_cum_sum();
+
     /**
        Creates a belief from a single state
     */
@@ -40,17 +42,17 @@ class ParticlesBelief : public Belief
 
     static void initStatic(RandSource* randSourceV, long numRandStreamsV, long maxMacroActLengthV);
 
+    static double ESS(std::vector<Particle>& sample);
+
     std::vector<Particle> belief;
+    std::vector<double> cum_sum;
 
     static RandSource* randSource;
     static long numRandStreams;
     static long maxMacroActLength;
+    static double ESSthreshold;
+    static double approxSample;
 };
-
-inline Particle ParticlesBelief::sample(RandStream& randStream) const
-{
-    return belief[randStream.get() % belief.size()];
-}
 
 inline Particle ParticlesBelief::getParticle(long i) const
 {

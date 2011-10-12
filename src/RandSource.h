@@ -20,7 +20,7 @@ public:
         }
     }
 
-    unsigned int get()
+    unsigned get()
     {
         unsigned int result;
         #pragma omp critical
@@ -32,7 +32,7 @@ public:
 
     inline double getf()
     {
-        return ((double)get() / RAND_MAX);
+        return (get() / ((double)RAND_MAX + 1));
     }
 
     friend class RandSource;

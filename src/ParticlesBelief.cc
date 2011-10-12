@@ -1,5 +1,6 @@
 #include "ParticlesBelief.h"
 #include <iostream>
+#include <cassert>
 using namespace std;
 
 // define static members
@@ -7,6 +8,8 @@ Model* BeliefNode::model;
 RandSource* ParticlesBelief::randSource;
 long ParticlesBelief::numRandStreams;
 long ParticlesBelief::maxMacroActLength;
+double ParticlesBelief::ESSthreshold = 0.5;
+double ParticlesBelief::approxSample = 0.99;
 
 void ParticlesBelief::initStatic(RandSource* randSource, long numRandStreams, long maxMacroActLength)
 {
@@ -84,7 +87,6 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     nxt = new ParticlesBelief(new BeliefNode(obs));
 
     double weight_sum = 0.0;
-    vector<Particle> belief_tmp;
 
 #ifdef BDEBUG
     const bool DEBUG = true;
@@ -105,23 +107,12 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         RandStream randStream;
         randStream.initseed(randSource->getStream(i).get());
 
-        //XXX use random sampling at here will cause belief variation!!!
-        //Belief::particle currParticle = this->sample(randSource);
-        //TODO there is still problem since Bounds::generateActPartitions
-        //     do not see the same random stream as in here
-        //     (so can cause "no next belief" error)
         Particle currParticle;
-        if(belief.size() == numRandStreams){
-	    currParticle = belief[i];
-	}
-	else{
-	    currParticle = this->sample(randStream);
-	}
+        currParticle = this->sample(randStream);
 
         State nextState(beliefNode->model->getNumStateVar(),0);
         State currState = currParticle.state;
 
-        long currPathLength = currParticle.pathLength;
         Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
 
         if (action.type == Act){
@@ -139,31 +130,22 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
                     cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<" "<<re<<"\n";
                 }
 
-                currPathLength++;
-                double xt_weight = currParticle.weight;
+                double new_weight = currParticle.weight * obsProb;
 
                 if (debug) {
-                    cout<<"xt_weight = "<<xt_weight<<"\n";
-                }
-
-                double new_weight = xt_weight*obsProb;
-
-                if (debug) {
+                    cout<<"currParticle.weight = "<<currParticle.weight<<"\n";
                     cout<<"obsProb = "<<obsProb<<"\n";
                     cout<<"new_weight = "<<new_weight<<"\n";
                 }
 
-                //if(DEBUG) {
-                //for(int kk=0; kk<nextState.size(); ++kk)
-                //cout << nextState[kk] << " ";
-                //cout << new_weight << endl;
-                //}
                 weight_sum += new_weight;
-                Particle tmp(nextState, currPathLength, new_weight);
+                Particle tmp(nextState,
+                             currParticle.pathLength + 1,
+                             new_weight);
 
                 #pragma omp critical
                 {
-                    belief_tmp.push_back(tmp);
+                    nxt->belief.push_back(tmp);
                 }
             }
         } else {
@@ -188,25 +170,38 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     // normalize
-    for(int i=0; i < belief_tmp.size(); i++)
-        belief_tmp[i].weight /= weight_sum;
+    for (unsigned i=0; i < nxt->belief.size(); i++)
+        nxt->belief[i].weight /= weight_sum;
 
-    // resampling
-    int cum_idx = 0;
-    double cum_weight = belief_tmp[cum_idx].weight;
-    double weight_interval = 1.0 / numRandStreams;
-    double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
-    for(int i = 0; i < numRandStreams; i++) {
-        while (cum_weight < sample_weight) {
-            cum_idx++;
-            cum_weight += belief_tmp[cum_idx].weight;
+    double ess = ESS(nxt->belief);
+    if (ess <= ESSthreshold * nxt->belief.size()) {
+        cout<<"Resampling\n";
+        // resampling
+        vector<Particle>belief_tmp = nxt->belief;
+        nxt->belief.clear();
+
+        int cum_idx = 0;
+        double cum_weight = belief_tmp[cum_idx].weight;
+        double weight_interval = 1.0 / numRandStreams;
+        double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
+        for(int i = 0; i < numRandStreams; i++) {
+            while (cum_weight < sample_weight) {
+                cum_idx++;
+                cum_weight += belief_tmp[cum_idx].weight;
+            }
+
+            Particle newParticle = belief_tmp[cum_idx];
+            newParticle.weight = weight_interval;
+            nxt->belief.push_back(newParticle);
+
+            sample_weight += weight_interval;
         }
 
-        Particle newParticle = belief_tmp[cum_idx];
-        newParticle.weight = weight_interval;
-        nxt->belief.push_back(newParticle);
-
-        sample_weight += weight_interval;
+        nxt->cum_sum.clear();
+    } else if (ess >= approxSample * nxt->belief.size()) {
+        nxt->cum_sum.clear();
+    } else {
+        nxt->compute_cum_sum();
     }
 
     if (nxt->belief.size() == 0){
@@ -219,4 +214,42 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     return nxt;
+}
+
+void ParticlesBelief::compute_cum_sum()
+{
+    cum_sum.clear();
+    cum_sum.push_back(belief[0].weight);
+    for (unsigned i=1; i < belief.size(); i++)
+        cum_sum.push_back(cum_sum[i-1] + belief[i].weight);
+    if (cum_sum.back() != 1)
+        cum_sum.back() = 1;
+}
+
+double ParticlesBelief::ESS(vector<Particle>& sample)
+{
+    double cv2 = 0.0;
+    double M = sample.size();
+    for (vector<Particle>::iterator it=sample.begin();
+        it != sample.end();
+        ++it)
+    {
+        cv2  +=  (M * it->weight - 1) * (M * it->weight - 1);
+    }
+
+    return M*M / ( M + cv2);
+}
+
+Particle ParticlesBelief::sample(RandStream& randStream) const
+{
+    if (cum_sum.empty())
+        return belief[randStream.getf() * belief.size()];
+
+    double cum = randStream.getf();
+    vector<double>::const_iterator low =
+            lower_bound(cum_sum.begin(), cum_sum.end(), cum);
+    long index = low - cum_sum.begin();
+
+    assert(index <= belief.size());
+    return belief[index];
 }

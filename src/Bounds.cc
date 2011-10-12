@@ -20,7 +20,7 @@ void Bounds::updateBestActions(Belief& belief)
     beliefNode.bestLBoundAct.setActNum(-1);
     beliefNode.bestUBoundAct.setActNum(-1);
 
-    for (long i = 0;
+    for (long i = model.getNumInitPolicies();
          i < model.getNumInitPolicies() + model.getNumActs();
          i++)
         if (beliefNode.actNodes[i] != NULL) {
