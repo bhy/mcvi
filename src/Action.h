@@ -3,7 +3,7 @@
 
 #include "Model.h"
 
-enum actType{None, Initial, Macro, Act}; // types of actions
+enum actType{Initial, Macro, Act, None}; // types of actions
 
 class Action
 {
@@ -21,6 +21,7 @@ class Action
     static int compare(const Action& a, const Action& b);
 
     void setActNum(long actNum);
+    void setActNumUser(long actNumUser);
 
     /**
        Get the type of action given its index in the \a actEdges

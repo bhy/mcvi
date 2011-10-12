@@ -127,7 +127,7 @@ void PolicyGraph::write(std::string filename)
     }
     fp << "\n";
     for (long i = 0; i < (long)allNodes.size(); i++){
-        fp << allNodes[i]->action.type << " " << allNodes[i]->action.actNum << " ";
+        fp << allNodes[i]->action.type << " " << allNodes[i]->action.getActNumUser() << " ";
         fp << allNodes[i]->edges.size() << " ";
         for (long j = 0; j < (long)allNodes[i]->edges.size(); j++){
             map<Node *, long, nodeComparator>::iterator temp = nodeSet.find(allNodes[i]->edges[j].nextNode);
@@ -185,7 +185,7 @@ void PolicyGraph::read(std::string filename)
         fp >> temptype;
         allNodes[i]->action.type = actType(temptype);
         fp >> actNum;
-        allNodes[i]->action.setActNum(actNum);
+        allNodes[i]->action.setActNumUser(actNum);
         long numChildren;
         fp >> numChildren;
         for (long j = 0; j < numChildren; j++){

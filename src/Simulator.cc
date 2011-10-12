@@ -41,7 +41,7 @@ void Simulator::runSingle(long length, double& sumReward,
         for(State::iterator it=currState.begin(); it != currState.end(); ++it)
             fp << *it << " ";
         fp<<endl;
-        fp << action.type << " " << action.actNum << endl;
+        fp << action.type << " " << action.getActNumUser() << endl;
 
         // Check for terminal state
         if (model.isTermState(currState)){
