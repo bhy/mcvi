@@ -165,14 +165,6 @@ class PolicyGraph
     }
 
     /**
-       Returns the number of initial policies (sink nodes)
-    */
-    inline long getNumInitPolicies()
-    {
-        return numInitPolicies;
-    }
-
-    /**
        @return pointer to node
        @param[in] obsGrp Macro state group that the node belongs to
        @param[in] index The index within the group. The index is ordered

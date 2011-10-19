@@ -80,7 +80,7 @@ void ObsEdge::addPolicyNodes()
 {
     if (lastUpdated == Never) {
         PolicyGraph& policyGraph = bounds->policyGraph;
-        for (long j=0; j < policyGraph.getNumInitPolicies(); j++){
+        for (long j=0; j < bounds->model.getNumInitPolicies(); j++){
             PolicyGraph::Node* node = policyGraph.getInitPolicy(j);
             addNode(node);
         }
