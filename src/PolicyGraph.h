@@ -1,8 +1,6 @@
 #ifndef __POLICYGRAPH_H
 #define __POLICYGRAPH_H
 
-#include "Model.h"
-#include "RandSource.h"
 #include "Obs.h"
 #include "Action.h"
 #include <vector>
@@ -59,7 +57,6 @@ class PolicyGraph
         Edge(long numObsVar)
         {
             obs.obs.resize(numObsVar,0);
-            obs.computeHash();
         }
     };
 
@@ -88,10 +85,10 @@ class PolicyGraph
 
     /**
        Initializes the policy graph.
-       @param[in] numInitPolicies Number of initial policies in the model that
+       @param [in] numInitPolicies Number of initial policies in the model that
        uses the policy graph.
-       @param[in] numObsVar Number of variables in the observation vector
-       @param[in] numRoots Number of roots for the graph
+       @param [in] numObsVar Number of variables in the observation vector
+       @param [in] numRoots Number of roots for the graph
     */
     PolicyGraph(long numInitPolicies, long numObsVar, long numRoots = 1);
 
@@ -111,12 +108,12 @@ class PolicyGraph
        Returns the action type and action index given the current controller
        state upon receiving macro state and observation.
     */
-    inline Action getAction(Node *ptr)
+    inline Action& getAction(Node *ptr)
     {
         return ptr->action;
     }
 
-    inline Action getAction(long i)
+    inline Action& getAction(long i)
     {
         return allNodes[i]->action;
     }
@@ -129,7 +126,7 @@ class PolicyGraph
         return find(obs,ptr->edges);
     }
 
-    inline long getNextNodeIndex(long curr, Obs obs)
+    inline long getNextNodeIndex(long curr, Obs& obs)
     {
         return nodeSet.find(find(obs,allNodes[curr]->edges))->second;
     }
@@ -166,8 +163,8 @@ class PolicyGraph
 
     /**
        @return pointer to node
-       @param[in] obsGrp Macro state group that the node belongs to
-       @param[in] index The index within the group. The index is ordered
+       @param [in] obsGrp Macro state group that the node belongs to
+       @param [in] index The index within the group. The index is ordered
        according to insertion time.
     */
     inline Node *getPolicy(long obsGrp, long index)
@@ -244,5 +241,4 @@ class PolicyGraph
     // Compare observations: return -1 if first < second, 0 if first == second
     // and 1 if first > second
 };
-
 #endif // __POLICYGRAPH_H
