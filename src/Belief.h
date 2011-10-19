@@ -16,57 +16,54 @@ struct Particle
     double weight;
     long pathLength;
 
-    Particle(State st, long pL, double weight): state(st), weight(weight), pathLength(pL) {};
-    Particle() {};
+    Particle(State st, long pL, double weight): state(st),
+                                                weight(weight),
+                                                pathLength(pL) {}
+    Particle() {}
 };
 
 struct ParticleStore
 {
+    // Total sum of all immediate reward (from calling model.sample())
+    // of all particle
     double currSum;
     std::vector<Particle> particles;
 };
 
 /**
    @class Belief
-   @brief Interface for actual belief; stores all bounds information on
-   the belief as well.
-   @details Used as node in the belief tree. Store one level of
-   action-observations with pointer to next beliefs. Stores all the current
-   bounds. Actual belief not represented here, inherit from this class to
-   implement different types of beliefs.
+   @brief Interface for actual belief
+   @provide sample(), nextBelief(Action&,Obs&)
+   @details Used as node in the belief tree. Actual belief not
+   represented here, inherit from this class to implement different
+   types of beliefs.
 
    @author Wee Sun Lee
    @date 22 August 2009
 */
 
 /**
-   Same distribution belief will not be checked. They are stored as two different Belief instances.
+   Same distribution belief will be checked by BeliefSet.h
+   implementation. Make sure your belief is comparable.
 */
 
 class Belief
 {
   public:
 
-    // History of actions and observations must be prefix-pruneable
-    // since we want to prune the prefix of the History every now and
-    // then
-    //History his;
-
     /**
-       Initialize the bound information
-       @param[in] obs  Last observation that generated this belief.
-       @param[in] model Model that is being used
+       Initialize the beliefNode associated with this belief
+       @param [in] beliefNode The beliefNode
     */
     Belief(BeliefNode* beliefNode): beliefNode(beliefNode) {}
 
     virtual ~Belief() { delete beliefNode; }
 
-
     /**
        Sample from this belief. Need to be implemented by classes
        that inherit from this class for specific belief types
        @return a state sampled from this belief
-       @param[in] randSource Source of random number
+       @param [in] randSource Source of random number
     */
     virtual Particle sample(RandStream& randStream) const = 0;
 
@@ -74,11 +71,12 @@ class Belief
 
     virtual State average() const = 0;
 
+    /**
+       Compute the next belief given an action and an observation.
+       @param [in] act The action
+       @param [in] obs The observation
+    */
     virtual Belief* nextBelief(const Action& act, const Obs& obs) const = 0;
-
-    // virtual static Belief* beliefFromState(State& st, Obs obs, long pathLength) = 0;
-
-    // virtual static Belief* beliefFromStateSet(std::vector<State>& st, Obs ob, long pathLength) = 0;
 
     BeliefNode* beliefNode;
 };
