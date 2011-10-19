@@ -1,22 +1,25 @@
 #ifndef __BELIEFNODE_H
 #define __BELIEFNODE_H
 
-#include "Obs.h"
 #include "Action.h"
 #include "PolicyGraph.h"
-#include "Utils.h"
 #include <vector>
 
+class Obs;
 class ActNode;
 
-class BeliefNode
-{
-  public:
+/**
+   @struct BeliefNode
+   @brief Interface for a belief node in the belief tree.
+   @details Used as node in the belief tree. Hold the current bounds,
+   lastUpdated, links to actNode.
+*/
 
+struct BeliefNode
+{
     /**
-       Initialize the bound information
-       @param[in] obs  Last observation that generated this belief.
-       @param[in] model Model that is being used
+       Initialize the last observation
+       @param[in] obs Last observation that generated this belief.
     */
     BeliefNode(const Obs& obs):
             obs(obs),
@@ -33,24 +36,26 @@ class BeliefNode
         BeliefNode::model = model;
     }
 
-    // the last observation that generated this belief need to get the
-    // group info
+    // The last observation that generated this belief, needed to get
+    // the group info
     const Obs& obs;
-    double lBound;
-    double uBound;
+
+    // The current bounds
+    double lBound, uBound;
 
     Action bestLBoundAct; // action that provided the lower bound
     Action bestUBoundAct; // action that provided the upper bound
 
-    // best policy graph node up to lastUpdated
+    // Best policy graph node whose index is up to lastUpdated
     PolicyGraph::Node* bestPolicyNode;
 
+    // Index of the last policy graph node we ran simulation from
     long lastUpdated;
 
-    // all actions, ordered by init actions, macro actions and simple action
+    // All action nodes, ordered by init actions, macro actions and
+    // normal action
     std::vector<ActNode*> actNodes;
 
     static Model* model; // model information
 };
-
 #endif
