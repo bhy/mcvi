@@ -70,7 +70,7 @@ void ValueIteration::doValueIteration(std::vector<std::vector<double> >& rewardM
     }
 
     cout << "time: " << difftime(curr,start) << " Diff: " << currChange << "\n";
-};
+}
 
 void ValueIteration::write(std::string filename)
 {
@@ -85,7 +85,7 @@ void ValueIteration::write(std::string filename)
         fp << actions[i] << "\n";
     }
     fp.close();
-};
+}
 
 void ValueIteration::read(std::string filename)
 {
@@ -102,5 +102,4 @@ void ValueIteration::read(std::string filename)
         fp >> actions[i];
     }
     fp.close();
-};
-
+}
