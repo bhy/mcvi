@@ -20,8 +20,8 @@ class Action
 
     static int compare(const Action& a, const Action& b);
 
-    void setActNum(long actNum);
-    void setActNumUser(long actNumUser);
+   void setActNum(long actNum);
+   void setActNumUser(actType type, long actNumUser);
 
     /**
        Get the type of action given its index in the \a actEdges

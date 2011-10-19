@@ -45,8 +45,9 @@ void Action::setActNum(long actNum)
     computeType();
 }
 
-void Action::setActNumUser(long actNumUser)
+void Action::setActNumUser(actType type, long actNumUser)
 {
+    this->type = type;
     this->actNumUser = actNumUser;
     actNum = Action::getBeliefAct(*model,type,actNumUser);
 }

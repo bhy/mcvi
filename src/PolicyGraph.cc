@@ -179,13 +179,12 @@ void PolicyGraph::read(std::string filename)
         initActionNode[i] = allNodes[tempIndex];
     }
 
+    long temptype;
     long actNum;
     for (long i = 0; i < numNodes; i++){
-        long temptype;
         fp >> temptype;
-        allNodes[i]->action.type = actType(temptype);
         fp >> actNum;
-        allNodes[i]->action.setActNumUser(actNum);
+        allNodes[i]->action.setActNumUser((actType)temptype, actNum);
         long numChildren;
         fp >> numChildren;
         for (long j = 0; j < numChildren; j++){
