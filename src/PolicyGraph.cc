@@ -1,5 +1,5 @@
-#include <iostream>
 #include "PolicyGraph.h"
+#include <iostream>
 #include <cstdlib>
 #include <fstream>
 

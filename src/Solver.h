@@ -1,17 +1,16 @@
 #ifndef __SOLVER_H
 #define __SOLVER_H
 
-#include "Model.h"
-#include "BeliefSet.h"
-#include "BeliefTree.h"
-#include "RandSource.h"
-#include "PolicyGraph.h"
-#include "Bounds.h"
-#include "Simulator.h"
+#include "State.h"
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <ctime>
+
+class Obs;
+class Model;
+class Belief;
+class BeliefSet;
 
 class Solver {
   public:

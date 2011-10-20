@@ -1,34 +1,18 @@
 #ifndef __BELIEF_H
 #define __BELIEF_H
 
-#include "Model.h"
-#include "BeliefNode.h"
-#include "PolicyGraph.h"
+#include "State.h"
+#include "Particle.h"
 #include "Utils.h"
 #include <vector>
 #include <cfloat>
 #include <map>
 #include <list>
 
-struct Particle
-{
-    State state;
-    double weight;
-    long pathLength;
-
-    Particle(State st, long pL, double weight): state(st),
-                                                weight(weight),
-                                                pathLength(pL) {}
-    Particle() {}
-};
-
-struct ParticleStore
-{
-    // Total sum of all immediate reward (from calling model.sample())
-    // of all particle
-    double currSum;
-    std::vector<Particle> particles;
-};
+class Action;
+class Obs;
+class RandStream;
+struct BeliefNode;
 
 /**
    @class Belief
@@ -57,7 +41,12 @@ class Belief
     */
     Belief(BeliefNode* beliefNode): beliefNode(beliefNode) {}
 
-    virtual ~Belief() { delete beliefNode; }
+    /**
+       A pure virtual destructor that does nothing. The job of delete
+    the pointer is transfered to the derived class. The implementation
+    need to define the destructor for Belief first.
+    */
+    virtual ~Belief();
 
     /**
        Sample from this belief. Need to be implemented by classes

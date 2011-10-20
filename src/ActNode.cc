@@ -1,5 +1,9 @@
 #include "ActNode.h"
+#include "ObsEdge.h"
+#include "Model.h"
+#include "Belief.h"
 #include "Bounds.h"
+#include "RandSource.h"
 #include <cstdio>
 using namespace std;
 

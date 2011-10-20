@@ -1,4 +1,14 @@
 #include "BeliefForest.h"
+#include "ActNode.h"
+#include "Obs.h"
+#include "ObsEdge.h"
+#include "Model.h"
+#include "Belief.h"
+#include "BeliefNode.h"
+#include "BeliefSet.h"
+#include "PolicyGraph.h"
+#include "RandSource.h"
+#include "Bounds.h"
 #include <time.h>
 #include <iostream>
 #include <cmath>

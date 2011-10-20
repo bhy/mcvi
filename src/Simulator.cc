@@ -1,4 +1,6 @@
 #include "Simulator.h"
+#include "Model.h"
+#include "RandSource.h"
 #include <iostream>
 #include <fstream>
 

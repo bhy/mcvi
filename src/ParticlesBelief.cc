@@ -1,5 +1,13 @@
 #include "ParticlesBelief.h"
+#include "Action.h"
+#include "ActNode.h"
+#include "Obs.h"
+#include "ObsEdge.h"
+#include "Model.h"
+#include "BeliefNode.h"
+#include "RandSource.h"
 #include <iostream>
+#include <cstdlib>
 #include <cassert>
 using namespace std;
 
@@ -10,6 +18,13 @@ long ParticlesBelief::numRandStreams;
 long ParticlesBelief::maxMacroActLength;
 double ParticlesBelief::ESSthreshold = 0.5;
 double ParticlesBelief::approxSample = 0.99;
+
+Belief::~Belief() {
+    delete beliefNode;
+}
+
+ParticlesBelief::~ParticlesBelief() {
+}
 
 void ParticlesBelief::initStatic(RandSource* randSource, long numRandStreams, long maxMacroActLength)
 {

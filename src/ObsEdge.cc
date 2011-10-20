@@ -1,7 +1,18 @@
 #include "ObsEdge.h"
+#include "Belief.h"
+#include "BeliefNode.h"
 #include "Bounds.h"
+#include "RandSource.h"
+#include "Simulator.h"
 #include <cassert>
 using namespace std;
+
+Simulator* ObsEdge::simulator;
+
+void ObsEdge::initStatic(Simulator* simulator)
+{
+    ObsEdge::simulator = simulator;
+}
 
 void ObsEdge::clearParticles()
 {
@@ -41,7 +52,7 @@ void ObsEdge::backupFromPolicyGraph()
             Particle& particle = cachedParticles->particles[k];
             RandStream randStream;
             randStream.initseed(bounds->randSource.getStream(k).get());
-            bounds->simulator.runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randStream);
+            simulator->runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randStream);
             double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
             sumPolicyValue += currValue;
         }

@@ -1,4 +1,16 @@
 #include "Solver.h"
+#include "Obs.h"
+#include "ObsEdge.h"
+#include "Model.h"
+#include "Belief.h"
+#include "BeliefNode.h"
+#include "BeliefSet.h"
+#include "BeliefTree.h"
+#include "PolicyGraph.h"
+#include "Bounds.h"
+#include "RandSource.h"
+#include "Simulator.h"
+#include "ParticlesBelief.h"
 #include "ParticlesBeliefSet.h"
 using namespace std;
 
@@ -128,7 +140,10 @@ void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
 
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     Simulator currSim(currModel, policyGraph, maxSimulLength);
-    Bounds bounds(currModel, policyGraph, currSim, currRandSource, numBackUpStreams, maxSimulLength);
+
+    ObsEdge::initStatic(&currSim);
+
+    Bounds bounds(currModel, policyGraph, currRandSource, numBackUpStreams, maxSimulLength);
     BeliefTree currTree(currModel, currSet, root, policyGraph, bounds, currRandSource, numBackUpStreams, numNextBeliefStreams);
     currTree.search(targetPrecision, maxTime, iterDeepMult, displayInterval, policy_file);
 

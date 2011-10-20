@@ -1,20 +1,16 @@
 #ifndef __MODEL_H
 #define __MODEL_H
 
+#include "State.h"
 #include "Utils.h"
-#include "RandSource.h"
 #include <vector>
 #include <cfloat>
 #include <climits>
 
 class Belief;
-
 class Action;
 class Obs;
-
-// Constants and types used in the implementation
-// HUY - CHANGE vector<long> to vector<double>
-typedef std::vector<double> State; // shorthand for defining state
+class RandStream;
 
 const long InitMacroActState = 0; // initial controller state for macro actions
 // must take the value InitMacroActState

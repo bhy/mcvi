@@ -2,8 +2,9 @@
 #define __PARTICLESBELIEFSET_H
 
 #include "BeliefSet.h"
-#include "ParticlesBelief.h"
 #include <set>
+
+class ParticlesBelief;
 
 /**
    @class ParticlesBeliefSet
@@ -31,23 +32,13 @@ class ParticlesBeliefSet: public BeliefSet
        macro action. For robustness.
     */
     ParticlesBeliefSet();
-
-    /**
-       Destroys stored beliefs.
-    */
-    ~ParticlesBeliefSet()
-    {
-        for (std::set<ParticlesBelief*, beliefComp>::iterator it = pBSet.begin();
-             it != pBSet.end(); ++it)
-            delete *it;
-        pBSet.clear();
-    }
+    ~ParticlesBeliefSet();
 
     long numBeliefs() { return pBSet.size(); };
 
-    std::pair<Belief*,bool> insert(Belief *belief);
+    std::pair<Belief*, bool> insert(Belief *belief);
 
-    std::set<ParticlesBelief *,beliefComp> pBSet;
+    std::set<ParticlesBelief*, beliefComp> pBSet;
 };
 
 #endif //__PARTICLESBELIEFSET_H

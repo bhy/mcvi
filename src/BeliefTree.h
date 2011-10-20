@@ -1,11 +1,18 @@
 #ifndef __BELIEFTREE_H
 #define __BELIEFTREE_H
 
-#include "Model.h"
-#include "PolicyGraph.h"
-#include "Bounds.h"
-#include "BeliefSet.h"
 #include <map>
+#include <string>
+#include <vector>
+
+class Obs;
+class ObsEdge;
+class Model;
+class Belief;
+class BeliefSet;
+class PolicyGraph;
+class RandSource;
+class Bounds;
 
 /**
    @class BeliefTree

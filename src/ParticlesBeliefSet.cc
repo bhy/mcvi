@@ -1,11 +1,25 @@
 #include "ParticlesBeliefSet.h"
+#include "ParticlesBelief.h"
 #include <iostream>
+#include <cstdlib>
 #include <cassert>
 #include <cmath>
 
 using namespace std;
 
 ParticlesBeliefSet::ParticlesBeliefSet() {}
+
+/**
+   Destroys stored beliefs.
+*/
+ParticlesBeliefSet::~ParticlesBeliefSet()
+{
+    for (std::set<ParticlesBelief*, beliefComp>::iterator it = pBSet.begin();
+         it != pBSet.end(); ++it)
+        delete *it;
+    pBSet.clear();
+}
+
 
 bool BeliefSet::beliefComp::operator()(const Belief* belief1, const Belief* belief2) const
 {

@@ -2,11 +2,10 @@
 #define __ACTNODE_H
 
 #include "Action.h"
-#include "ObsEdge.h"
-#include "Belief.h"
-#include "Model.h"
-#include "RandSource.h"
+#include <map>
 
+class ObsEdge;
+class Belief;
 class Bounds;
 
 class ActNode
@@ -33,7 +32,7 @@ class ActNode
     void clearObsPartitions();
 
     // The label of this ActNode
-    const Action& action;
+    const Action action;
     // The belief representation of the Belief father of this ActNode
     const Belief& belief;
     Bounds* bounds;

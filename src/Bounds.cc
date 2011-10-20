@@ -1,4 +1,13 @@
 #include "Bounds.h"
+#include "Action.h"
+#include "ActNode.h"
+#include "Obs.h"
+#include "ObsEdge.h"
+#include "Model.h"
+#include "Belief.h"
+#include "BeliefNode.h"
+#include "PolicyGraph.h"
+#include "RandSource.h"
 #include <iostream>
 
 using namespace std;

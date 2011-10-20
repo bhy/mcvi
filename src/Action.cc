@@ -1,5 +1,6 @@
 #include "Action.h"
 #include <cstdio>
+#include <cstdlib>
 using namespace std;
 
 Model* Action::model;

@@ -1,15 +1,14 @@
 #ifndef __BOUNDS_H
 #define __BOUNDS_H
 
-#include "Model.h"
-#include "Belief.h"
-#include "ObsEdge.h"
-#include "ActNode.h"
-#include "PolicyGraph.h"
-#include "Simulator.h"
 #include "Utils.h"
 #include <map>
 #include <list>
+
+class Model;
+class Belief;
+class PolicyGraph;
+class RandSource;
 
 /**
    @class Bounds
@@ -43,10 +42,10 @@ class Bounds
     */
     // make singleton instance for this class
     Bounds(Model& model, PolicyGraph& policyGraph,
-           Simulator& simulator, RandSource& randSource,
+           RandSource& randSource,
            long numRandStreams, long maxSimulLength):
             model(model), policyGraph(policyGraph),
-            simulator(simulator), randSource(randSource),
+            randSource(randSource),
             numRandStreams(numRandStreams),
             maxSimulLength(maxSimulLength)
     {}
@@ -71,7 +70,6 @@ class Bounds
 
     Model& model;
     PolicyGraph& policyGraph;
-    Simulator& simulator;
     RandSource& randSource;
     long numRandStreams;
     long maxSimulLength;

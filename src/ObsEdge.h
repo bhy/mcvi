@@ -1,15 +1,15 @@
 #ifndef __OBSEDGE_H
 #define __OBSEDGE_H
 
-#include "Belief.h"
+#include "Obs.h"
+#include "Particle.h"
 #include "PolicyGraph.h"
-#include "RandSource.h"
-#include "Simulator.h"
 #include <limits>
 #include <vector>
 #include <cmath>
 
 class Bounds;
+class Simulator;
 
 class ObsEdge {
   public:
@@ -45,6 +45,8 @@ class ObsEdge {
     void clearParticles();
     void addNode(PolicyGraph::Node* node);
 
+    static void initStatic(Simulator* simulator);
+
     // The observation that generated this ObsEdge
     const Obs obs;
     Bounds* bounds;
@@ -57,9 +59,11 @@ class ObsEdge {
     std::vector<PolicyGraph::Node* > nodes;
     PolicyGraph::Node* bestPolicyNode;
     double bestPolicyVal;
-    Belief *nextBelief; // next child belief
+    Belief* nextBelief; // next child belief
     ParticleStore *cachedParticles; // particles stored, used for backup
     long lastUpdated;
+
+    static Simulator* simulator;
 };
 
 #endif

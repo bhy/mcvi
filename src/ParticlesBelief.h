@@ -1,11 +1,11 @@
 #ifndef __PARTICLESBELIEF_H
 #define __PARTICLESBELIEF_H
 
-#include "Model.h"
 #include "Belief.h"
-#include "BeliefNode.h"
-#include "ActNode.h"
 #include <vector>
+
+class RandStream;
+class RandSource;
 
 /**
    @class ParticlesBelief
@@ -21,6 +21,7 @@ class ParticlesBelief : public Belief
 {
   public:
     ParticlesBelief(BeliefNode* beliefNode): Belief(beliefNode) {}
+    ~ParticlesBelief();
 
     Particle sample(RandStream& randStream) const;
     Particle sample(long index, RandStream& randStream) const {

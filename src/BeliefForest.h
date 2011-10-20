@@ -1,13 +1,17 @@
 #ifndef __BELIEFFOREST_H
 #define __BELIEFFOREST_H
 
-#include "Model.h"
-#include "PolicyGraph.h"
-#include "RandSource.h"
-#include "Bounds.h"
 #include "BeliefSet.h"
 #include <map>
 #include <queue>
+
+class Obs;
+class ObsEdge;
+class Model;
+class Belief;
+class PolicyGraph;
+class RandSource;
+class Bounds;
 
 /**
    @class BeliefForest

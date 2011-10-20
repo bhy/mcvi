@@ -1,9 +1,12 @@
 #ifndef __SIMULATOR_H
 #define __SIMULATOR_H
+
+#include "State.h"
 #include "PolicyGraph.h"
-#include "Model.h"
-#include "RandSource.h"
-#include "Belief.h"
+
+class Model;
+class PolicyGraph;
+class RandStream;
 
 /**
    @class Simulator

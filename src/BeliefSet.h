@@ -1,7 +1,6 @@
 #ifndef __BELIEFSET_H
 #define __BELIEFSET_H
 
-#include "Model.h"
 #include "Belief.h"
 
 /**
