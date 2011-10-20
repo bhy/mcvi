@@ -38,7 +38,7 @@ struct BeliefNode
 
     // The last observation that generated this belief, needed to get
     // the group info
-    const Obs& obs;
+    const Obs obs;
 
     // The current bounds
     double lBound, uBound;
