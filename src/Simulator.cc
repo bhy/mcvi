@@ -113,7 +113,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
 
     // Initialize simulation
 
-    Action action = policy.getAction(currGraphNode);
+    Action& action = policy.getAction(currGraphNode);
     // Run simulation
     for (long t=0; t< length; t++){
 
