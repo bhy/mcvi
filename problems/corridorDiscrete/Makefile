@@ -15,6 +15,7 @@ SOLVERMAIN = $(PROB)CorridorSolver.cc
 SIMULATORMAIN = $(PROB)CorridorSimulator.cc
 
 # Set compiler options for debugging etc.
-# CXXFLAGS = -Wall -g -O2 -fopenmp
+CXXFLAGS = -Wall -ggdb -O0
+#CXXFLAGS = -Wall -g -O2 -fopenmp
 
 include $(SRC)common.mk

@@ -1,4 +1,6 @@
 #include "CorridorModel.h"
+#include "Include.h"
+#include "ParticlesBelief.h"
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -32,13 +34,13 @@ double CorridorModel::sample(const State& currState, const Action& action, State
     if (currState[0] < 0) {
         obs.obs[0] = TermObs;
         nextState = currState;
-        // if (action.actNum == ActEnter)
+        // if (action.getActNumUser() == ActEnter)
         //     return WrongPenalty;
         // else return -1000;
         return -1000;
     }
 
-    if (action.actNum == ActEnter) {
+    if (action.getActNumUser() == ActEnter) {
         if (currState[1] == 1) {
             nextState[0] = TermState;
             obs.obs[0] = TermObs;
@@ -49,7 +51,7 @@ double CorridorModel::sample(const State& currState, const Action& action, State
             reward = WrongPenalty;
         }
     } else {
-        bool moveDir = (action.actNum == ActLeft);
+        bool moveDir = (action.getActNumUser() == ActLeft);
         long nxtIndex;
 
         if NOISY(moveDir) nxtIndex = 1;
@@ -73,7 +75,7 @@ double CorridorModel::sample(const State& currState, const Action& action, State
 
     if (debug) {
         cout<<"Model::sample\n";
-        cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<obs.obs[0]<<"\n";
+        cout<<currState[1]<<" "<<action.getActNumUser()<<" "<<nextState[1]<<" "<<obs.obs[0]<<"\n";
         cout<<"Leaving Model::sample\n";
     }
 
@@ -93,7 +95,7 @@ double CorridorModel::initPolicy(const State& currState, const Action& initActio
     }
 
     // move left
-    return sample(currState, Action(ActLeft), nextState, obs, randStream);
+    return sample(currState, Action(Act,ActLeft), nextState, obs, randStream);
 }
 
 State CorridorModel::sampleInitState() {
@@ -134,7 +136,7 @@ double CorridorModel::getObsProb(const Action& action, const State& nextState, c
     double nxtPos = nextState[1];
 
     if (debug) {
-        cout<<"ActNum "<<action.actNum<<"\n";
+        cout<<"ActNum "<<action.getActNumUser()<<"\n";
         cout<<"State "<<nextState[1]<<"\n";
         cout<<"Obs "<<obs.obs[0]<<"\n";
     }

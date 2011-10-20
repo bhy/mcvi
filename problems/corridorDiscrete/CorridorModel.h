@@ -1,7 +1,6 @@
 #ifndef __CORRIDORMODEL_H
 #define __CORRIDORMODEL_H
 
-#include "ParticlesBelief.h"
 #include "Model.h"
 
 
@@ -24,7 +23,9 @@ const long NumActs = 3;
 const long TermState = -1;
 
 const long NumMacroActs = 0;
-const long NumInitPolicies = 0;
+const long NumInitPolicies = 1;
+
+class ParticlesBelief;
 
 class CorridorModel : public Model
 {

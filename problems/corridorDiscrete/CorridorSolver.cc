@@ -1,4 +1,5 @@
 #include "CorridorModel.h"
+#include "Action.h"
 #include "Solver.h"
 #include "ParticlesBeliefSet.h"
 #include <sstream>
@@ -19,5 +20,5 @@ int main(int argc, char **argv)
     Action::initStatic(&currModel);
     ParticlesBelief *root = currModel.getInitBelief(solver.numNextBeliefStreams);
 
-    solver.solve(currModel, currSet, root);
+    solver.solve(currModel, currSet, (Belief*)root);
 }
