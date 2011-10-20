@@ -5,8 +5,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "Obs.h"
 #include "Model.h"
-#include "ParticlesBelief.h"
 #include "HerdingProblem.h"
 #include <map>
 
@@ -41,7 +41,7 @@ class Herding : public Model
 
     double getObsProb(const Action& act, const State& nextState, const Obs& obs);
 
-    double beliefTransition(const State& currState, Action action, State& nextState, Obs& obs){return 0.0;};
+    double beliefTransition(const State& currState, Action& action, State& nextState, Obs& obs){return 0.0;};
     /**
        Macro state computed by
     */

@@ -2,7 +2,7 @@
 #ifndef __HERDINGPROBLEM_H
 #define __HERDINGPROBLEM_H
 
-#include "Model.h"
+#include "State.h"
 
 /**
    Constants and types used in pacman model. Take care in making any changes
