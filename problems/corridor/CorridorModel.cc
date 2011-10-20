@@ -1,4 +1,6 @@
 #include "CorridorModel.h"
+#include "Include.h"
+#include "ParticlesBelief.h"
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -49,7 +51,7 @@ double CorridorModel::sample(const State& currState, const Action& action, State
     if (currState[0] < 0){ // terminal state
         obs.obs[0] = TermObs;
         nextState = currState;
-        if (action.actNum==ActEnter)
+        if (action.getActNumUser()==ActEnter)
             return WrongPenalty;
         else
             return 0;
@@ -58,7 +60,7 @@ double CorridorModel::sample(const State& currState, const Action& action, State
     double pos = currState[1];
 
 
-    if (action.actNum==ActEnter) {
+    if (action.getActNumUser()==ActEnter) {
         if(indoor(pos)==0) {
             nextState[0] = TermState;
             obs.obs[0] = TermObs;
@@ -69,12 +71,12 @@ double CorridorModel::sample(const State& currState, const Action& action, State
             reward = WrongPenalty;
         }
     } else {
-        assert(action.actNum==ActLeft|| action.actNum==ActRight);
+        assert(action.getActNumUser()==ActLeft|| action.getActNumUser()==ActRight);
         double moveDir;
         double randReal = randStream.getf();
         double nxtPos;
 
-        if(action.actNum==ActLeft) moveDir = -1;
+        if(action.getActNumUser()==ActLeft) moveDir = -1;
         else moveDir = 1;
         moveDir += (randReal - 0.5)*Noise;
 
@@ -124,7 +126,7 @@ double CorridorModel::initPolicy(const State& currState, const Action& initActio
         return 0;
     };
 
-    return sample(currState, Action(ActRight), nextState, obs, randStream);
+    return sample(currState, Action(Act,ActRight), nextState, obs, randStream);
 }
 
 State CorridorModel::sampleInitState()

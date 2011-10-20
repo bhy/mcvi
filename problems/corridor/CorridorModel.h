@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "ParticlesBelief.h"
 #include "Model.h"
 #include <map>
 
@@ -39,7 +38,9 @@ const long TermState = -1; // indicates state is at terminal state
 
 // Same as actions but repeat action till macro states change.
 const long NumMacroActs = 0;
-const long NumInitPolicies = 0;
+const long NumInitPolicies = 1;
+
+class ParticlesBelief;
 
 /**
    @class CorridorModel
