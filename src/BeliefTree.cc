@@ -90,30 +90,30 @@ void BeliefTree::expandNodes(double target)
     map<Obs,ObsEdge>::iterator iter = findBestObs(currNode, currTarget, excessUncertainty);
 
     while (excessUncertainty > 0){
-        Action& act = currNode->beliefNode->bestUBoundAct;
-        assert(act.actNum != -1);
+        Action* act = &(currNode->beliefNode->bestUBoundAct);
+        assert(act->actNum != -1);
 
-        if (currNode->beliefNode->actNodes[act.actNum] == NULL) {
+        if (currNode->beliefNode->actNodes[act->actNum] == NULL) {
             bounds.updateBestActions(*currNode);
-            act = currNode->beliefNode->bestUBoundAct;
+            act = &(currNode->beliefNode->bestUBoundAct);
         }
 
         if (debug) {
-            cout<<"obsChildren size = "<<currNode->beliefNode->actNodes[act.actNum]->obsChildren.size()<<"\n";
+            cout<<"obsChildren size = "<<currNode->beliefNode->actNodes[act->actNum]->obsChildren.size()<<"\n";
         }
 
-        while (iter == currNode->beliefNode->actNodes[act.actNum]->obsChildren.end()) {
-            cerr<<"No nextBelief for bestUBoundAct = "<<act.actNum<<"\n";
+        while (iter == currNode->beliefNode->actNodes[act->actNum]->obsChildren.end()) {
+            cerr<<"No nextBelief for bestUBoundAct = "<<act->actNum<<"\n";
             // memory leaks here!!
-            currNode->beliefNode->actNodes[act.actNum] = NULL;
+            currNode->beliefNode->actNodes[act->actNum] = NULL;
             cerr<<"Try to find another action that can generate nextBelief since all the \
 obs of this action is deleted\n";
             bounds.updateBestActions(*currNode);
-            act = currNode->beliefNode->bestUBoundAct;
-            while (act.actNum == -1) {
+            act = &(currNode->beliefNode->bestUBoundAct);
+            while (act->actNum == -1) {
                 cerr<<"Try to backUp again since all the actions fail\n";
                 bounds.backUp(*currNode);
-                act = currNode->beliefNode->bestUBoundAct;
+                act = &(currNode->beliefNode->bestUBoundAct);
             }
             cerr<<"bestUBoundAct = "<<currNode->beliefNode->bestUBoundAct.actNum<<"\n";
             fflush(stdout);
@@ -123,7 +123,7 @@ obs of this action is deleted\n";
         Belief *nextNode = iter->second.nextBelief;
         if (nextNode == NULL){
 
-            nextNode = currNode->nextBelief(act, iter->first);
+            nextNode = currNode->nextBelief(*act, iter->first);
 
             if (debug) {
                 cout<<"BeliefTree::expandNodes nextNode = NULL\n";
@@ -131,8 +131,8 @@ obs of this action is deleted\n";
 
             if (nextNode==NULL) {
                 // Cannot sample next belief for this observation, which means the obs is almost not possible, remove it
-                cerr << "No next belief for act=" << act.actNum << " obs=" << iter->first.obs[1] << endl;
-                currNode->beliefNode->actNodes[act.actNum]->obsChildren.erase(iter);
+                cerr << "No next belief for act=" << act->actNum << " obs=" << iter->first.obs[1] << endl;
+                currNode->beliefNode->actNodes[act->actNum]->obsChildren.erase(iter);
                 iter = findBestObs(currNode, currTarget, excessUncertainty);
                 continue;
             }
