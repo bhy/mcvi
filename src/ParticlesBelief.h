@@ -29,34 +29,52 @@ class ParticlesBelief : public Belief
     State average() const;
     Belief* nextBelief(const Action& action, const Obs& obs) const;
 
-    Particle getParticle(long i) const;
+    /**
+       Get the particle with the given index
+    */
+    Particle getParticle(long index) const;
 
+    /**
+       Compute the cummulative sum for sampling using binary search
+    */
     void compute_cum_sum();
 
     /**
-       Creates a belief from a single state
+       Create a belief from a single state
     */
-    static Belief *beliefFromState(const State& st, const Obs& obs, long pathLength);
+    static Belief *beliefFromState(const State& st, const Obs& obs,  long pathLength);
 
+    /**
+       Create a belief from a set of DIFFERENT states
+    */
     static Belief *beliefFromStateSet(const std::vector<State>& st, const Obs& obs, const std::vector<long>& pathLength);
 
     static void initStatic(RandSource* randSourceV, long numRandStreamsV, long maxMacroActLengthV);
 
+    /**
+       Compute the effective sample size
+       @return ESS
+       @param [in] a set of particles
+    */
     static double ESS(std::vector<Particle>& sample);
 
+    // A belief is represented by a set of particles
     std::vector<Particle> belief;
+    // The cummulative sum associated with the vector of particles
     std::vector<double> cum_sum;
 
     static RandSource* randSource;
     static long numRandStreams;
     static long maxMacroActLength;
     static double ESSthreshold;
+    // When do we need to use the binary search compared to the normal
+    // getParticle
     static double approxSample;
 };
 
-inline Particle ParticlesBelief::getParticle(long i) const
+inline Particle ParticlesBelief::getParticle(long index) const
 {
-    return belief[i % belief.size()];
+    return belief[index % belief.size()];
 }
 
 #endif //__PARTICLESBELIEF_H

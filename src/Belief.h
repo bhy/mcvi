@@ -67,6 +67,9 @@ class Belief
     */
     virtual Particle sample(RandStream& randStream) const = 0;
 
+    /**
+       A hack to get the same particle every time
+    */
     virtual Particle sample(long index, RandStream& randStream) const = 0;
 
     virtual State average() const = 0;
