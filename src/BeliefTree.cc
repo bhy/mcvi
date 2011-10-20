@@ -90,7 +90,7 @@ void BeliefTree::expandNodes(double target)
     map<Obs,ObsEdge>::iterator iter = findBestObs(currNode, currTarget, excessUncertainty);
 
     while (excessUncertainty > 0){
-        Action act = currNode->beliefNode->bestUBoundAct;
+        Action& act = currNode->beliefNode->bestUBoundAct;
         assert(act.actNum != -1);
 
         if (currNode->beliefNode->actNodes[act.actNum] == NULL) {
