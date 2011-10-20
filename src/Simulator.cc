@@ -32,11 +32,11 @@ void Simulator::runSingle(long length, double& sumReward,
     //long numSelfLoops = 1;
 
     // To keep track of policy graph state
-    Obs  obs(vector<long>(model.getNumObsVar(),0)); // observation
+    Obs obs(vector<long>(model.getNumObsVar(),0)); // observation
     PolicyGraph::Node *currGraphNode = policy.getRoot(rootIndex);
     PolicyGraph::Node *nextGraphNode;
 
-    Action action = policy.getAction(currGraphNode);
+    Action& action = policy.getAction(currGraphNode);
 
     // Run simulation
     for (long t=0; t< length; t++){
