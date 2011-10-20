@@ -8,7 +8,7 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include "ParticlesBelief.h"
+#include "Obs.h"
 #include "Model.h"
 #include "UnderwaterProblem.h"
 #include <map>
