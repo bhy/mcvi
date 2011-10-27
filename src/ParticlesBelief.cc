@@ -101,11 +101,11 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
 
     double weight_sum = 0.0;
 
-#ifdef BDEBUG
+    #ifdef BDEBUG
     const bool DEBUG = true;
-#else
+    #else
     const bool DEBUG = false;
-#endif
+    #endif
 
     if(DEBUG) {
         cout << "=================================================="<<endl;
@@ -125,17 +125,16 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         particles.push_back(*it);
     }
 
-    #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
-    for (long i = 0; i < numRandStreams; ++i){
+    State nextState(beliefNode->model->getNumStateVar(),0);
+    Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
+    #pragma omp parallel for schedule(guided) reduction(+:weight_sum) firstprivate(nextState, currObs)
+    for (long i = 0; i < numRandStreams; ++i) {
         RandStream randStream;
         randStream.initseed(randSource->getStream(i).get());
 
-        Particle currParticle = particles[i];
+        Particle const& currParticle = particles[i];
 
-        State nextState(beliefNode->model->getNumStateVar(),0);
-        State currState = currParticle.state;
-
-        Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
+        State const& currState = currParticle.state;
 
         if (action.type == Act){
             double re = beliefNode->model->sample(currState,
@@ -143,9 +142,9 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
                                                   nextState,
                                                   currObs,
                                                   randStream),
-                    obsProb = beliefNode->model->getObsProb(action,
-                                                            nextState,
-                                                            obs);
+              obsProb = beliefNode->model->getObsProb(action,
+                                                      nextState,
+                                                      obs);
 
             if (obsProb != 0.0) {
                 if (debug) {

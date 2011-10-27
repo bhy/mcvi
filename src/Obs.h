@@ -7,6 +7,7 @@ class Obs
 {
   public:
     explicit Obs(std::vector<long> obs);
+    Obs(Obs const& other);
     Obs();
     virtual ~Obs() {}
 

@@ -4,6 +4,13 @@ using namespace std;
 Obs::Obs(vector<long> obs): obs(obs)
 {
     hashCode = 0;
+    // computeHash();
+}
+
+Obs::Obs(Obs const& other): obs(other.obs)
+{
+    hashCode = other.hashCode;
+    // computeHash();
 }
 
 Obs::Obs()
