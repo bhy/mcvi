@@ -81,7 +81,7 @@ class Model
        Restricts allowable actions given an observation
        Override this function if restriction is required.
     */
-    virtual bool allowableAct(const Belief& belief, const Action& act) = 0;
+    virtual bool allowableAct(Belief const& belief, Action const& act) = 0;
 
     /**
        Action sampler.
@@ -93,7 +93,7 @@ class Model
        @param[out] obs Observation
        @param[in] randSource Source of random numbers
     */
-    virtual double sample(const State& currState, const Action& act, State& nextState, Obs& obs, RandStream& randStream) = 0;
+    virtual double sample(State const& currState, Action const& act, State& nextState, Obs& obs, RandStream& randStream) = 0;
 
     /**
        Macro action sampler. Macro actions are called at every time step just
@@ -116,7 +116,7 @@ class Model
        @param[out] obs Observation
        @param[in] randSource Source of random numbers
     */
-    virtual double sample(const State& currState, const Action& macroAct, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
+    virtual double sample(State const& currState, Action const& macroAct, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
 
     /**
        Initial policy sampler. These are the initial policies when the solver
@@ -143,19 +143,19 @@ class Model
        @param[out] nextControllerState Controller transitions to this state. To be used for the next controller action.
        @param[in] randSource Source of random numbers
     */
-    virtual double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
+    virtual double initPolicy(State const& currState, Action const& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
 
     /**
        Upper bound to the value of \a state. The value of a state is
        the expected sum of discounted reward of running a simulation from
        the state.
     */
-    virtual double upperBound(const State& state) = 0;
+    virtual double upperBound(State const& state) = 0;
 
     /**
      * Probability for seeing observation obs when arrived state nextState.
      */
-    virtual double getObsProb(const Action& act, const State& nextState, const Obs& obs) = 0;
+    virtual double getObsProb(Action const& act, State const& nextState, Obs const& obs) = 0;
 
     /**
        Maximum value that the reward can take in any state.
@@ -170,7 +170,7 @@ class Model
     /**
        Returns the observation type: LoopObs, TermObs or OtherObs.
     */
-    virtual obsType getObsType(const Obs& obs) = 0;
+    virtual obsType getObsType(Obs const& obs) = 0;
 
     /**
        Sets the type of the observation: LoopObs, TermObs or OtherObs.
@@ -180,7 +180,7 @@ class Model
     /**
        @return Whether this state a terminal state
     */
-    virtual bool isTermState(const State& state) = 0;
+    virtual bool isTermState(State const& state) = 0;
 
     /**
        If implemented, this is used to restrict the search for policies during
@@ -189,7 +189,7 @@ class Model
        the partial policies within the other group are unlikely to be
        useful to this group.
     */
-    virtual long getObsGrpFromObs(const Obs& obs) { return 0; }
+    virtual long getObsGrpFromObs(Obs const& obs) { return 0; }
 
     /**
        @return The number of state variables
@@ -230,7 +230,7 @@ class Model
     class vecDoubleComparator {
       public:
 
-        bool operator()(const std::vector<double>& v1, const std::vector<double>& v2) const
+        bool operator()(std::vector<double> const& v1, std::vector<double> const& v2) const
         {
             for (size_t i = 0; i < v1.size(); i++){
                 // HUY
