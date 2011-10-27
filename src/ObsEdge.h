@@ -13,7 +13,7 @@ class Simulator;
 
 class ObsEdge {
   public:
-    ObsEdge(const Obs obs, Bounds* bounds)
+    ObsEdge(Obs const obs, Bounds* bounds)
             : obs(obs), bounds(bounds),
               count(0),
               bestPolicyNode(NULL),
@@ -57,7 +57,7 @@ class ObsEdge {
     static void initStatic(Simulator* simulator);
 
     // The observation that generated this ObsEdge
-    const Obs obs;
+    Obs const obs;
     Bounds* bounds;
 
     double upper;

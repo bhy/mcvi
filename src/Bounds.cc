@@ -139,29 +139,43 @@ void Bounds::backUpInitPolicies(Belief& belief)
                                                  belief,
                                                  this);
         double policyValue = 0;
+
+        vector<Particle> particles;
+        int k = -1;
+        for (Belief::const_iterator it = belief.begin(numRandStreams);
+             it != belief.end(); ++it) {
+            RandStream randStream;
+            randStream.initseed(randSource.getStream(++k).get());
+
+            particles.push_back(*it);
+        }
+
         // run simulation
         for (long j = 0; j < numRandStreams; j++){
             RandStream randStream;
             randStream.initseed(randSource.getStream(j).get());
-            Particle currParticle = belief.sample(randStream);
-            State currState = currParticle.state;
+            Particle const& currParticle = particles[j];
+            State const* currState = &currParticle.state;
             State nextState(model.getNumStateVar(),0);
+
             long currMacroActState = InitMacroActState;
             long nextMacroActState;
+
+            Obs obs(vector<long>(model.getNumObsVar(),0));
+
             double currDiscount = 1;
             double sumDiscounted = 0;
             double currReward;
             for (long k = 0; k < maxSimulLength; k++){
                 // Check for terminal state
-                if (model.isTermState(currState)){
+                if (model.isTermState(*currState)){
                     break;
                 }
-                Obs obs(vector<long>(model.getNumObsVar(),0));
-                currReward = model.initPolicy(currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
+                currReward = model.initPolicy(*currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
                 currMacroActState = nextMacroActState;
                 sumDiscounted += currDiscount * currReward;
                 currDiscount *= model.getDiscount();
-                currState = nextState;
+                currState = &nextState;
             }
             double currWeight = power(model.getDiscount(),currParticle.pathLength);
             policyValue += currWeight*sumDiscounted;

@@ -82,7 +82,6 @@ void ActNode::generateObsPartitions()
         State const& currState = currParticle.state;
 
         double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randStream);
-        double discounted = pow(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
 
         map<Obs,ObsEdge>::iterator obsIt = obsChildren.find(obs);
 
@@ -93,6 +92,7 @@ void ActNode::generateObsPartitions()
             obsIt = ret.first;
         }
 
+        double discounted = pow(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
         obsIt->second.addParticle(nextState, currParticle.pathLength+1, discounted);
     }
 

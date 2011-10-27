@@ -125,16 +125,16 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         particles.push_back(*it);
     }
 
-    State nextState(beliefNode->model->getNumStateVar(),0);
-    Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
-    #pragma omp parallel for schedule(guided) reduction(+:weight_sum) firstprivate(nextState, currObs)
+    #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
     for (long i = 0; i < numRandStreams; ++i) {
         RandStream randStream;
         randStream.initseed(randSource->getStream(i).get());
 
         Particle const& currParticle = particles[i];
-
         State const& currState = currParticle.state;
+
+        State nextState(beliefNode->model->getNumStateVar(),0);
+        Obs currObs(vector<long>(beliefNode->model->getNumObsVar(),0));
 
         if (action.type == Act){
             double re = beliefNode->model->sample(currState,
@@ -243,22 +243,34 @@ void ParticlesBelief::compute_cum_sum()
     cum_sum.push_back(belief[0].weight);
     for (unsigned i=1; i < belief.size(); i++)
         cum_sum.push_back(cum_sum[i-1] + belief[i].weight);
-    if (cum_sum.back() != 1)
-        cum_sum.back() = 1;
+
+    // the total sum is 1
+    cum_sum.back() = 1;
 }
 
 double ParticlesBelief::ESS(vector<Particle>& sample)
 {
-    double cv2 = 0.0;
-    double M = sample.size();
+    // double cv2 = 0.0;
+    // double M = sample.size();
+    // for (vector<Particle>::iterator it=sample.begin();
+    //      it != sample.end();
+    //      ++it)
+    // {
+    //     cv2  +=  (M * it->weight - 1) * (M * it->weight - 1);
+    // }
+
+    // return M*M / ( M + cv2);
+
+    double sum = 0.0;
     for (vector<Particle>::iterator it=sample.begin();
          it != sample.end();
          ++it)
     {
-        cv2  +=  (M * it->weight - 1) * (M * it->weight - 1);
+        sum +=  it->weight * it->weight;
     }
 
-    return M*M / ( M + cv2);
+    return 1.0 / sum;
+
 }
 
 Particle ParticlesBelief::sample(RandStream& randStream) const

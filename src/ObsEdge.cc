@@ -28,6 +28,9 @@ void ObsEdge::backup()
     if (bounds->model.getObsType(obs) == TermObs){
         bestPolicyNode = bounds->policyGraph.getInitPolicy(0);
         lower = upper = cachedParticles->currSum;
+        // update lastUpdated to prevent count from being increased in
+        // addParticle() and fails the assert()
+        lastUpdated = 0;
     } else {
         if (lastUpdated == Never)
             findInitUpper();
