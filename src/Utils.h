@@ -1,10 +1,12 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
+#include <cmath>
 #include <vector>
 #include <iostream>
 #include <limits>
 
+const double epsilon = 1e-5;
 const long Never = -1;
 #define Inf (std::numeric_limits<double>::infinity())
 #define NegInf (-(std::numeric_limits<double>::max()-1))
@@ -23,6 +25,11 @@ inline double power(double x, long i)
         return temp * temp;
     else
         return temp * temp * x;
+}
+
+inline bool equal(double x, double y)
+{
+    return (fabs(y - x) <= epsilon);
 }
 
 #endif
