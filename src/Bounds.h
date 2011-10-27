@@ -30,17 +30,13 @@ class Bounds
 {
   public:
     /**
-       @param[in] model Provides sampling functions
-       @param[in, out] policyGraph Provides policy graph data structure
-       @param[in] simulator Provides simulation from a starting point
-       @param[in] randSource Source of random number
-       @param[in] numRandStreams Number of starting points to be sampled
-       @param[in] maxSimulLength Simulation length for each simulation
-       @param[in] maxMacroActLength Max number of steps allowed for any
-       macro action before returning control to the policy graph
-       @param[in] cacheSize size of cache for storing particles at children
+       @param [in] model Provides sampling functions
+       @param [in, out] policyGraph Provides policy graph data structure
+       @param [in] randSource Source of random number
+       @param [in] numRandStreams Number of starting points to be sampled
+       @param [in] maxSimulLength Simulation length for each simulation
     */
-    // make singleton instance for this class
+    // TODO: make singleton instance for this class
     Bounds(Model& model, PolicyGraph& policyGraph,
            RandSource& randSource,
            long numRandStreams, long maxSimulLength):
@@ -54,14 +50,19 @@ class Bounds
 
     /**
        Run backup for upper and lower bound.
-       @param belief Belief to be backed up.
+       @param [in] belief Belief to be backed up.
     */
     void backUp(Belief& belief);
+
+    /**
+       Update the best Upper(Lower)bound action.
+       @param [in] belief Belief to be updated
+    */
     void updateBestActions(Belief& belief);
 
-    /** Backup operations for each type of actions. Reset the count (number of particles) to 0
+    /**
+       Backup operations for each type of actions.
      */
-
     void backUpInitPolicies(Belief& belief);
     void backUpActions(Belief& belief);
 
