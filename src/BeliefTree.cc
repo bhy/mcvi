@@ -1,3 +1,8 @@
+#include <cstdio>
+#include <ctime>
+#include <cassert>
+#include <iostream>
+#include <sstream>
 #include "BeliefTree.h"
 #include "Action.h"
 #include "ActNode.h"
@@ -10,11 +15,6 @@
 #include "PolicyGraph.h"
 #include "RandSource.h"
 #include "Bounds.h"
-#include <ctime>
-#include <iostream>
-#include <cstdio>
-#include <sstream>
-#include <cassert>
 
 #ifdef DEBUG
 #define DEBUGMSG 1

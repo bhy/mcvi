@@ -1,10 +1,10 @@
+#include <cassert>
 #include "ObsEdge.h"
 #include "Belief.h"
 #include "BeliefNode.h"
 #include "Bounds.h"
 #include "RandSource.h"
 #include "Simulator.h"
-#include <cassert>
 using namespace std;
 
 Simulator* ObsEdge::simulator;

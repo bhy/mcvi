@@ -1,8 +1,8 @@
 #ifndef __PARTICLESBELIEF_H
 #define __PARTICLESBELIEF_H
 
-#include "Belief.h"
 #include <vector>
+#include "Belief.h"
 
 class RandStream;
 class RandSource;

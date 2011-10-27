@@ -16,7 +16,7 @@ Model* BeliefNode::model;
 RandSource* ParticlesBelief::randSource;
 long ParticlesBelief::numRandStreams;
 long ParticlesBelief::maxMacroActLength;
-double ParticlesBelief::ESSthreshold = 0.5;
+double ParticlesBelief::ESSthreshold = 0.7;
 double ParticlesBelief::approxSample = 0.99;
 
 Belief::~Belief() {
@@ -213,8 +213,8 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         }
 
         nxt->cum_sum.clear();
-    } else if (ess >= approxSample * nxt->belief.size()) {
-        nxt->cum_sum.clear();
+    // } else if (ess >= approxSample * nxt->belief.size()) {
+    //     nxt->cum_sum.clear();
     } else {
         nxt->compute_cum_sum();
     }

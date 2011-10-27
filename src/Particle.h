@@ -1,8 +1,8 @@
 #ifndef __PARTICLE_H
 #define __PARTICLE_H
 
-#include "State.h"
 #include <vector>
+#include "State.h"
 
 struct Particle
 {

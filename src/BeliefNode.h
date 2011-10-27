@@ -1,9 +1,9 @@
 #ifndef __BELIEFNODE_H
 #define __BELIEFNODE_H
 
+#include <vector>
 #include "Action.h"
 #include "PolicyGraph.h"
-#include <vector>
 
 class Obs;
 class ActNode;

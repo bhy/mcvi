@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Bounds.h"
 #include "Action.h"
 #include "ActNode.h"
@@ -8,7 +9,6 @@
 #include "BeliefNode.h"
 #include "PolicyGraph.h"
 #include "RandSource.h"
-#include <iostream>
 
 using namespace std;
 

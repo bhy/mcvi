@@ -1,9 +1,9 @@
 #ifndef __BELIEFFOREST_H
 #define __BELIEFFOREST_H
 
-#include "BeliefSet.h"
 #include <map>
 #include <queue>
+#include "BeliefSet.h"
 
 class Obs;
 class ObsEdge;

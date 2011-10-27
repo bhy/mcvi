@@ -1,11 +1,10 @@
 #ifndef __MODEL_H
 #define __MODEL_H
 
+#include <cfloat>
+#include <vector>
 #include "State.h"
 #include "Utils.h"
-#include <vector>
-#include <cfloat>
-#include <climits>
 
 class Belief;
 class Action;

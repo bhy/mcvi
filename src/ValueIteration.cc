@@ -1,10 +1,10 @@
-#include "ValueIteration.h"
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <fstream>
-#include <time.h>
+#include "ValueIteration.h"
 
 using namespace std;
 

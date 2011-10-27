@@ -1,12 +1,12 @@
 #ifndef __POLICYGRAPH_H
 #define __POLICYGRAPH_H
 
-#include "Obs.h"
-#include "Action.h"
 #include <vector>
 #include <map>
 #include <set>
 #include <string>
+#include "Obs.h"
+#include "Action.h"
 
 /**
    @class PolicyGraph

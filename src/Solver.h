@@ -1,11 +1,11 @@
 #ifndef __SOLVER_H
 #define __SOLVER_H
 
-#include "State.h"
-#include <iostream>
-#include <sstream>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <sstream>
+#include "State.h"
 
 class Obs;
 class Model;

@@ -1,3 +1,6 @@
+#include <ctime>
+#include <cmath>
+#include <iostream>
 #include "BeliefForest.h"
 #include "ActNode.h"
 #include "Obs.h"
@@ -9,9 +12,6 @@
 #include "PolicyGraph.h"
 #include "RandSource.h"
 #include "Bounds.h"
-#include <time.h>
-#include <iostream>
-#include <cmath>
 
 using namespace std;
 

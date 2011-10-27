@@ -1,9 +1,9 @@
-#include "ParticlesBeliefSet.h"
-#include "ParticlesBelief.h"
-#include <iostream>
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
+#include <iostream>
+#include "ParticlesBeliefSet.h"
+#include "ParticlesBelief.h"
 
 using namespace std;
 

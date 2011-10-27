@@ -1,10 +1,11 @@
+#include <cstdio>
 #include "ActNode.h"
 #include "ObsEdge.h"
 #include "Model.h"
 #include "Belief.h"
 #include "Bounds.h"
 #include "RandSource.h"
-#include <cstdio>
+
 using namespace std;
 
 ActNode::ActNode(const Action& action, const Belief& belief, Bounds* bounds):

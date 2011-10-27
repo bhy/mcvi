@@ -1,6 +1,6 @@
-#include "Action.h"
 #include <cstdio>
 #include <cstdlib>
+#include "Action.h"
 using namespace std;
 
 Model* Action::model;

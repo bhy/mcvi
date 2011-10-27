@@ -12,6 +12,7 @@
 #include "Simulator.h"
 #include "ParticlesBelief.h"
 #include "ParticlesBeliefSet.h"
+
 using namespace std;
 
 void Solver::input(int argc, char **argv, int noRequiredArgs)

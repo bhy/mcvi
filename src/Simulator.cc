@@ -1,8 +1,8 @@
+#include <iostream>
+#include <fstream>
 #include "Simulator.h"
 #include "Model.h"
 #include "RandSource.h"
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 

@@ -1,9 +1,9 @@
 #ifndef __BOUNDS_H
 #define __BOUNDS_H
 
-#include "Utils.h"
 #include <map>
 #include <list>
+#include "Utils.h"
 
 class Model;
 class Belief;

@@ -1,8 +1,8 @@
 #ifndef __PARTICLESBELIEFSET_H
 #define __PARTICLESBELIEFSET_H
 
-#include "BeliefSet.h"
 #include <set>
+#include "BeliefSet.h"
 
 class ParticlesBelief;
 

@@ -1,13 +1,13 @@
 #ifndef __BELIEF_H
 #define __BELIEF_H
 
+#include <cfloat>
+#include <vector>
+#include <map>
+#include <list>
 #include "State.h"
 #include "Particle.h"
 #include "Utils.h"
-#include <vector>
-#include <cfloat>
-#include <map>
-#include <list>
 
 class Action;
 class Obs;
