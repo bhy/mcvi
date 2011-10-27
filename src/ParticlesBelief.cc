@@ -1,3 +1,7 @@
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
+#include <iostream>
 #include "ParticlesBelief.h"
 #include "Action.h"
 #include "ActNode.h"
@@ -6,10 +10,8 @@
 #include "Model.h"
 #include "BeliefNode.h"
 #include "RandSource.h"
-#include <iostream>
-#include <cstdlib>
-#include <cassert>
 using namespace std;
+typedef typename Belief::const_iterator const_iterator;
 
 // define static members
 Model* BeliefNode::model;
@@ -18,10 +20,6 @@ long ParticlesBelief::numRandStreams;
 long ParticlesBelief::maxMacroActLength;
 double ParticlesBelief::ESSthreshold = 0.7;
 double ParticlesBelief::approxSample = 0.99;
-
-Belief::~Belief() {
-    delete beliefNode;
-}
 
 ParticlesBelief::~ParticlesBelief() {
 }
@@ -117,13 +115,22 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         cout<<endl;
     }
 
+    vector<Particle> particles;
+    int i = -1;
+    for (Belief::const_iterator it = this->begin(numRandStreams);
+         it != this->end(); ++it) {
+        RandStream randStream;
+        randStream.initseed(randSource->getStream(++i).get());
+
+        particles.push_back(*it);
+    }
+
     #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
-    for (long i = 0; i < numRandStreams; i++){
+    for (long i = 0; i < numRandStreams; ++i){
         RandStream randStream;
         randStream.initseed(randSource->getStream(i).get());
 
-        Particle currParticle;
-        currParticle = this->sample(randStream);
+        Particle currParticle = particles[i];
 
         State nextState(beliefNode->model->getNumStateVar(),0);
         State currState = currParticle.state;
@@ -198,7 +205,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         int cum_idx = 0;
         double cum_weight = belief_tmp[cum_idx].weight;
         double weight_interval = 1.0 / numRandStreams;
-        double sample_weight = weight_interval * ((double) rand()/RAND_MAX);
+        double sample_weight = weight_interval * ((double) rand()/((double)RAND_MAX+1));
         for(int i = 0; i < numRandStreams; i++) {
             while (cum_weight < sample_weight) {
                 cum_idx++;
@@ -213,8 +220,8 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         }
 
         nxt->cum_sum.clear();
-    // } else if (ess >= approxSample * nxt->belief.size()) {
-    //     nxt->cum_sum.clear();
+        // } else if (ess >= approxSample * nxt->belief.size()) {
+        //     nxt->cum_sum.clear();
     } else {
         nxt->compute_cum_sum();
     }
@@ -246,8 +253,8 @@ double ParticlesBelief::ESS(vector<Particle>& sample)
     double cv2 = 0.0;
     double M = sample.size();
     for (vector<Particle>::iterator it=sample.begin();
-        it != sample.end();
-        ++it)
+         it != sample.end();
+         ++it)
     {
         cv2  +=  (M * it->weight - 1) * (M * it->weight - 1);
     }
@@ -267,4 +274,113 @@ Particle ParticlesBelief::sample(RandStream& randStream) const
 
     assert(index <= belief.size());
     return belief[index];
+}
+
+ParticlesBelief::ParticlesBeliefIterator::ParticlesBeliefIterator(vector<Particle> const* belief, int num_particles, RandStream& randStream)
+        : belief_(belief), num_particles_(num_particles),
+          current_particle_(0),
+          cum_index_(-1),
+          cum_weight_(0.0),
+          weight_interval_(1.0 / num_particles)
+{
+    sample_weight_=(weight_interval_ * randStream.getf());
+}
+
+ParticlesBelief::ParticlesBeliefIterator::ParticlesBeliefIterator(vector<Particle> const* belief, int num_particles)
+        : belief_(belief), num_particles_(num_particles),
+          current_particle_(0),
+          cum_index_(-1),
+          cum_weight_(0.0),
+          weight_interval_(1.0 / num_particles),
+          sample_weight_(weight_interval_ * (rand() / ((double)RAND_MAX + 1)))
+{}
+
+ParticlesBelief::ParticlesBeliefIterator::ParticlesBeliefIterator(ParticlesBelief::ParticlesBeliefIterator const& other)
+        : belief_(other.belief_), num_particles_(other.num_particles_),
+          current_particle_(other.current_particle_),
+          cum_index_(other.cum_index_),
+          cum_weight_(other.cum_weight_),
+          weight_interval_(other.weight_interval_),
+          sample_weight_(other.sample_weight_),
+          new_particle_(other.new_particle_)
+{}
+
+ParticlesBelief::ParticlesBeliefIterator* ParticlesBelief::ParticlesBeliefIterator::clone()
+{
+    assert(current_particle_ <= num_particles_);
+    ParticlesBelief::ParticlesBeliefIterator* new_iterator = new ParticlesBelief::ParticlesBeliefIterator(*this);
+
+    return new_iterator;
+}
+
+void ParticlesBelief::ParticlesBeliefIterator::operator++()
+{
+    assert(current_particle_<= num_particles_);
+    if (current_particle_ == num_particles_) {
+        ParticlesBelief::ParticlesBeliefIterator* temp = new ParticlesBelief::ParticlesBeliefIterator(NULL,-1);
+        swap(*this,*temp);
+        return;
+    }
+
+    while (cum_weight_ < sample_weight_) {
+        ++cum_index_;
+        cum_weight_ += (*belief_)[cum_index_].weight;
+    }
+    sample_weight_ += weight_interval_;
+    if (sample_weight_ > 1) sample_weight_ = 1;
+    current_particle_++;
+}
+
+bool ParticlesBelief::ParticlesBeliefIterator::operator!=(Belief::BeliefItImpl const& right)
+{
+    ParticlesBelief::ParticlesBeliefIterator const* temp = safe_cast<ParticlesBelief::ParticlesBeliefIterator const*>(&right);
+    return (belief_ != temp->belief_ ||
+            num_particles_ != temp->num_particles_ ||
+            current_particle_ != temp->current_particle_ ||
+            cum_index_ != temp->cum_index_);
+    // other attributes are double and too prone to error but the
+    // first sample_weight_ may be needed, but not for this iterator
+}
+
+Particle const& ParticlesBelief::ParticlesBeliefIterator::operator*()
+{
+    assert(current_particle_ <= num_particles_);
+    if (cum_index_ < 0)
+        throw 20;
+    assert(cum_index_ < belief_->size());
+
+    new_particle_ = (*belief_)[cum_index_];
+    new_particle_.weight = weight_interval_;
+
+    return new_particle_;
+}
+
+Particle const* ParticlesBelief::ParticlesBeliefIterator::getPointer()
+{
+    assert(current_particle_ <= num_particles_);
+    assert(cum_index_ < belief_->size());
+
+    new_particle_ = (*belief_)[cum_index_];
+    new_particle_.weight = weight_interval_;
+
+    return &new_particle_;
+}
+
+const_iterator ParticlesBelief::begin(int num_particles, RandStream& randStream) const
+{
+    ParticlesBelief::ParticlesBeliefIterator* temp = new ParticlesBeliefIterator(&belief, num_particles, randStream);
+    ++(*temp);
+    return const_iterator(temp);
+}
+
+const_iterator ParticlesBelief::begin(int num_particles) const
+{
+    ParticlesBelief::ParticlesBeliefIterator* temp = new ParticlesBeliefIterator(&belief, num_particles);
+    ++(*temp);
+    return const_iterator(temp);
+}
+
+const_iterator ParticlesBelief::end() const
+{
+    return const_iterator(new ParticlesBeliefIterator(NULL,-1));
 }

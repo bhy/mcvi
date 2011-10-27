@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cassert>
 #include "ActNode.h"
 #include "ObsEdge.h"
 #include "Model.h"
@@ -26,6 +27,7 @@ void ActNode::backup()
          currIt != obsChildren.end(); ++currIt){
         // backup for each observation
         ObsEdge& obsEdge = currIt->second;
+        assert(obsEdge.count == obsEdge.cachedParticles->particles.size());
         obsEdge.backup();
     }
 
@@ -69,14 +71,15 @@ void ActNode::generateObsPartitions()
     RandStream randStream;
     randStream.initseed(randSeed);
 
+    Belief::const_iterator it;
     // Don't use parallel here since we need randStream to be used in
-    // a sequential manner??? Is it true?
-    for (long j=0; j < bounds->numRandStreams; j++){
-        Particle currParticle = belief.sample(randStream);
-        State currState = currParticle.state;
-        State nextState(bounds->model.getNumStateVar(),0);
-
-        Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
+    // a sequential manner??? TODO: Is it true?
+    Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
+    State nextState(bounds->model.getNumStateVar(),0);
+    for (it = belief.begin(bounds->numRandStreams,randStream);
+         it != belief.end(); ++it){
+        Particle const& currParticle = *it;
+        State const& currState = currParticle.state;
 
         double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randStream);
         double discounted = pow(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;

@@ -14,20 +14,29 @@ class Simulator;
 class ObsEdge {
   public:
     ObsEdge(const Obs obs, Bounds* bounds)
-            :obs(obs), bounds(bounds),
-             count(0),
-             bestPolicyNode(NULL),
-             bestPolicyVal(NegInf),
-             nextBelief(NULL),
-             cachedParticles(NULL),
-             lastUpdated(Never)
+            : obs(obs), bounds(bounds),
+              count(0),
+              bestPolicyNode(NULL),
+              bestPolicyVal(NegInf),
+              nextBelief(NULL),
+              lastUpdated(Never)
     {
         cachedParticles = new ParticleStore();
         cachedParticles->currSum = 0;
         cachedParticles->particles.clear();
     }
 
-    ObsEdge() {}
+    ObsEdge()
+            : count(0),
+              bestPolicyNode(NULL),
+              bestPolicyVal(NegInf),
+              nextBelief(NULL),
+              lastUpdated(Never)
+    {
+        cachedParticles = new ParticleStore();
+        cachedParticles->currSum = 0;
+        cachedParticles->particles.clear();
+    }
 
     ~ObsEdge()
     {

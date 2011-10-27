@@ -11,7 +11,7 @@ class Bounds;
 class ActNode
 {
   public:
-    ActNode(const Action& action, const Belief& belief, Bounds* bounds);
+    ActNode(Action const& action, Belief const& belief, Bounds* bounds);
 
     /**
        Back up on this ActNode
@@ -32,9 +32,9 @@ class ActNode
     void clearObsPartitions();
 
     // The label of this ActNode
-    const Action action;
+    Action const action;
     // The belief representation of the Belief father of this ActNode
-    const Belief& belief;
+    Belief const& belief;
     Bounds* bounds;
     // The average lower (upper) bounds compute by dividing the total
     // lower (upper) bounds of all ObsEdge children by the number of

@@ -71,6 +71,37 @@ class ParticlesBelief : public Belief
     // When do we need to use the binary search compared to the normal
     // getParticle
     static double approxSample;
+
+    class ParticlesBeliefIterator:
+            public BeliefItImpl
+    {
+      public:
+        ParticlesBeliefIterator(std::vector<Particle> const* belief, int num_particles, RandStream& randStream);
+        ParticlesBeliefIterator(std::vector<Particle> const* belief, int num_particles);
+        ParticlesBeliefIterator(ParticlesBeliefIterator const& other);
+        ~ParticlesBeliefIterator() {}
+
+        ParticlesBeliefIterator* clone();
+        void operator++();
+        bool operator!=(Belief::BeliefItImpl const& right);
+        Particle const& operator*();
+        Particle const* getPointer();
+
+//      private:
+        std::vector<Particle> const* belief_;
+        int num_particles_;
+        int current_particle_;
+        int cum_index_;
+        double cum_weight_;
+        /*const*/ double weight_interval_;
+        double sample_weight_;
+        Particle new_particle_;
+
+    };
+
+    const_iterator begin(int num_particles) const;
+    const_iterator begin(int num_particles, RandStream& randStream) const;
+    const_iterator end() const;
 };
 
 inline Particle ParticlesBelief::getParticle(long index) const

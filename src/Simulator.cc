@@ -39,7 +39,7 @@ void Simulator::runSingle(long length, double& sumReward,
     Action* action = &(policy.getAction(currGraphNode));
 
     // Run simulation
-    for (long t=0; t< length; t++){
+    for (long t=0; t < length; t++){
         for(State::iterator it=currState.begin(); it != currState.end(); ++it)
             fp << *it << " ";
         fp<<endl;
@@ -115,7 +115,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
 
     Action* action = &(policy.getAction(currGraphNode));
     // Run simulation
-    for (long t=0; t< length; t++){
+    for (long t=0; t < length; t++){
 
         // Check for terminal state
         if (model.isTermState(currState)){

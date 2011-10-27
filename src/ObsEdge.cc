@@ -42,6 +42,7 @@ void ObsEdge::backup()
 
 void ObsEdge::backupFromPolicyGraph()
 {
+    assert(count == cachedParticles->particles.size());
     for (vector<PolicyGraph::Node*>::iterator it = nodes.begin();
          it != nodes.end(); ++it) {
         double sumPolicyValue = cachedParticles->currSum;
@@ -117,10 +118,11 @@ void ObsEdge::addParticle(const State& state, long pathLength, double immediateR
         cachedParticles = new ParticleStore();
     }
     // weight = 1
-cachedParticles->particles.push_back(Particle(state, pathLength, 1));
+    cachedParticles->particles.push_back(Particle(state, pathLength, 1));
 
     if (lastUpdated == Never) {
-        count++;
+        ++count;
+        assert(count == cachedParticles->particles.size());
         cachedParticles->currSum += immediateReward;
     }
 }
