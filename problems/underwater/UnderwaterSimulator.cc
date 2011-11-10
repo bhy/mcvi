@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     UnderwaterProblem currProblem;
     currProblem.discount = discount;
 
-    UnderwaterModel::readProblem(map_file, currProblem);
+    UnderwaterModel::readProblem(map_file, &currProblem);
     UnderwaterModel currModel(currProblem, true);
 
     Action::initStatic((Model*)(&currModel));

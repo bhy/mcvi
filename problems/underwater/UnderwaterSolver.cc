@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     currProblem.discount = solver.discount;
 
     // HUY note - 1. Read problem from file
-    UnderwaterModel::readProblem(map_file, currProblem);
+    UnderwaterModel::readProblem(map_file, &currProblem);
     bool useMacroBool = true;
 //    if (useMacro != 1)
     useMacroBool = false;
