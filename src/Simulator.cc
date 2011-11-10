@@ -24,8 +24,8 @@ void Simulator::runSingle(long length, double& sumReward,
     double currDiscount = 1;
 
     // States
-    State currState = startState; // initialize
-    State nextState(model.getNumStateVar(),0); // allocate space
+    State* currState = new State(startState); // initialize
+    State* nextState = new State(model.getNumStateVar(),0); // allocate space
 
     // Macro action
     long currMacroActState = InitMacroActState, nextMacroActState;
@@ -40,19 +40,19 @@ void Simulator::runSingle(long length, double& sumReward,
 
     // Run simulation
     for (long t=0; t < length; t++){
-        for(State::iterator it=currState.begin(); it != currState.end(); ++it)
+        for(State::iterator it=currState->begin(); it != currState->end(); ++it)
             fp << *it << " ";
         fp<<endl;
         fp << action->type << " " << action->getActNumUser() << endl;
 
         // Check for terminal state
-        if (model.isTermState(currState)){
+        if (model.isTermState(*currState)){
             //fp<<"success"<<endl;
             break;
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(currState, *action, currMacroActState, nextState, nextMacroActState, obs, randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, *nextState, nextMacroActState, obs, randStream);
             currMacroActState = nextMacroActState;
         }
         // else if (act.type == macro){
@@ -75,18 +75,26 @@ void Simulator::runSingle(long length, double& sumReward,
         //     }
         // }
         else{
-            currReward = model.sample(currState, *action, nextState, obs, randStream);
+            currReward = model.sample(*currState, *action, *nextState, obs, randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }
         sumReward += currReward;
         sumDiscounted += currDiscount * currReward;
         currDiscount *= model.getDiscount();
+
+        // swap 2 pointers
+        State* temp;
+        temp = currState;
         currState = nextState;
+        nextState = temp;
+
         action = &(policy.getAction(currGraphNode));
     }
-}
 
+    delete currState;
+    delete nextState;
+}
 
 void Simulator::runSingle(long length, double& sumDiscounted,
                           State startState, PolicyGraph::Node *currNode,
@@ -98,8 +106,8 @@ void Simulator::runSingle(long length, double& sumDiscounted,
     double currDiscount = 1;
 
     // States
-    State currState = startState;
-    State nextState(model.getNumStateVar(),0); // allocate space
+    State* currState = new State(startState); // initialize
+    State* nextState = new State(model.getNumStateVar(),0); // allocate space
 
     // Macro action
     long currMacroActState = InitMacroActState, nextMacroActState;
@@ -118,12 +126,12 @@ void Simulator::runSingle(long length, double& sumDiscounted,
     for (long t=0; t < length; t++){
 
         // Check for terminal state
-        if (model.isTermState(currState)){
+        if (model.isTermState(*currState)){
             break;
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(currState, *action, currMacroActState, nextState, nextMacroActState, obs, randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, *nextState, nextMacroActState, obs, randStream);
             currMacroActState = nextMacroActState;
         }
         // else if (act.type == macro){
@@ -146,13 +154,21 @@ void Simulator::runSingle(long length, double& sumDiscounted,
         //     }
         // }
         else{
-            currReward = model.sample(currState, *action, nextState, obs, randStream);
+            currReward = model.sample(*currState, *action, *nextState, obs, randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }
         sumDiscounted += currDiscount * currReward;
         currDiscount *= model.getDiscount();
+
+        State* temp;
+        temp = currState;
         currState = nextState;
+        nextState = temp;
+
         action = &(policy.getAction(currGraphNode));
     }
+
+    delete currState;
+    delete nextState;
 }
