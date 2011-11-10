@@ -18,7 +18,7 @@ Model* BeliefNode::model;
 RandSource* ParticlesBelief::randSource;
 long ParticlesBelief::numRandStreams;
 long ParticlesBelief::maxMacroActLength;
-double ParticlesBelief::ESSthreshold = 0.7;
+double ParticlesBelief::ESSthreshold = 0.5;
 double ParticlesBelief::approxSample = 0.99;
 
 ParticlesBelief::~ParticlesBelief() {
@@ -116,12 +116,8 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     vector<Particle> particles;
-    int i = -1;
     for (Belief::const_iterator it = this->begin(numRandStreams);
          it != this->end(); ++it) {
-        RandStream randStream;
-        randStream.initseed(randSource->getStream(++i).get());
-
         particles.push_back(*it);
     }
 

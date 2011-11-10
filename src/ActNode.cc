@@ -71,15 +71,15 @@ void ActNode::generateObsPartitions()
     RandStream randStream;
     randStream.initseed(randSeed);
 
-    Belief::const_iterator it;
     // Don't use parallel here since we need randStream to be used in
     // a sequential manner??? TODO: Is it true?
-    Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
-    State nextState(bounds->model.getNumStateVar(),0);
-    for (it = belief.begin(bounds->numRandStreams,randStream);
+    for (Belief::const_iterator it = belief.begin(bounds->numRandStreams,randStream);
          it != belief.end(); ++it){
         Particle const& currParticle = *it;
         State const& currState = currParticle.state;
+
+        Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
+        State nextState(bounds->model.getNumStateVar(),0);
 
         double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randStream);
 

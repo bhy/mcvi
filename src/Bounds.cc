@@ -141,17 +141,13 @@ void Bounds::backUpInitPolicies(Belief& belief)
         double policyValue = 0;
 
         vector<Particle> particles;
-        int k = -1;
+        // run simulation
         for (Belief::const_iterator it = belief.begin(numRandStreams);
              it != belief.end(); ++it) {
-            RandStream randStream;
-            randStream.initseed(randSource.getStream(++k).get());
-
             particles.push_back(*it);
         }
 
-        // run simulation
-        for (long j = 0; j < numRandStreams; j++){
+        for (long j = 0; j < numRandStreams; j++) {
             RandStream randStream;
             randStream.initseed(randSource.getStream(j).get());
             Particle const& currParticle = particles[j];
