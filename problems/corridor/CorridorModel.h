@@ -57,51 +57,51 @@ class ParticlesBelief;
 */
 class CorridorModel : public Model
 {
-public:
+  public:
     CorridorModel();
 
-    double sample(const State& currState, const Action& action, State& nextState, Obs &obs, RandStream& randStream );
+    double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream );
 
     //XXX No macro act
-    double sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double sample(State const& currState, Action const& macroAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     /**
        Greedy policy that selects the action that moves left
     */
-    double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     State sampleInitState();
     ParticlesBelief* getInitBelief(int numStates);
 
 
     /* actually do not need to be real prob, any kind of weight is ok */
-    double getObsProb(const Action& action, const State& state, const Obs& obs);
+    double getObsProb(Action const& action, State const& state, Obs const& obs);
 
-    double upperBound(const State& state);
+    double upperBound(State const& state);
 
     double getMaxReward() { return EnterReward;};
 
     double getMinReward() { return WrongPenalty;};
 
-    bool allowableAct(const Belief& belief, const Action& action);
+    bool allowableAct(Belief const& belief, Action const& action);
 
-    //inline long getObsGrpFromObs(const Obs& obs) { return obs[1]; };
+    //inline long getObsGrpFromObs(Obs const& obs) { return obs[1]; };
 
     //XXX hmm, what TermObs mean?
-    inline obsType getObsType(const Obs& obs) { return OtherObs; };
+    inline obsType getObsType(Obs const& obs) { return OtherObs; };
 
-    inline void setObsType(Obs& obs, obsType type) {
+    inline void setObsType(Obs* obs, obsType type) {
         //obs[0] = type; //XXX
     } ;
 
-    inline bool isTermState(const State& state) { return (static_cast<long>(state[0]) == TermState);};
+    inline bool isTermState(State const& state) { return (static_cast<long>(state[0]) == TermState);};
 
     /**
        Output an ascii visual display of the state.
     */
     void displayState(State state, long type = 0);
 
-private:
+  private:
     double probRandom;
 
 };
