@@ -93,7 +93,7 @@ class Model
        @param[out] obs Observation
        @param[in] randSource Source of random numbers
     */
-    virtual double sample(State const& currState, Action const& act, State& nextState, Obs& obs, RandStream& randStream) = 0;
+    virtual double sample(State const& currState, Action const& act, State* nextState, Obs* obs, RandStream* randStream) = 0;
 
     /**
        Macro action sampler. Macro actions are called at every time step just
@@ -116,7 +116,7 @@ class Model
        @param[out] obs Observation
        @param[in] randSource Source of random numbers
     */
-    virtual double sample(State const& currState, Action const& macroAct, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
+    virtual double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream) = 0;
 
     /**
        Initial policy sampler. These are the initial policies when the solver
@@ -143,7 +143,7 @@ class Model
        @param[out] nextControllerState Controller transitions to this state. To be used for the next controller action.
        @param[in] randSource Source of random numbers
     */
-    virtual double initPolicy(State const& currState, Action const& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) = 0;
+    virtual double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream) = 0;
 
     /**
        Upper bound to the value of \a state. The value of a state is
@@ -175,7 +175,7 @@ class Model
     /**
        Sets the type of the observation: LoopObs, TermObs or OtherObs.
     */
-    virtual void setObsType(Obs& obs, obsType type) = 0;
+    virtual void setObsType(Obs* obs, obsType type) = 0;
 
     /**
        @return Whether this state a terminal state
