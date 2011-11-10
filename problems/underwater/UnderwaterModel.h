@@ -14,7 +14,7 @@
 #include <map>
 
 /**
-  Constants and types used in pacman model. Take care in making any changes
+  Constants and types used in the model. Take care in making any changes
   as they affect most of the pacman code.
   */
 const double TerminalReward = 10000; //reach the goal
@@ -77,7 +77,6 @@ class UnderwaterModel : public Model
 	//get approximate flat state representation from current state
 	State getFlatState(const State& state);
 
-	// HUY
 	inline bool isTermState(const State& state) { return state[rx] == -1;};
 	/**
 	  Reads in problem parameters from file.

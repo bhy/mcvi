@@ -1,3 +1,9 @@
+/**
+   This problem is different from the problem in the published paper
+   "Monte Carlo Value Iteration for Continuous-State POMDPs". The
+   results are not directly comparable.
+*/
+
 #ifndef __CORRIDORMODEL_H
 #define __CORRIDORMODEL_H
 
@@ -22,7 +28,7 @@ const double DoorRadius = 1.0;
 const double CorridorLength = 21;
 const double CorridorEndLength = 5;
 const double Noise = 0.01;
-const double EnterReward = 1;
+const double EnterReward = 3;
 const double WrongPenalty = -2;
 
 const double MovementCost = 0; // Cost of any other actions
