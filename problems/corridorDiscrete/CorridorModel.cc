@@ -17,37 +17,37 @@ int rand_range(int low, int high) {
     return low + uniform_deviate(rand()) * (high-low);
 }
 
-#define NOISY(v) ((v) ^ (randStream.getf() < Noise))
+#define NOISY(v) ((v) ^ (randStream->getf() < Noise))
 
 CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount) {};
 
-bool CorridorModel::allowableAct(const Belief& belief, const Action& action) {
+bool CorridorModel::allowableAct(Belief const& belief, Action const& action) {
     if (action.type == Macro) return false;
 
     return true;
 }
 
-double CorridorModel::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream) {
+double CorridorModel::sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream) {
     bool debug = false;
 
     double reward = MovementCost;
     if (currState[0] < 0) {
-        obs.obs[0] = TermObs;
-        nextState = currState;
+        obs->obs[0] = TermObs;
+        *nextState = currState;
         // if (action.getActNumUser() == ActEnter)
-        //     return WrongPenalty;
+        // return WrongPenalty;
         // else return -1000;
         return -1000;
     }
 
     if (action.getActNumUser() == ActEnter) {
         if (currState[1] == 1) {
-            nextState[0] = TermState;
-            obs.obs[0] = TermObs;
+            (*nextState)[0] = TermState;
+            obs->obs[0] = TermObs;
             reward = EnterReward;
         } else {
-            nextState = currState;
-            obs.obs[0] = ObsWrongDoor;
+            *nextState = currState;
+            obs->obs[0] = ObsWrongDoor;
             reward = WrongPenalty;
         }
     } else {
@@ -62,45 +62,45 @@ double CorridorModel::sample(const State& currState, const Action& action, State
         long nxtPos = currState[1] + nxtIndex;
         if (nxtPos < 0 || nxtPos > 3) nxtPos -= nxtPos / abs(nxtPos);
 
-        obs.obs[0] = ObsNothing;
+        obs->obs[0] = ObsNothing;
         if (nxtPos == 0) {
-            obs.obs[0] = ObsLeftEnd;
+            obs->obs[0] = ObsLeftEnd;
         } else if (nxtPos == 3) {
-            obs.obs[0] = ObsRightEnd;
+            obs->obs[0] = ObsRightEnd;
         }
 
-        nextState[1] = nxtPos;
-        nextState[0] = 0;
+        (*nextState)[1] = nxtPos;
+        (*nextState)[0] = 0;
     }
 
     if (debug) {
         cout<<"Model::sample\n";
-        cout<<currState[1]<<" "<<action.getActNumUser()<<" "<<nextState[1]<<" "<<obs.obs[0]<<"\n";
+        cout<<currState[1]<<" "<<action.getActNumUser()<<" "<<(*nextState)[1]<<" "<<obs->obs[0]<<"\n";
         cout<<"Leaving Model::sample\n";
     }
 
     return reward;
 }
 
-double CorridorModel::sample(const State& currState, const Action& macroAct, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream) {
+double CorridorModel::sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream) {
     assert(false);
     return 0;
 }
 
-double CorridorModel::initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& dummy, RandStream& randStream) {
+double CorridorModel::initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* dummy, RandStream* randStream) {
     Obs obs(vector<long>(getNumObsVar(), 0));
     if (currState[0] > 0) {
-        nextState = currState;
+        *nextState = currState;
         return 0;
     }
 
     // move left
-    return sample(currState, Action(Act,ActLeft), nextState, obs, randStream);
+    return sample(currState, Action(Act,ActLeft), nextState, &obs, randStream);
 }
 
 State CorridorModel::sampleInitState() {
     double p = rand_range(0,4);
-//    cout << p << endl;
+    // cout << p << endl;
     State st(getNumStateVar(), 0);
     st[1] = p;
     return st;
@@ -119,7 +119,7 @@ ParticlesBelief* CorridorModel::getInitBelief(int num) {
     return pb;
 }
 
-double CorridorModel::upperBound(const State& state) {
+double CorridorModel::upperBound(State const& state) {
     double minSteps = fabs(state[1] - 1);
     double reward = 0, coef = 1;
     for (int i=1; i<minSteps; i++) {
@@ -130,7 +130,7 @@ double CorridorModel::upperBound(const State& state) {
     return reward;
 }
 
-double CorridorModel::getObsProb(const Action& action, const State& nextState, const Obs& obs) {
+double CorridorModel::getObsProb(Action const& action, State const& nextState, Obs const& obs) {
     bool debug = false;
 
     double nxtPos = nextState[1];

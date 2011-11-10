@@ -32,29 +32,29 @@ class CorridorModel : public Model
   public:
     CorridorModel();
 
-    double sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream);
+    double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream);
 
-    double sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream);
+    double sample(State const& currState, Action const& macroAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream);
 
-    double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream);
+    double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream);
 
     State sampleInitState();
     ParticlesBelief* getInitBelief(int numStates);
 
-    double getObsProb(const Action& action, const State& state, const Obs& obs);
+    double getObsProb(Action const& action, State const& state, Obs const& obs);
 
-    double upperBound(const State& state);
+    double upperBound(State const& state);
 
     double getMaxReward() { return EnterReward; }
     double getMinReward() { return WrongPenalty; }
 
-    bool allowableAct(const Belief& belief, const Action& action);
+    bool allowableAct(Belief const& belief, Action const& action);
 
-    inline obsType getObsType(const Obs& obs) { return OtherObs; }
+    inline obsType getObsType(Obs const& obs) { return OtherObs; }
 
-    inline void setObsType(Obs& obs, obsType type) {}
+    inline void setObsType(Obs* obs, obsType type) {}
 
-    inline bool isTermState(const State& state) {
+    inline bool isTermState(State const& state) {
         return (static_cast<long>(state[0]) == TermState);
     }
 
