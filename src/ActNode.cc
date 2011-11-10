@@ -81,7 +81,7 @@ void ActNode::generateObsPartitions()
         Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
         State nextState(bounds->model.getNumStateVar(),0);
 
-        double immediateReward = bounds->model.sample(currState, this->action, nextState, obs, randStream);
+        double immediateReward = bounds->model.sample(currState, this->action, &nextState, &obs, &randStream);
 
         map<Obs,ObsEdge>::iterator obsIt = obsChildren.find(obs);
 

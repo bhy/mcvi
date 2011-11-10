@@ -52,7 +52,7 @@ void Simulator::runSingle(long length, double& sumReward,
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(*currState, *action, currMacroActState, *nextState, nextMacroActState, obs, randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
             currMacroActState = nextMacroActState;
         }
         // else if (act.type == macro){
@@ -75,7 +75,7 @@ void Simulator::runSingle(long length, double& sumReward,
         //     }
         // }
         else{
-            currReward = model.sample(*currState, *action, *nextState, obs, randStream);
+            currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }
@@ -131,7 +131,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(*currState, *action, currMacroActState, *nextState, nextMacroActState, obs, randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
             currMacroActState = nextMacroActState;
         }
         // else if (act.type == macro){
@@ -154,7 +154,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
         //     }
         // }
         else{
-            currReward = model.sample(*currState, *action, *nextState, obs, randStream);
+            currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }

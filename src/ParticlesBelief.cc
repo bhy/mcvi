@@ -135,9 +135,9 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         if (action.type == Act){
             double re = beliefNode->model->sample(currState,
                                                   action,
-                                                  nextState,
-                                                  currObs,
-                                                  randStream),
+                                                  &nextState,
+                                                  &currObs,
+                                                  &randStream),
               obsProb = beliefNode->model->getObsProb(action,
                                                       nextState,
                                                       obs);

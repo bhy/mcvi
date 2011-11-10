@@ -167,7 +167,7 @@ void Bounds::backUpInitPolicies(Belief& belief)
                 if (model.isTermState(*currState)){
                     break;
                 }
-                currReward = model.initPolicy(*currState, Action(i), currMacroActState, nextState, nextMacroActState, obs, randStream);
+                currReward = model.initPolicy(*currState, Action(i), currMacroActState, &nextState, &nextMacroActState, &obs, &randStream);
                 currMacroActState = nextMacroActState;
                 sumDiscounted += currDiscount * currReward;
                 currDiscount *= model.getDiscount();
@@ -182,7 +182,7 @@ void Bounds::backUpInitPolicies(Belief& belief)
 
         // construct observation edge
         Obs tempObs(vector<long>(model.getNumObsVar(),0));
-        model.setObsType(tempObs,LoopObs);
+        model.setObsType(&tempObs,LoopObs);
         pair<map<Obs,ObsEdge>::iterator, bool> ret =
                 beliefNode.actNodes[i]->obsChildren.insert(pair<Obs,ObsEdge >(tempObs,ObsEdge(tempObs, this)));
         ObsEdge& insertedEdge = ret.first->second;
