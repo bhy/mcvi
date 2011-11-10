@@ -7,7 +7,7 @@
 
 /**
    @class ValueIteration
-   @brief Simple value iteration for MDPs. Update by Huy: actions changed from a vector of int to vect of long
+   @brief Simple value iteration for MDPs.
    @details
    @author Wee Sun Lee
    @date 26 October 2009

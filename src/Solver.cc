@@ -26,7 +26,7 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
             << "  -n numRandomStreamsForNextBelief (default: 100)\n"
             << "  -d discountFactor (default: 0.95)\n"
             << "  -i depthMultiplier (default: 0.95)\n"
-            << "  -u useMacro (default: 1)\n"
+            // << "  -u useMacro (default: 1)\n"
             << "  -s randNumSeed (default: 0, uses time)\n"
             << "  -v displayInterval (default: 60)\n";
 

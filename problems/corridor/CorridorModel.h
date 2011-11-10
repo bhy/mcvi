@@ -28,7 +28,7 @@ const double DoorRadius = 1.0;
 const double CorridorLength = 21;
 const double CorridorEndLength = 5;
 const double Noise = 0.01;
-const double EnterReward = 3;
+const double EnterReward = 1;
 const double WrongPenalty = -2;
 
 const double MovementCost = 0; // Cost of any other actions

@@ -5,11 +5,9 @@
 
 /**
    @class BeliefSet
-   @brief Interface for storing belief and computing child beliefs
-   @details Provides interface for data structure for storing beliefs. Also
-   provides interface for computing the next belief given current belief,
-   action and observation. Inherit from this class for specific types
-   of belief representations.
+   @brief Interface for storing belief
+   @details Provides interface for data structure for storing beliefs.
+   Inherit from this class for specific types of belief representations.
 
    @author Wee Sun Lee
    @date 27 August 2009
