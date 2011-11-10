@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Herding::Herding(HerdingProblem& problem, bool useMacro): useMacro(useMacro), Model(problem.numStateVars, problem.numObsVars, NumActs, NumMacroActs, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), numRegionPerAgent(problem.numRegionPerAgent), grid(problem.grid), probRandom(problem.probRandom), numStateVars(problem.numStateVars), numGhosts(problem.numGhosts)
+Herding::Herding(HerdingProblem const& problem, bool useMacro): useMacro(useMacro), Model(problem.numStateVars, problem.numObsVars, NumActs, NumMacroActs, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), numRegionPerAgent(problem.numRegionPerAgent), grid(problem.grid), probRandom(problem.probRandom), numStateVars(problem.numStateVars), numGhosts(problem.numGhosts)
 {
     // Figure out the topology - which region is connected to which
     connectivity.resize(numRegionPerAgent);
@@ -61,18 +61,17 @@ Herding::Herding(HerdingProblem& problem, bool useMacro): useMacro(useMacro), Mo
 
     // init variables used for allowable actions from each macro state grp
     constraints.resize(agentMStateCt);
-    findConstraints(constraints);
-
+    findConstraints(&constraints);
 }
 
-bool Herding::allowableAct(const Belief& belief, const Action& action)
+bool Herding::allowableAct(Belief const& belief, Action const& action)
 {
     actType type = action.type;
     if (useMacro && (type != Macro)) return false;
     if (!useMacro && (type == Macro)) return false;
 
     bool ok = false;
-    long temp = belief.beliefNode->obs.obs[1] %  agentMStateCt;
+    long temp = belief.beliefNode->obs.obs[1] % agentMStateCt;
     for (long i=0; i< constraints[temp].size(); i++){
         if (constraints[temp][i] == action.getActNumUser()){
             ok = true;
@@ -82,7 +81,7 @@ bool Herding::allowableAct(const Belief& belief, const Action& action)
     return ok;
 }
 
-void Herding::readProblem(std::string filename, HerdingProblem& problem)
+void Herding::readProblem(std::string filename, HerdingProblem* problem)
 {
     ifstream fp;
     fp.open(filename.c_str(), ios::in);
@@ -90,54 +89,54 @@ void Herding::readProblem(std::string filename, HerdingProblem& problem)
         cerr << "Fail to open " << filename << "\n";
         exit(EXIT_FAILURE);
     }
-    fp >> problem.numObsVars;
-    fp >> problem.probRandom;
-    fp >> problem.numGhosts;
+    fp >> problem->numObsVars;
+    fp >> problem->probRandom;
+    fp >> problem->numGhosts;
 
-    fp >> problem.xSize;
-    fp >> problem.ySize;
+    fp >> problem->xSize;
+    fp >> problem->ySize;
 
-    problem.numStateVars = 2*(problem.numGhosts + 2);
-    problem.initState.resize(problem.numStateVars);
-    fp >> problem.initState[a1x];
-    fp >> problem.initState[a1y];
-    fp >> problem.initState[a2x];
-    fp >> problem.initState[a2y];
-    for (long i=0; i< problem.numGhosts; i++){
-        fp >> problem.initState[2*i + gx];
-        fp >> problem.initState[2*i + gy];
+    problem->numStateVars = 2*(problem->numGhosts + 2);
+    problem->initState.resize(problem->numStateVars);
+    fp >> problem->initState[a1x];
+    fp >> problem->initState[a1y];
+    fp >> problem->initState[a2x];
+    fp >> problem->initState[a2y];
+    for (long i=0; i< problem->numGhosts; i++){
+        fp >> problem->initState[2*i + gx];
+        fp >> problem->initState[2*i + gy];
     }
 
     long num = 0, tmp;
-    problem.grid.resize(problem.xSize);
-    for (long i = 0; i< problem.xSize; i++)
-        problem.grid[i].resize(problem.ySize);
+    problem->grid.resize(problem->xSize);
+    for (long i = 0; i< problem->xSize; i++)
+        problem->grid[i].resize(problem->ySize);
 
-    for (long i = 0; i< problem.ySize; i++){
-        for (long j = 0; j < problem.xSize; j++){
+    for (long i = 0; i< problem->ySize; i++){
+        for (long j = 0; j < problem->xSize; j++){
             fp >> tmp;
-            problem.grid[j][problem.ySize-i-1] = tmp-1;
+            problem->grid[j][problem->ySize-i-1] = tmp-1;
             if (tmp > num)
                 num = tmp;
         }
     }
 
-    problem.numRegionPerAgent = num;
+    problem->numRegionPerAgent = num;
 
     fp.close();
 }
 
-double Herding::sample(const State& currState, const Action& action, State& nextState, Obs& obs, RandStream& randStream  )
+double Herding::sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream )
 {
     long act = action.getActNumUser();
 
     if (currState[0] == TermState){ // terminal state
-        obs.obs[0] = TermObs;
-        nextState = currState;
+        obs->obs[0] = TermObs;
+        (*nextState) = currState;
         return 0;
     }
 
-    nextState.resize(numStateVars,0);
+    (*nextState).resize(numStateVars,0);
     double tempReward = 0;
     bool ghostRemain = false;
     for (long i = 0; i < numGhosts; i++){
@@ -145,23 +144,23 @@ double Herding::sample(const State& currState, const Action& action, State& next
         if (((currState[a1x] == currState[gx + 2*i]) && (currState[a1y] == currState[gy + 2*i]))||
             ((currState[a2x] == currState[gx + 2*i]) && (currState[a2y] == currState[gy + 2*i]))){
             tempReward += Caught;
-            nextState[gx + 2*i] = -1;
-            nextState[gy + 2*i] = -1;
+            (*nextState)[gx + 2*i] = -1;
+            (*nextState)[gy + 2*i] = -1;
         } else
             if (currState[gx + 2*i] != -1)
                 ghostRemain = true;
             else{
-                nextState[gx + 2*i] = -1;
-                nextState[gy + 2*i] = -1;
+                (*nextState)[gx + 2*i] = -1;
+                (*nextState)[gy + 2*i] = -1;
             }
     }
     if (ghostRemain == false){
         for (long i=0; i < numStateVars; i++)
-            nextState[i] = TermState; // terminal state
-        obs.obs[0] = TermObs;
-        obs.obs[1] = 0;
+            (*nextState)[i] = TermState; // terminal state
+        obs->obs[0] = TermObs;
+        obs->obs[1] = 0;
         if (this->getNumObsVar()==3)
-            obs.obs[2] = 0;
+            obs->obs[2] = 0;
         return tempReward;
     }
 
@@ -172,23 +171,23 @@ double Herding::sample(const State& currState, const Action& action, State& next
 
     // change agent 1 position if possible
     if (grid[currState[a1x] + RelativeDirX[act1]][currState[a1y] + RelativeDirY[act1]] >= 0){
-        nextState[a1x] = currState[a1x] + RelativeDirX[act1];
-        nextState[a1y] = currState[a1y] + RelativeDirY[act1];
+        (*nextState)[a1x] = currState[a1x] + RelativeDirX[act1];
+        (*nextState)[a1y] = currState[a1y] + RelativeDirY[act1];
     }else{
-        nextState[a1x] = currState[a1x];
-        nextState[a1y] = currState[a1y];
+        (*nextState)[a1x] = currState[a1x];
+        (*nextState)[a1y] = currState[a1y];
     }
     // change agent 2 position if possible
     if (grid[currState[a2x] + RelativeDirX[act2]][currState[a2y] + RelativeDirY[act2]] >= 0){
-        nextState[a2x] = currState[a2x] + RelativeDirX[act2];
-        nextState[a2y] = currState[a2y] + RelativeDirY[act2];
+        (*nextState)[a2x] = currState[a2x] + RelativeDirX[act2];
+        (*nextState)[a2y] = currState[a2y] + RelativeDirY[act2];
     }else{
-        nextState[a2x] = currState[a2x];
-        nextState[a2y] = currState[a2y];
+        (*nextState)[a2x] = currState[a2x];
+        (*nextState)[a2y] = currState[a2y];
     }
 
     for (long k = 0; k < numGhosts; k++){
-        if (nextState[gx + 2*k] != -1){
+        if ((*nextState)[gx + 2*k] != -1){
             // Store legal ghost actions
             // cannot move into walls, cannot move to position currently occupied by agent
             // Compute the ghost move that moves furthest from the closest agent
@@ -230,7 +229,7 @@ double Herding::sample(const State& currState, const Action& action, State& next
                 else
                     probs[i] = probRandom/(numLegalDir-numBestCost);
             }
-            double randReal = (double) (randStream.get() % 10000)/10000;
+            double randReal = (double) (randStream->get() % 10000)/10000;
             long ghostDir = 0;
             double currSum = probs[0];
             for (long i=1;i<numLegalDir;i++){
@@ -242,44 +241,44 @@ double Herding::sample(const State& currState, const Action& action, State& next
                 }
             }
 
-            nextState[gx + 2*k] = currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]];
-            nextState[gy + 2*k] = currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]];
+            (*nextState)[gx + 2*k] = currState[gx + 2*k] + RelativeDirX[legalDirs[ghostDir]];
+            (*nextState)[gy + 2*k] = currState[gy + 2*k] + RelativeDirY[legalDirs[ghostDir]];
         }
     }
 
-    obs.obs[0] = OtherObs;
-    obs.obs[1] = getObsGrpFromState(nextState);
+    obs->obs[0] = OtherObs;
+    obs->obs[1] = getObsGrpFromState((*nextState));
     if (this->getNumObsVar()==3)
-        obs.obs[2] = computeGhostIndex(nextState);
+        obs->obs[2] = computeGhostIndex((*nextState));
 
     return tempReward + MovementCost;
 }
 
-double Herding::sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream  )
+double Herding::sample(State const& currState, Action const& macroAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream )
 {
     long macroAct = macroAction.getActNumUser();
     if (currState[0] < 0){
-        obs.obs[0] = TermObs;
-        nextState = currState;
+        obs->obs[0] = TermObs;
+        (*nextState) = currState;
         return 0;
     }
 
     nextControllerState = 0;
     double rwd = sample(currState, macroAction, nextState, obs, randStream);
-    if (obs.obs[0] == TermObs)
+    if (obs->obs[0] == TermObs)
         return rwd;
     else{
-        bool a1EnterJunc = ((currState[a1x] != nextState[a1x]) || (currState[a1y] != nextState[a1y])) && (rType[grid[nextState[a1x]][nextState[a1y]]] == junction);
-        bool a2EnterJunc = ((currState[a2x] != nextState[a2x]) || (currState[a2y] != nextState[a2y])) && (rType[grid[nextState[a2x]][nextState[a2y]]] == junction);
+        bool a1EnterJunc = ((currState[a1x] != (*nextState)[a1x]) || (currState[a1y] != (*nextState)[a1y])) && (rType[grid[(*nextState)[a1x]][(*nextState)[a1y]]] == junction);
+        bool a2EnterJunc = ((currState[a2x] != (*nextState)[a2x]) || (currState[a2y] != (*nextState)[a2y])) && (rType[grid[(*nextState)[a2x]][(*nextState)[a2y]]] == junction);
         if (!(a1EnterJunc || a2EnterJunc)){
-            obs.obs.resize(this->getNumObsVar(),0);
-            obs.obs[0] = LoopObs;
+            obs->obs.resize(this->getNumObsVar(),0);
+            obs->obs[0] = LoopObs;
         }
     }
     return rwd;
 }
 
-long Herding::computeGhostIndex(const State& state)
+long Herding::computeGhostIndex(State const& state)
 {
     long a1NEnum = 0, a1SEnum = 0, a1SWnum = 0, a1NWnum = 0;
     long a2NEnum = 0, a2SEnum = 0, a2SWnum = 0, a2NWnum = 0;
@@ -346,7 +345,7 @@ long Herding::computeGhostIndex(const State& state)
     return ghostIndex;
 }
 
-long Herding::getObsGrpFromState(const State& state)
+long Herding::getObsGrpFromState(State const& state)
 {
     long a1Region = grid[state[a1x]][state[a1y]];
     long a2Region = grid[state[a2x]][state[a2y]];
@@ -358,7 +357,7 @@ long Herding::getObsGrpFromState(const State& state)
     }
 }
 
-void Herding::findConstraints(std::vector<std::vector<long> >& constraints)
+void Herding::findConstraints(std::vector<std::vector<long> >* constraints)
 {
     for (long i = 0; i< agentMStateCt; i++){ // go through all macrostate grps
         long a1Region = i/numRegionPerAgent; // agent 1's region
@@ -373,7 +372,7 @@ void Herding::findConstraints(std::vector<std::vector<long> >& constraints)
                     // at least one agent must move
                     if ((j == unchanged) && (k == unchanged)) ok = false;
                     if (ok){
-                        constraints[i].push_back(j*NumActsPerAgent+k);
+                        (*constraints)[i].push_back(j*NumActsPerAgent+k);
                     }
                 }
             }
@@ -381,11 +380,11 @@ void Herding::findConstraints(std::vector<std::vector<long> >& constraints)
     }
 }
 
-double Herding::initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream  )
+double Herding::initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream )
 {
     long policyIndex = initAction.getActNumUser();
     if (currState[0] == TermState){
-        nextState = currState;
+        (*nextState) = currState;
         return 0;
     }
 
@@ -444,13 +443,13 @@ double Herding::initPolicy(const State& currState, const Action& initAction, lon
     long maxNum = -1;
     act1 = 4;
     for (long i=0; i<4; ++i) {
-        //    cout << temp[i] << " ";
+        // cout << temp[i] << " ";
         if(temp[i] > maxNum && (grid[currState[a1x] + RelativeDirX[i]][currState[a1y] + RelativeDirY[i]] >= 0)){
             maxNum = temp[i];
             act1 = i;
         }
     }
-    //  cout << act1 << endl;
+    // cout << act1 << endl;
 
     temp[0] = a2SEnum + a2NEnum;
     temp[1] = a2SEnum + a2SWnum;
@@ -466,14 +465,14 @@ double Herding::initPolicy(const State& currState, const Action& initAction, lon
             act2 = i;
         }
     }
-    //  cout << act2 << endl;
+    // cout << act2 << endl;
 
     act = act1 * NumActsPerAgent + act2;
 
     return sample(currState, Action(Act,act), nextState, obs, randStream);
 }
 
-inline double Herding::upperBound(const State& state)
+inline double Herding::upperBound(State const& state)
 {
     long a1Node = gridNodeLabel[state[a1x]][state[a1y]];
     long a2Node = gridNodeLabel[state[a2x]][state[a2y]];
@@ -598,13 +597,13 @@ void Herding::displayState(State state, long type)
                     else
                         cout << "3";
             }
-            if ((type == -1)&&(j != xSize-1))
+            if ((type == -1) && (j != xSize-1))
                 cout << " , ";
-        }
-        cout << "\n";
     }
-    if (type != -1)
-        cout << "\n";
+    cout << "\n";
+}
+if (type != -1)
+    cout << "\n";
 }
 
 void Herding::writeMapping(std::string filename)
@@ -649,7 +648,7 @@ void Herding::readMapping(std::string filename)
     fp.close();
 }
 
-inline double Herding::getObsProb(const Action& action, const State& nextState, const Obs& obs){
+inline double Herding::getObsProb(Action const& action, State const& nextState, Obs const& obs){
     if(nextState[0] == TermState) return obs.obs[0] == TermObs;
     else if(obs.obs[0] == LoopObs) { return 0.0; cerr << "shouldn't end with LoopObs" <<endl;}
     if(obs.obs[1] != getObsGrpFromState(nextState))
@@ -661,7 +660,7 @@ inline double Herding::getObsProb(const Action& action, const State& nextState, 
 }
 
 /*
-  void Herding::symmetrize(State& state)
+  void Herding::symmetrize(State* state)
   {
   bool swap = false;
   if (state[a1x] > state[a2x])

@@ -20,40 +20,40 @@
 class Herding : public Model
 {
   public:
-    Herding(HerdingProblem& problem, bool useMacro = true);
+    Herding(HerdingProblem const& problem, bool useMacro = true);
 
-    double sample(const State& currState, const Action& action, State& nextState, Obs &obs, RandStream& randStream );
+    double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream );
 
-    double sample(const State& currState, const Action& macroAct, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     /**
        Greedy policy
     */
-    double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
-    double upperBound(const State& state);
+    double upperBound(State const& state);
 
     double getMaxReward() { return Caught;};
 
     double getMinReward() { return MovementCost;};
 
-    bool allowableAct(const Belief& belief, const Action& action);
+    bool allowableAct(Belief const& belief, Action const& action);
 
-    double getObsProb(const Action& act, const State& nextState, const Obs& obs);
+    double getObsProb(Action const& act, State const& nextState, Obs const& obs);
 
-    double beliefTransition(const State& currState, Action& action, State& nextState, Obs& obs){return 0.0;};
+    double beliefTransition(State const& currState, Action* action, State* nextState, Obs* obs){return 0.0;};
     /**
        Macro state computed by
     */
-    long getObsGrpFromState(const State& state);
+    long getObsGrpFromState(State const& state);
 
-    inline long getObsGrpFromObs(const Obs& obs) { return obs.obs[1]; };
+    inline long getObsGrpFromObs(Obs const& obs) { return obs.obs[1]; };
 
-    inline obsType getObsType(const Obs& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; };
+    inline obsType getObsType(Obs const& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; };
 
-    inline void setObsType(Obs& obs, obsType type) { obs.obs[0] = type; } ;
+    inline void setObsType(Obs* obs, obsType type) { obs->obs[0] = type; } ;
 
-    inline bool isTermState(const State& state) { return (state[0] == TermState);};
+    inline bool isTermState(State const& state) { return (state[0] == TermState);};
 
     /**
        Reads in problem parameters from file.
@@ -74,7 +74,7 @@ class Herding : public Model
        bottom left of the grid is (0,0) while the top right is
        (width-1, height-1).
     */
-    static void readProblem(std::string filename, HerdingProblem& problem);
+    static void readProblem(std::string filename, HerdingProblem* problem);
 
     /**
        Output an ascii visual display of the state.
@@ -110,7 +110,7 @@ class Herding : public Model
     std::vector<std::vector <long> > connectivity;
 
     // Find allowable actions in each macrostate
-    void findConstraints(std::vector<std::vector<long> >& constraints);
+    void findConstraints(std::vector<std::vector<long> >* constraints);
 
     // for computing shortest path
     std::vector<std::vector <long> > gridNodeLabel; // label of accessible locs
@@ -121,7 +121,7 @@ class Herding : public Model
     std::vector<double> discountedReward;
     void calcShortestPath(long i, long j); // single source shortest path
     void calcShortestPathMatrix(); // compute all pairs shortest path
-    long computeGhostIndex(const State& state);
+    long computeGhostIndex(State const& state);
 
 };
 

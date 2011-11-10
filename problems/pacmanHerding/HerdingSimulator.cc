@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     HerdingProblem currProblem;
     currProblem.discount = discount;
 
-    Herding::readProblem(map_file, currProblem);
+    Herding::readProblem(map_file, &currProblem);
 
     Herding currModel(currProblem);
     currModel.readMapping(macroStateGroup_file);

@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     HerdingProblem currProblem;
     currProblem.discount = solver.discount;
 
-    Herding::readProblem(map_file, currProblem);
+    Herding::readProblem(map_file, &currProblem);
     bool useMacroBool = true;
 //    if (useMacro != 1)
     useMacroBool = false;
