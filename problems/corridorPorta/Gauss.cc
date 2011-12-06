@@ -17,24 +17,48 @@ double Gauss::evaluate(double x)
     return exp(-(x - mean) * (x-mean) / (2 * variance)) / factor;
 }
 
-double Gauss::sample(RandStream rand_stream)
+double Gauss::sample(RandStream* rand_stream)
+{
+    double result, x1, x2, w;
+
+    do {
+        x1 = 2 * rand_stream->getf() - 1;
+        x2 = 2 * rand_stream->getf() - 1;
+        w = x1 * x1 + x2 * x2;
+    } while (w == 0 || w >= 1);
+
+    sample(x1, x2, w,
+           &result, &result);
+    return result;
+}
+
+double Gauss::sample()
 {
     if (have_sample) {
         have_sample = false;
         return saved_sample;
     }
 
-    double x1, x2, w;
+    double result, x1, x2, w;
+
     do {
-        x1 = 2 * rand_stream.randf() - 1;
-        x2 = 2 * rand_stream.randf() - 1;
+        x1 = 2 * randf() - 1;
+        x2 = 2 * randf() - 1;
         w = x1 * x1 + x2 * x2;
     } while (w == 0 || w >= 1);
 
-    w = sqrt( -2 * log(w) / w);
-    double y1 = x1 * w, y2 = x2 * w;
-    saved_sample = deviation * y2 + mean;
+    sample(x1, x2, w, &result, &saved_sample);
     have_sample = true;
 
-    return deviation * y1 + mean;
+    return result;
+}
+
+void Gauss::sample(double x1, double x2, double w,
+                   double* normal1, double* normal2)
+{
+    w = sqrt( -2 * log(w) / w);
+    double y1 = x1 * w, y2 = x2 * w;
+
+    *normal1 = deviation * y1 + mean;
+    *normal2 = deviation * y2 + mean;
 }

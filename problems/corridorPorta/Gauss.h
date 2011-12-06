@@ -17,9 +17,14 @@ class Gauss
     double evaluate(double x);
 
     // Draw a sample from this distribution. We have 2 samples and
-    // only get one, the other one is saved. So be consistent with the
-    // choice of randStream
-    double sample(RandStream* rand_stream)
+    // discard 1 for the purpose of consistency with the use of
+    // rand_stream
+    double sample(RandStream* rand_stream);
+    // Draw a sample from this distribution. Return 1 sample and cache
+    // the other one
+    double sample();
+    void sample(double x1, double x2, double w,
+                double* normal1, double* normal2);
 
     double mean, variance, deviation, factor;
     double saved_sample;

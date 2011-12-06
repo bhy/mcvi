@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include "Model.h"
+#include "Obs.h"
 #include "GaussModel.h"
 
 /**
@@ -62,15 +63,15 @@ class CorridorModel : public Model
 public:
     CorridorModel();
 
-    double sample(const State& currState, const Action& action, State& nextState, Obs &obs, RandStream& randStream );
+    double sample(const State& currState, const Action& action, State* nextState, Obs* obs, RandStream* randStream );
 
     //XXX No macro act
-    double sample(const State& currState, const Action& macroAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double sample(const State& currState, const Action& macroAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     /**
        Greedy policy that selects the action that moves left
     */
-    double initPolicy(const State& currState, const Action& initAction, long controllerState, State& nextState, long& nextControllerState, Obs& obs, RandStream& randStream );
+    double initPolicy(const State& currState, const Action& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     State sampleInitState();
     ParticlesBelief* getInitBelief(int numStates);
@@ -87,14 +88,11 @@ public:
 
     bool allowableAct(const Belief& belief, const Action& action);
 
-    //inline long getObsGrpFromObs(const Obs& obs) { return obs[1]; };
-
-    //XXX hmm, what TermObs mean?
     inline obsType getObsType(const Obs& obs) { return OtherObs; };
 
-    inline void setObsType(Obs& obs, obsType type) {
-        //obs[0] = type; //XXX
-    } ;
+    inline void setObsType(Obs* obs, obsType type) {
+        obs->obs[0] = type;
+    };
 
     inline bool isTermState(const State& state) { return (static_cast<long>(state[0]) == TermState);};
 
@@ -106,10 +104,12 @@ public:
   private:
     void initRewardModel();
     void initObsModel();
+    void initInitState();
 
     double probRandom;
     Gauss MovementModel[3];
     GaussMixture RewardModel[3];
+    GaussMixture InitState;
     GaussModel ObsModel;
     double MaxReward;
     double MinReward;

@@ -3,7 +3,7 @@ using namespace std;
 
 int GaussModel::sample(double x, RandStream* rand_stream)
 {
-    double cdf = rand_stream->randf(), sum = 0;
+    double cdf = rand_stream->getf(), sum = 0;
     int index = 0;
 
     while (sum < cdf && index < gauss_mixture.size()) {

@@ -14,6 +14,10 @@ class GaussMixture
 
     double evaluate(double x);
 
+    // Draw a sample. The components are selected proportionally to
+    // the absolute value of their corresponding weights.
+    double sample();
+
     std::vector<Gauss> gauss;
     std::vector<double> weights;
 };
