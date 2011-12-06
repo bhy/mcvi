@@ -137,7 +137,7 @@ double ObsEdge::findInitUpper()
 
     for (long k=0; k < count; k++) {
         Particle& particle = cachedParticles->particles[k];
-        double currValue = pow(model.getDiscount(), particle.pathLength) * model.upperBound(particle.state);
+        double currValue = power(model.getDiscount(), particle.pathLength) * model.upperBound(particle.state);
         sumDiscounted += currValue;
     }
     upper = cachedParticles->currSum + sumDiscounted;

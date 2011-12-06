@@ -12,6 +12,12 @@ For bug reports and suggestions, please email <motion@comp.nus.edu.sg>.
 POMDPs. Proc. Int. Workshop on the Algorithmic Foundations of Robotics
 (WAFR) (2011), pp. 175-191.
 
+[2] Unmanned Aircraft Collision Avoidance using Continuous-State
+POMDPs. Proc. Robotics: Science and Systems, 2011.
+
+[3]Monte Carlo Value Iteration with Macro-Actions. Proc. Neural
+Information Processing Systems (NIPS), 2011.
+
 ========================================================================
 TABLE OF CONTENTS
 ========================================================================
@@ -28,7 +34,8 @@ REQUIREMENTS
 
 Operating systems:        Linux
 
-Tested compilers:         gcc/g++ 4.4.6 under Ubuntu-Linux
+Tested compilers:         gcc/g++ 4.1.2 under RedHat 5
+                          gcc/g++ 4.4.6 under Ubuntu-Linux
                           gcc/g++ 4.5.3 under Ubuntu-Linux
                           gcc/g++ 4.6.1 under Ubuntu-Linux
 
@@ -86,6 +93,11 @@ command.
 - Try simulating a policy. Type:
     ./Simulator -m 10by10.txt -g obsgroup10by10 -o policy10by10 -n
     <number of times to run simulation>
+
+Most of the examples will take more than 1 hour to converge, you can
+set the duration by the "-t" option.
+
+"Warning: no next belief" ===> See Notice
 
 ========================================================================
 PACKAGE CONTENTS
@@ -164,6 +176,12 @@ we only provide a Model, a Simulator which only calculates the average
 ========================================================================
 NOTICE
 ========================================================================
+
+"Warning: no next belief" means that the program sampled a "bad"
+observation and there is no probable next belief. This is not a
+problem as the program will back up and regenerate the observations if
+it runs out of next beliefs. You can also try to increase the number
+of particles to see if that helps.
 
 Macro-action is not supported in this version. There are plans to
 provide supports for it in the next version.

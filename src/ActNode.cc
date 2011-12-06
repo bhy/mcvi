@@ -92,7 +92,7 @@ void ActNode::generateObsPartitions()
             obsIt = ret.first;
         }
 
-        double discounted = pow(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
+        double discounted = power(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
         obsIt->second.addParticle(nextState, currParticle.pathLength+1, discounted);
     }
 

@@ -26,7 +26,7 @@ class Obs
     // static member of type integral (int, char, byte) can be
     // initialized in the declaration
     const static long largePrime = 105907;
-    const static unsigned long modulo = 1125899906842597;
+    const static unsigned long modulo = 179426549;
 };
 
 #endif

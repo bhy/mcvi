@@ -3,6 +3,13 @@
 
 #include <cstdlib>
 #include <vector>
+#include "Utils.h"
+
+const double rand_max = ((double)RAND_MAX + 1);
+
+inline double randf() {
+    return (double)rand() / rand_max;
+}
 
 class RandSource;
 
@@ -32,7 +39,7 @@ public:
 
     inline double getf()
     {
-        return (get() / ((double)RAND_MAX + 1));
+        return (get() / rand_max);
     }
 
     friend class RandSource;

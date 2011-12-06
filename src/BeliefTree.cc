@@ -44,7 +44,14 @@ void BeliefTree::search(double targetGap, unsigned maxTime, double targetMultipl
         double temp = difftime(curr,start);
         if (temp - timeSoFar >= displayInterval){
             timeSoFar = temp;
-            cout << "time: " << difftime(curr,start) << " uBound: " << root->beliefNode->uBound << " lBound: " << root->beliefNode->lBound << " diff: " << root->beliefNode->uBound - root->beliefNode->lBound << " numBeliefs: " << beliefSet.numBeliefs() << " numPolicyNodes: " << policyGraph.getNumPolicyNodes() << "\n";
+            cout << "time: " << difftime(curr,start)
+                 << " uBound: " << root->beliefNode->uBound
+                 << " lBound: " << root->beliefNode->lBound
+                 << " diff: "
+                 << root->beliefNode->uBound - root->beliefNode->lBound
+                 << " numBeliefs: " << beliefSet.numBeliefs()
+                 << " numPolicyNodes: " << policyGraph.getNumPolicyNodes()
+                 << "\n";
         }
 
         double currTarget = (root->beliefNode->uBound - root->beliefNode->lBound) * targetMultiplier;
@@ -61,7 +68,14 @@ void BeliefTree::search(double targetGap, unsigned maxTime, double targetMultipl
             break;
     }
 
-    cout << "time: " << difftime(curr,start) << " uBound: " << root->beliefNode->uBound << " lBound: " << root->beliefNode->lBound << " diff: " << root->beliefNode->uBound - root->beliefNode->lBound << " numBeliefs: " << beliefSet.numBeliefs() << " numPolicyNodes: " << policyGraph.getNumPolicyNodes() << "\n";
+    cout << "time: " << difftime(curr,start)
+         << " uBound: " << root->beliefNode->uBound
+         << " lBound: " << root->beliefNode->lBound
+         << " diff: "
+         << root->beliefNode->uBound - root->beliefNode->lBound
+         << " numBeliefs: " << beliefSet.numBeliefs()
+         << " numPolicyNodes: " << policyGraph.getNumPolicyNodes()
+         << "\n";
 
 }
 
@@ -82,9 +96,14 @@ void BeliefTree::expandNodes(double target)
     bounds.backUp(*currNode);
 
     if (debug) {
-        cout<<"ActNodes size = "<<currNode->beliefNode->actNodes.size()<<"\n";
-        map<Obs,ObsEdge>::iterator it = currNode->beliefNode->actNodes[0]->obsChildren.begin();
-        cout<<"cachedParticles = NULL? "<<((it->second).cachedParticles == NULL)<<endl;
+        cout << "ActNodes size = "
+             << currNode->beliefNode->actNodes.size()
+             << "\n";
+        map<Obs,ObsEdge>::iterator it =
+                currNode->beliefNode->actNodes[0]->obsChildren.begin();
+        cout << "cachedParticles = NULL? "
+             << ((it->second).cachedParticles == NULL)
+             << "\n";
     }
 
     map<Obs,ObsEdge>::iterator iter = findBestObs(currNode, currTarget, excessUncertainty);
@@ -99,23 +118,32 @@ void BeliefTree::expandNodes(double target)
         }
 
         if (debug) {
-            cout<<"obsChildren size = "<<currNode->beliefNode->actNodes[act->actNum]->obsChildren.size()<<"\n";
+            cout << "obsChildren size = "
+                 << currNode->beliefNode->actNodes[act->actNum]->obsChildren.size()
+                 <<"\n";
         }
 
         while (iter == currNode->beliefNode->actNodes[act->actNum]->obsChildren.end()) {
-            cerr<<"No nextBelief for bestUBoundAct = "<<act->actNum<<"\n";
+            cerr << "No nextBelief for bestUBoundAct = "
+                 << act->actNum
+                 << "\n";
             // memory leaks here!!
             currNode->beliefNode->actNodes[act->actNum] = NULL;
-            cerr<<"Try to find another action that can generate nextBelief since all the \
-obs of this action is deleted\n";
+            cerr << "Try to find another action that can generate "
+                 << "nextBelief since all the "
+                 << "obs of this action is deleted\n";
+
             bounds.updateBestActions(*currNode);
             act = &(currNode->beliefNode->bestUBoundAct);
             while (act->actNum == -1) {
-                cerr<<"Try to backUp again since all the actions fail\n";
+                cerr << "Try to backUp again since all the actions fail"
+                     << "\n";
                 bounds.backUp(*currNode);
                 act = &(currNode->beliefNode->bestUBoundAct);
             }
-            cerr<<"bestUBoundAct = "<<currNode->beliefNode->bestUBoundAct.actNum<<"\n";
+            cerr<< "bestUBoundAct = "
+                << currNode->beliefNode->bestUBoundAct.actNum
+                << "\n";
             fflush(stdout);
             iter = findBestObs(currNode, currTarget, excessUncertainty);
         }
@@ -126,12 +154,14 @@ obs of this action is deleted\n";
             nextNode = currNode->nextBelief(*act, iter->first);
 
             if (debug) {
-                cout<<"BeliefTree::expandNodes nextNode = NULL\n";
+                cout << "BeliefTree::expandNodes nextNode = NULL\n";
             }
 
             if (nextNode==NULL) {
                 // Cannot sample next belief for this observation, which means the obs is almost not possible, remove it
-                cerr << "No next belief for act=" << act->actNum << " obs=" << iter->first.obs[1] << endl;
+                cerr << "No next belief for act=" << act->actNum
+                     << " obs=" << iter->first.obs[0]
+                     << "\n";
                 currNode->beliefNode->actNodes[act->actNum]->obsChildren.erase(iter);
                 iter = findBestObs(currNode, currTarget, excessUncertainty);
                 continue;
@@ -178,10 +208,11 @@ inline map<Obs,ObsEdge>::iterator BeliefTree::findBestObs(Belief *currNode, doub
     double currBest = NegInf;
     map<Obs,ObsEdge>::iterator currBestObs = currNode->beliefNode->actNodes[actIndex]->obsChildren.end();
     while (iter !=  currNode->beliefNode->actNodes[actIndex]->obsChildren.end()){
-
         if (debug) {
-            cout<<"BeliefTree::findBestObs In while-loop\n";
-            cout<<"cachedParticles = NULL? "<<(iter->second.cachedParticles == NULL)<<"\n";
+            cout << "BeliefTree::findBestObs In while-loop\n";
+            cout << "cachedParticles = NULL? "
+                 << (iter->second.cachedParticles == NULL)
+                 << "\n";
         }
 
         double diff = (iter->second.upper-iter->second.lower)/iter->second.count - target;
@@ -196,7 +227,7 @@ inline map<Obs,ObsEdge>::iterator BeliefTree::findBestObs(Belief *currNode, doub
     }
 
     if (debug) {
-        cout<<"Leaving BeliefTree::findBestObs\n";
+        cout << "Leaving BeliefTree::findBestObs\n";
     }
 
     return currBestObs;

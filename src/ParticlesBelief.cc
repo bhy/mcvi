@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 #include "ParticlesBelief.h"
 #include "Action.h"
 #include "ActNode.h"
@@ -11,7 +12,7 @@
 #include "BeliefNode.h"
 #include "RandSource.h"
 using namespace std;
-typedef typename Belief::const_iterator const_iterator;
+typedef Belief::const_iterator const_iterator;
 
 // define static members
 Model* BeliefNode::model;
