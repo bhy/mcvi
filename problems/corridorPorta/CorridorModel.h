@@ -1,7 +1,6 @@
 /**
-   This problem is different from the problem in the published paper
-   "Monte Carlo Value Iteration for Continuous-State POMDPs". The
-   results are not directly comparable.
+   This problem is the problem in the published paper
+   "Monte Carlo Value Iteration for Continuous-State POMDPs".
 */
 
 #ifndef __CORRIDORMODEL_H
@@ -22,27 +21,21 @@
 const double Discount = 0.95;
 
 const int NumDoors = 4;
-//Position of doors, the first door is good door
-//Note that door should inside the interval
-// [-CorridorEndLength+CorridorEndLength, CorridorLength-CorridorEndLength]
+//Position of doors, the first door is the correct door
 const double DoorPositions[] = {3, -11, -5, 9};
 const double DoorRadius = 1.0;
 const double CorridorLength = 20;
-//const double CorridorEndLength = 5;
-//const double EnterReward = 1;
-//const double WrongPenalty = -2;
 
 const double MovementCost = 0; // Cost of any other actions
 const long NumStateVars = 2; // enter success, coordinates of rover
 const long NumObsVars = 1;
 enum directions {ActLeft, ActRight, ActEnter}; // Action names
-enum observations {ObsLeftEnd, ObsRightEnd, ObsDoor, ObsCorridor};
+venum observations {ObsLeftEnd, ObsRightEnd, ObsDoor, ObsCorridor};
 const double MovementVariance = 0.05;
 const double ActionScale = 2.0;
 
 const long NumActs = 3; // Number of actions
 
-//const long TermObs = -1;
 const long TermState = -1; // indicates state is at terminal state
 
 // Same as actions but repeat action till macro states change.
@@ -55,8 +48,8 @@ class ParticlesBelief;
    @class CorridorModel
    @brief Continuous Corridor Problem
    @details ...
-   @author Haoyu Bai
-   @date 14 Mar 2010
+   @author Le Trong Dao
+   @date 6 Dec 2011
 */
 class CorridorModel : public Model
 {
@@ -69,7 +62,7 @@ public:
     double sample(const State& currState, const Action& macroAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     /**
-       Greedy policy that selects the action that moves left
+       Greedy policy that selects the Enter action
     */
     double initPolicy(const State& currState, const Action& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 

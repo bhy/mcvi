@@ -173,7 +173,6 @@ double CorridorModel::sample(State const& currState, Action const& action, State
         obs->obs[0] = ObsModel.sample(nxtPos, randStream);
     }
 
-//    cout << "Obs = " << obs->obs[0] << "\n";
     assert(obs->obs[0] < 4);
 
     return reward + RewardModel[act_index].evaluate(currState[1]);
@@ -200,12 +199,6 @@ double CorridorModel::initPolicy(State const& currState, Action const& initActio
 
 State CorridorModel::sampleInitState()
 {
-    // double p = randf();
-    // p = p*CorridorLength*2 - CorridorLength;
-    // State st(getNumStateVar(), 0);
-    // st[1] = p;
-    // return st;
-
     State st(getNumStateVar(), 0);
     st[1] = InitState.sample();
     return st;
@@ -219,7 +212,6 @@ ParticlesBelief* CorridorModel::getInitBelief(int num)
     double w = 1.0/num;
     for (long i = 0; i < num; i++){
         State st = sampleInitState();
-        //XXX seems pathlength starts from 1
         Particle temp(st,0, w);
         pb->belief.push_back(temp);
     }
