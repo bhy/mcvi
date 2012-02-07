@@ -61,6 +61,7 @@ double CorridorModel::sample(State const& currState, Action const& action, State
     if (action.getActNumUser()==ActEnter) {
         if(indoor(pos)==0) {
             (*nextState)[0] = TermState;
+            (*nextState)[1] = currState[1];
             obs->obs[0] = TermObs;
             reward = EnterReward;
         } else {
