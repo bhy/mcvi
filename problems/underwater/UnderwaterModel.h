@@ -46,6 +46,10 @@ class UnderwaterModel : public Model
   public:
     UnderwaterModel(UnderwaterProblem const& problem, bool useMacro = true);
 
+    Belief* initialBelief() const;
+
+    void setInitialBelief(Belief* root);
+
     double sample(State const& currState, Action const& act, State* nextState, Obs* obs, RandStream* randStream );
 
     double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
@@ -102,6 +106,8 @@ class UnderwaterModel : public Model
     std::pair<long, long> findNearestGoal(long x, long y);
     std::pair<long, long> stateToCoord(long stateNo){return std::make_pair(stateNo/xSize, stateNo % xSize);}
     long coordToState(std::pair<long, long> coord){return coord.second*xSize + coord.first;}
+
+    Belief* root;
 };
 
 #endif // __UNDERWATERMODEL_H

@@ -1,6 +1,8 @@
 #include "UnderwaterModel.h"
 #include "UnderwaterProblem.h"
 #include "Solver.h"
+#include "Action.h"
+#include "ParticlesBelief.h"
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
@@ -38,5 +40,14 @@ int main(int argc, char **argv)
 
     vector<long> pathLength(currProblem.initialBeliefStates.size(), 0);
 
-    solver.solve(currModel, currProblem.initialBeliefStates, pathLength);
+    Obs obs(vector<long>(currModel.getNumObsVar(),0));
+    obs.obs[1] = -1;
+    Action::initStatic(&currModel);
+    currModel.setInitialBelief(
+        ParticlesBelief::beliefFromStateSet(
+            currProblem.initialBeliefStates,
+            obs,
+            pathLength));
+
+    solver.solve(currModel);
 }

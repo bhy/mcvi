@@ -13,6 +13,16 @@ UnderwaterModel::UnderwaterModel(UnderwaterProblem const& problem, bool useMacro
     numStates = xSize * ySize + 1;
 }
 
+Belief* UnderwaterModel::initialBelief() const
+{
+    return root;
+}
+
+void UnderwaterModel::setInitialBelief(Belief* root)
+{
+    this->root = root;
+}
+
 bool UnderwaterModel::allowableAct(Belief const& belief, Action const& action)
 {
     actType type = action.type;
