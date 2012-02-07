@@ -87,8 +87,13 @@ void print(vector<double> a) {
 Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
 {
     bool debug = false;
+    ParticlesBelief *nxt = NULL;
 
-    ParticlesBelief *nxt = safe_cast<ParticlesBelief*>(this->beliefNode->actNodes[action.actNum]->obsChildren[obs].nextBelief);
+    if (!this->beliefNode->actNodes.empty())
+        ParticlesBelief *nxt =
+               safe_cast<ParticlesBelief*>(
+                   this->beliefNode->actNodes[action.actNum]
+                   ->obsChildren[obs].nextBelief);
 
     if (nxt != NULL)
         return nxt;
