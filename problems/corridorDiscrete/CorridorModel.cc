@@ -46,6 +46,7 @@ double CorridorModel::sample(State const& currState, Action const& action, State
     if (action.getActNumUser() == ActEnter) {
         if (currState[1] == 1) {
             (*nextState)[0] = TermState;
+            (*nextState)[1] = currState[1];
             obs->obs[0] = TermObs;
             reward = EnterReward;
         } else {
@@ -57,8 +58,8 @@ double CorridorModel::sample(State const& currState, Action const& action, State
         bool moveDir = (action.getActNumUser() == ActLeft);
         long nxtIndex;
 
-        if NOISY(moveDir) nxtIndex = 1;
-        else nxtIndex = -1;
+        if NOISY(moveDir) nxtIndex = -1;
+        else nxtIndex = 1;
         // if (moveDir) nxtIndex = -1;
         // else nxtIndex = 1;
 
@@ -102,7 +103,7 @@ double CorridorModel::initPolicy(State const& currState, Action const& initActio
 }
 
 State CorridorModel::sampleInitState() const {
-    double p = rand_range(0,4);
+    double p = 3;
     // cout << p << endl;
     State st(getNumStateVar(), 0);
     st[1] = p;
