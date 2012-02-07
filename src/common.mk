@@ -36,6 +36,7 @@ SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)BeliefForest.h \
 		$(SRC)Model.h \
 		$(SRC)Bounds.h \
+		$(SRC)Controller.h \
 		$(SRC)PolicyGraph.h \
 		$(SRC)RandSource.h \
 		$(SRC)Simulator.h \
@@ -51,6 +52,7 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)BeliefTree.cc \
 		$(SRC)BeliefForest.cc \
 		$(SRC)Bounds.cc \
+		$(SRC)Controller.cc \
 		$(SRC)PolicyGraph.cc \
 		$(SRC)Simulator.cc \
 		$(SRC)ValueIteration.cc \
