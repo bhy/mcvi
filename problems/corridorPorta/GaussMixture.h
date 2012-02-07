@@ -12,11 +12,11 @@ class GaussMixture
     GaussMixture() {}
     GaussMixture(std::vector<Gauss> const& gauss, std::vector<double> const& weights): gauss(gauss), weights(weights) {}
 
-    double evaluate(double x);
+    double evaluate(double x) const;
 
     // Draw a sample. The components are selected proportionally to
     // the absolute value of their corresponding weights.
-    double sample();
+    double sample() const;
 
     std::vector<Gauss> gauss;
     std::vector<double> weights;

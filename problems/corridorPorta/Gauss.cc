@@ -7,17 +7,15 @@ using namespace std;
 Gauss::Gauss(double const mean, double const variance):
         mean(mean), variance(variance),
         deviation(sqrt(variance)),
-        factor(sqrt(2 * M_PI * variance)),
-        have_sample(false)
-{
-}
+        factor(sqrt(2 * M_PI * variance))
+{}
 
-double Gauss::evaluate(double x)
+double Gauss::evaluate(double x) const
 {
     return exp(-(x - mean) * (x-mean) / (2 * variance)) / factor;
 }
 
-double Gauss::sample(RandStream* rand_stream)
+double Gauss::sample(RandStream* rand_stream) const
 {
     double result, x1, x2, w;
 
@@ -32,13 +30,8 @@ double Gauss::sample(RandStream* rand_stream)
     return result;
 }
 
-double Gauss::sample()
+double Gauss::sample() const
 {
-    if (have_sample) {
-        have_sample = false;
-        return saved_sample;
-    }
-
     double result, x1, x2, w;
 
     do {
@@ -47,14 +40,14 @@ double Gauss::sample()
         w = x1 * x1 + x2 * x2;
     } while (w == 0 || w >= 1);
 
-    sample(x1, x2, w, &result, &saved_sample);
-    have_sample = true;
+    double dummy;
+    sample(x1, x2, w, &result, &dummy);
 
     return result;
 }
 
 void Gauss::sample(double x1, double x2, double w,
-                   double* normal1, double* normal2)
+                   double* normal1, double* normal2) const
 {
     w = sqrt( -2 * log(w) / w);
     double y1 = x1 * w, y2 = x2 * w;

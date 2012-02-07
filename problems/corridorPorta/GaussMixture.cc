@@ -2,7 +2,7 @@
 #include "RandSource.h"
 using namespace std;
 
-double GaussMixture::evaluate(double x)
+double GaussMixture::evaluate(double x) const
 {
     double result = 0.0;
     for (int i = 0; i < gauss.size(); ++i)
@@ -11,7 +11,7 @@ double GaussMixture::evaluate(double x)
     return result;
 }
 
-double GaussMixture::sample()
+double GaussMixture::sample() const
 {
     double sum = 0.0;
     for (int i = 0; i < weights.size(); ++i)

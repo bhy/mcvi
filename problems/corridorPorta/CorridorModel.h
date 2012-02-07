@@ -30,7 +30,7 @@ const double MovementCost = 0; // Cost of any other actions
 const long NumStateVars = 2; // enter success, coordinates of rover
 const long NumObsVars = 1;
 enum directions {ActLeft, ActRight, ActEnter}; // Action names
-venum observations {ObsLeftEnd, ObsRightEnd, ObsDoor, ObsCorridor};
+enum observations {ObsLeftEnd, ObsRightEnd, ObsDoor, ObsCorridor};
 const double MovementVariance = 0.05;
 const double ActionScale = 2.0;
 
@@ -53,8 +53,8 @@ class ParticlesBelief;
 */
 class CorridorModel : public Model
 {
-public:
-    CorridorModel();
+  public:
+    CorridorModel(int numParticles = -1);
 
     double sample(const State& currState, const Action& action, State* nextState, Obs* obs, RandStream* randStream );
 
@@ -66,8 +66,8 @@ public:
     */
     double initPolicy(const State& currState, const Action& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
-    State sampleInitState();
-    ParticlesBelief* getInitBelief(int numStates);
+    State sampleInitState() const;
+    Belief* initialBelief() const;
 
 
     /* actually do not need to be real prob, any kind of weight is ok */
@@ -106,6 +106,8 @@ public:
     GaussModel ObsModel;
     double MaxReward;
     double MinReward;
+
+    int numParticles;
 };
 
 #endif

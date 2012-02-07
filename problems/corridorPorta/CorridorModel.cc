@@ -116,9 +116,10 @@ void CorridorModel::initInitState()
     InitState = GaussMixture(gauss, sameValueVector(4,1));
 }
 
-CorridorModel::CorridorModel():
+CorridorModel::CorridorModel(int numParticles):
         Model(NumStateVars, NumObsVars, NumActs,
-              NumMacroActs, NumInitPolicies, Discount)
+              NumMacroActs, NumInitPolicies, Discount),
+        numParticles(numParticles)
 {
     MovementModel[0] = Gauss(-ActionScale,MovementVariance);
     MovementModel[1] = Gauss(ActionScale,MovementVariance);
@@ -197,20 +198,20 @@ double CorridorModel::initPolicy(State const& currState, Action const& initActio
     return sample(currState, Action(Act,ActEnter), nextState, &obs, randStream);
 }
 
-State CorridorModel::sampleInitState()
+State CorridorModel::sampleInitState() const
 {
     State st(getNumStateVar(), 0);
     st[1] = InitState.sample();
     return st;
 }
 
-ParticlesBelief* CorridorModel::getInitBelief(int num)
+Belief* CorridorModel::initialBelief() const
 {
     Obs obs(vector<long>(getNumObsVar(), 0));
     obs.obs[0]=ObsCorridor;
     ParticlesBelief *pb = new ParticlesBelief(new BeliefNode(obs));
-    double w = 1.0/num;
-    for (long i = 0; i < num; i++){
+    double w = 1.0 / numParticles;
+    for (long i = 0; i < numParticles; i++){
         State st = sampleInitState();
         Particle temp(st,0, w);
         pb->belief.push_back(temp);
