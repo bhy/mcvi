@@ -19,7 +19,12 @@ int rand_range(int low, int high) {
 
 #define NOISY(v) ((v) ^ (randStream->getf() < Noise))
 
-CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount) {};
+CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount), numParticles(-1) {}
+
+CorridorModel::CorridorModel(int numParticles):
+        Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount),
+        numParticles(numParticles)
+{}
 
 bool CorridorModel::allowableAct(Belief const& belief, Action const& action) {
     if (action.type == Macro) return false;
@@ -98,7 +103,7 @@ double CorridorModel::initPolicy(State const& currState, Action const& initActio
     return sample(currState, Action(Act,ActLeft), nextState, &obs, randStream);
 }
 
-State CorridorModel::sampleInitState() {
+State CorridorModel::sampleInitState() const {
     double p = rand_range(0,4);
     // cout << p << endl;
     State st(getNumStateVar(), 0);
@@ -106,12 +111,12 @@ State CorridorModel::sampleInitState() {
     return st;
 }
 
-ParticlesBelief* CorridorModel::getInitBelief(int num) {
+Belief* CorridorModel::initialBelief() const {
     Obs obs(vector<long>(getNumObsVar(), 0));
     obs.obs[0] = ObsNothing;
     ParticlesBelief* pb = new ParticlesBelief(new BeliefNode(obs));
-    double w = 1.0/num;
-    for (long i = 0; i < num; i++) {
+    double w = 1.0 / numParticles;
+    for (long i = 0; i < numParticles; i++) {
         State st = sampleInitState();
         Particle temp(st,0,w);
         pb->belief.push_back(temp);
