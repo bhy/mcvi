@@ -28,6 +28,7 @@ class Solver {
     void solve(Model& currModel, State& initialBeliefState, long pathLength);
     void solve(Model& currModel, State& initialBeliefState, Obs& obs, long pathLength);
 
+    void solve(Model& currModel);
     void solve(Model& currModel, BeliefSet& currSet);
     void solve(Model& currModel, BeliefSet& currSet, Belief* root);
 

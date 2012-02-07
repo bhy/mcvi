@@ -120,6 +120,13 @@ void Solver::solve(Model& currModel, State& initialBeliefState, Obs& obs, long p
     this->solve(currModel, currSet, root);
 }
 
+void Solver::solve(Model& currModel)
+{
+    Action::initStatic(&currModel);
+    ParticlesBeliefSet currSet;
+    this->solve(currModel, currSet, currModel.initialBelief());
+}
+
 void Solver::solve(Model& currModel, BeliefSet& currSet)
 {
     this->solve(currModel, currSet, currModel.initialBelief());
@@ -127,7 +134,6 @@ void Solver::solve(Model& currModel, BeliefSet& currSet)
 
 void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
 {
-    Action::initStatic(&currModel);
     // Current code may not work if the following is not true
     if (numBackUpStreams > numNextBeliefStreams) {
         cout << "Number of next belief stream need to be larger than or equal to backup streams\n";
