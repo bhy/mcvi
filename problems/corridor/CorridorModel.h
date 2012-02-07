@@ -59,6 +59,7 @@ class CorridorModel : public Model
 {
   public:
     CorridorModel();
+    CorridorModel(int numParticles);
 
     double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream );
 
@@ -70,8 +71,8 @@ class CorridorModel : public Model
     */
     double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
-    State sampleInitState();
-    ParticlesBelief* getInitBelief(int numStates);
+    State sampleInitState() const;
+    Belief* initialBelief() const;
 
 
     /* actually do not need to be real prob, any kind of weight is ok */
@@ -103,7 +104,7 @@ class CorridorModel : public Model
 
   private:
     double probRandom;
-
+    int numParticles;
 };
 
 #endif // __PACMANMODEL_H

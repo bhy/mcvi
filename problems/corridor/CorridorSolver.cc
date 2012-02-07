@@ -15,10 +15,10 @@ int main(int argc, char **argv)
 
     solver.input(argc, argv, 2);
 
-    CorridorModel currModel;
+    CorridorModel currModel(solver.numNextBeliefStreams);
     ParticlesBeliefSet currSet;
     Action::initStatic(&currModel);
-    ParticlesBelief *root = currModel.getInitBelief(solver.numNextBeliefStreams);
+    Belief *root = currModel.initialBelief();
 
     solver.solve(currModel, currSet, (Belief*)root);
 }

@@ -10,10 +10,6 @@
 
 using namespace std;
 
-inline double randf() {
-    return (double)rand() / RAND_MAX;
-}
-
 int indoor(double pos) {
     int i=0;
     for(i=0;i<NumDoors;++i)
@@ -34,7 +30,15 @@ inline bool noisy(bool v)
 
 #define NOISY(v) ((v) ^ (randStream->getf()<Noise))
 
-CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount)
+CorridorModel::CorridorModel():
+        Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount),
+        numParticles(-1)
+{
+}
+
+CorridorModel::CorridorModel(int numParticles):
+        Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount),
+        numParticles(numParticles)
 {
 }
 
@@ -129,7 +133,7 @@ double CorridorModel::initPolicy(State const& currState, Action const& initActio
     return sample(currState, Action(Act,ActRight), nextState, &obs, randStream);
 }
 
-State CorridorModel::sampleInitState()
+State CorridorModel::sampleInitState() const
 {
     double p = randf();
     p = p*CorridorLength*2 - CorridorLength ;
@@ -138,13 +142,13 @@ State CorridorModel::sampleInitState()
     return st;
 }
 
-ParticlesBelief* CorridorModel::getInitBelief(int num)
+Belief* CorridorModel::initialBelief() const
 {
     Obs obs(vector<long>(getNumObsVar(), 0));
     obs.obs[0]=ObsNothing;
     ParticlesBelief *pb = new ParticlesBelief(new BeliefNode(obs));
-    double w = 1.0/num;
-    for (long i = 0; i < num; i++){
+    double w = 1.0 / numParticles;
+    for (long i = 0; i < numParticles; i++){
         State st = sampleInitState();
         //XXX seems pathlength starts from 1
         Particle temp(st,0, w);
