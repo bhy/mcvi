@@ -127,9 +127,10 @@ void Solver::solve(Model& currModel, BeliefSet& currSet)
 
 void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
 {
+    Action::initStatic(&currModel);
     // Current code may not work if the following is not true
     if (numBackUpStreams > numNextBeliefStreams) {
-        cout << "Number of next belief stream need to be larger than backup streams\n";
+        cout << "Number of next belief stream need to be larger than or equal to backup streams\n";
         exit(1);
     }
 
