@@ -58,8 +58,7 @@ class ParticlesBelief;
 class CorridorModel : public Model
 {
   public:
-    CorridorModel();
-    CorridorModel(int numParticles);
+    CorridorModel(int numParticles = -1);
 
     double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream );
 
