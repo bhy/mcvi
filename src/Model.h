@@ -78,6 +78,11 @@ class Model
     {}
 
     /**
+       Return the initial belief
+    */
+    virtual Belief* initialBelief() const = 0;
+
+    /**
        Restricts allowable actions given an observation
        Override this function if restriction is required.
     */
@@ -189,37 +194,37 @@ class Model
        the partial policies within the other group are unlikely to be
        useful to this group.
     */
-    virtual long getObsGrpFromObs(Obs const& obs) { return 0; }
+    virtual long getObsGrpFromObs(Obs const& obs) const { return 0; }
 
     /**
        @return The number of state variables
     */
-    inline long getNumStateVar() { return numStateVar; }
+    inline long getNumStateVar() const { return numStateVar; }
 
     /**
        @return The number of observation variables
     */
-    inline long getNumObsVar() { return numObsVar; }
+    inline long getNumObsVar() const { return numObsVar; }
 
     /**
        @return Discount value for the problem.
     */
-    inline double getDiscount() { return discount; }
+    inline double getDiscount() const { return discount; }
 
     /**
        @return Number of base actions in the model.
     */
-    inline long getNumActs() { return numActs; }
+    inline long getNumActs() const { return numActs; }
 
     /**
        @return Number of macro actions in the model.
     */
-    inline long getNumMacroActs() { return numMacroActs; }
+    inline long getNumMacroActs() const { return numMacroActs; }
 
     /**
        @return Number of initial policies in the model
     */
-    inline long getNumInitPolicies() { return numInitPolicies; }
+    inline long getNumInitPolicies() const { return numInitPolicies; }
 
     /**
        This function object compares states and observations. Used in map.

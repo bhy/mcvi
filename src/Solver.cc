@@ -120,6 +120,11 @@ void Solver::solve(Model& currModel, State& initialBeliefState, Obs& obs, long p
     this->solve(currModel, currSet, root);
 }
 
+void Solver::solve(Model& currModel, BeliefSet& currSet)
+{
+    this->solve(currModel, currSet, currModel.initialBelief());
+}
+
 void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
 {
     // Current code may not work if the following is not true
