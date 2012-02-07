@@ -19,8 +19,6 @@ int rand_range(int low, int high) {
 
 #define NOISY(v) ((v) ^ (randStream->getf() < Noise))
 
-CorridorModel::CorridorModel(): Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount), numParticles(-1) {}
-
 CorridorModel::CorridorModel(int numParticles):
         Model(NumStateVars, NumObsVars, NumActs, NumMacroActs, NumInitPolicies, Discount),
         numParticles(numParticles)
