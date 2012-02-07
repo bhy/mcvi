@@ -5,9 +5,17 @@
 
 using namespace std;
 
-Herding::Herding(HerdingProblem const& problem, bool useMacro): useMacro(useMacro), Model(problem.numStateVars, problem.numObsVars, NumActs, NumMacroActs, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), numRegionPerAgent(problem.numRegionPerAgent), grid(problem.grid), probRandom(problem.probRandom), numStateVars(problem.numStateVars), numGhosts(problem.numGhosts)
+Herding::Herding(HerdingProblem const& problem, bool useMacro):
+        Model(problem.numStateVars, problem.numObsVars, NumActs, NumMacroActs, NumInitPolicies, problem.discount),
+        useMacro(useMacro),
+        xSize(problem.xSize), ySize(problem.ySize),
+        numRegionPerAgent(problem.numRegionPerAgent),
+        grid(problem.grid),
+        probRandom(problem.probRandom),
+        numStateVars(problem.numStateVars),
+        numGhosts(problem.numGhosts)
 {
-    // Figure out the topology - which region is connected to which
+   // Figure out the topology - which region is connected to which
     connectivity.resize(numRegionPerAgent);
     vector<bool> done(numRegionPerAgent);
     for (long i = 0; i< numRegionPerAgent; i++){
@@ -62,6 +70,11 @@ Herding::Herding(HerdingProblem const& problem, bool useMacro): useMacro(useMacr
     // init variables used for allowable actions from each macro state grp
     constraints.resize(agentMStateCt);
     findConstraints(&constraints);
+}
+
+void Herding::setInitialBelief(Belief* root)
+{
+    this->root = root;
 }
 
 bool Herding::allowableAct(Belief const& belief, Action const& action)
@@ -276,6 +289,11 @@ double Herding::sample(State const& currState, Action const& macroAction, long c
         }
     }
     return rwd;
+}
+
+Belief* Herding::initialBelief() const
+{
+    return root;
 }
 
 long Herding::computeGhostIndex(State const& state)

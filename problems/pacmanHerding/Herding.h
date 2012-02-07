@@ -20,11 +20,15 @@
 class Herding : public Model
 {
   public:
-    Herding(HerdingProblem const& problem, bool useMacro = true);
+    Herding(HerdingProblem const& problem, bool useMacro = false);
+
+    void setInitialBelief(Belief* root);
 
     double sample(State const& currState, Action const& action, State* nextState, Obs* obs, RandStream* randStream );
 
     double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
+
+    Belief* initialBelief() const;
 
     /**
        Greedy policy
@@ -41,19 +45,19 @@ class Herding : public Model
 
     double getObsProb(Action const& act, State const& nextState, Obs const& obs);
 
-    double beliefTransition(State const& currState, Action* action, State* nextState, Obs* obs){return 0.0;};
+    double beliefTransition(State const& currState, Action* action, State* nextState, Obs* obs){return 0.0;}
     /**
        Macro state computed by
     */
     long getObsGrpFromState(State const& state);
 
-    inline long getObsGrpFromObs(Obs const& obs) { return obs.obs[1]; };
+    inline long getObsGrpFromObs(Obs const& obs) { return obs.obs[1]; }
 
-    inline obsType getObsType(Obs const& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; };
+    inline obsType getObsType(Obs const& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; }
 
-    inline void setObsType(Obs* obs, obsType type) { obs->obs[0] = type; } ;
+    inline void setObsType(Obs* obs, obsType type) { obs->obs[0] = type; }
 
-    inline bool isTermState(State const& state) { return (state[0] == TermState);};
+    inline bool isTermState(State const& state) { return (state[0] == TermState);}
 
     /**
        Reads in problem parameters from file.
@@ -105,6 +109,8 @@ class Herding : public Model
     long ghostMStateCt;
     long agentMStateCt;
 
+    Belief* root;
+
     // vector indexed by macrostate grp containing
     // macrostate grp on the east, south, west, north of a macro state grp
     std::vector<std::vector <long> > connectivity;
@@ -122,7 +128,6 @@ class Herding : public Model
     void calcShortestPath(long i, long j); // single source shortest path
     void calcShortestPathMatrix(); // compute all pairs shortest path
     long computeGhostIndex(State const& state);
-
 };
 
 #endif // __HERDING_H

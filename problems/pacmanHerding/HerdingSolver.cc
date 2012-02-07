@@ -40,6 +40,10 @@ int main(int argc, char **argv)
     Obs obs(vector<long>(currModel.getNumObsVar(),0));
     obs.obs[1] = obsGrp;
 
-    solver.solve(currModel, currProblem.initState, obs, 0);
+    Action::initStatic(&currModel);
+    currModel.setInitialBelief(
+        ParticlesBelief::beliefFromState(currProblem.initState, obs, 0));
+
+    solver.solve(currModel);
     currModel.writeMapping(obsGroup_file);
 }
