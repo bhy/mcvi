@@ -1,6 +1,7 @@
 #include "Herding.h"
 #include "HerdingProblem.h"
-#include "ParticlesBeliefSet.h"
+#include "Action.h"
+#include "ParticlesBelief.h"
 #include "Solver.h"
 #include <sstream>
 #include <iostream>
