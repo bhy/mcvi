@@ -34,7 +34,7 @@ class Controller: public ControllerInterface
     PolicyGraph& policy;
     PolicyGraph::Node *currGraphNode;
     Belief* currBel;
-    bool firstAction;
+    bool firstAction, staleBelief;
 };
 
 #endif

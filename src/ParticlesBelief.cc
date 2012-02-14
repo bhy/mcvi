@@ -188,7 +188,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
         }
 
         delete nxt;
-        cerr << "Warning: no next belief" << endl;
+        cerr << "\nWarning: no next belief" << endl;
         return NULL;
     }
 

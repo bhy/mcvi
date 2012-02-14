@@ -10,7 +10,8 @@ using namespace std;
 Controller::Controller(PolicyGraph& policy, Belief* belief):
         policy(policy),
         currBel(belief),
-        firstAction(true)
+        firstAction(true),
+        staleBelief(false)
 {
     currGraphNode = policy.getRoot(0);
 }
@@ -18,7 +19,8 @@ Controller::Controller(PolicyGraph& policy, Belief* belief):
 Controller::Controller(PolicyGraph& policy, Model const& model):
         policy(policy),
         currBel(model.initialBelief()),
-        firstAction(true)
+        firstAction(true),
+        staleBelief(false)
 {
     currGraphNode = policy.getRoot(0);
 }
@@ -36,9 +38,18 @@ Action const& Controller::nextAction(Obs const& obs, int dummy)
     currGraphNode = nextGraphNode;
 
     // Update the belief
-    Belief* nextBelief = currBel->nextBelief(action, obs);
-    delete currBel;
-    currBel = nextBelief;
+    Belief* nextBelief = NULL;
+    if (!staleBelief) {
+        nextBelief = currBel->nextBelief(action, obs);
+        if (nextBelief == NULL) {
+            cout<<"\nCannot track the belief from now on!!\n";
+            cout<<"You will get a stale belief if you call currBelief()\n\n";
+            staleBelief = true;
+        } else {
+            delete currBel;
+            currBel = nextBelief;
+        }
+    }
 
     return policy.getAction(currGraphNode);;
 }
