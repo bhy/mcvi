@@ -84,7 +84,7 @@ void print(vector<double> a) {
 /*
   Generating next belief.
 */
-Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
+Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool useSameRandSeed) const
 {
     bool debug = false;
     ParticlesBelief *nxt = NULL;
@@ -122,7 +122,12 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs) const
     }
 
     RandStream randStream;
-    randStream.initseed(beliefNode->actNodes[action.actNum]->randSeed);
+    if (useSameRandSeed) {
+        randStream.initseed(
+            beliefNode->actNodes[action.actNum]->randSeed);
+    } else {
+        randStream.initseed(randSource->get());
+    }
     // Use the same seed as in generate(Macro)ObsPartition
 
     vector<Particle> particles;

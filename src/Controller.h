@@ -25,8 +25,8 @@ class Obs;
 class Controller: public ControllerInterface
 {
   public:
-    Controller(PolicyGraph& policy, Belief* belief);
-    Controller(PolicyGraph& policy, Model const& model);
+    Controller(PolicyGraph& policy, Belief* belief, bool trackBelief = false);
+    Controller(PolicyGraph& policy, Model const& model, bool trackBelief = false);
     ActionDefine nextAction(ObsDefine obs, int dummy = -1);
     BeliefDefine currBelief() const;
 
@@ -34,7 +34,7 @@ class Controller: public ControllerInterface
     PolicyGraph& policy;
     PolicyGraph::Node *currGraphNode;
     Belief* currBel;
-    bool firstAction, staleBelief;
+    bool firstAction, trackBelief, staleBelief;
 };
 
 #endif

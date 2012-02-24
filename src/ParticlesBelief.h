@@ -28,7 +28,7 @@ class ParticlesBelief : public Belief
         return getParticle(index);
     }
     State average() const;
-    Belief* nextBelief(const Action& action, const Obs& obs) const;
+    Belief* nextBelief(const Action& action, const Obs& obs, bool useSameRandSeed) const;
 
     /**
        Get the particle with the given index

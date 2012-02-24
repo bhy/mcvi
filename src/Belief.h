@@ -70,7 +70,7 @@ class Belief
        @param [in] act The action
        @param [in] obs The observation
     */
-    virtual Belief* nextBelief(const Action& act, const Obs& obs) const = 0;
+    virtual Belief* nextBelief(const Action& act, const Obs& obs, bool useSameRandSeed = true) const = 0;
 
     BeliefNode* beliefNode;
 

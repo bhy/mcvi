@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     policyGraph.read("policy");
 
-    Controller control(policyGraph, currModel);
+    Controller control(policyGraph, currModel, true);
 
     cout<<"Action      : 0 (left), 1 (right), 2 (enter)\n";
     cout<<"Observation : -1 (terminate), 0 (nothing), 1 (wrong-door), 2 (left-end), 3 (right-end)\n";
