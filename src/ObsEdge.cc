@@ -64,7 +64,7 @@ void ObsEdge::findBestInitPolicy()
             Particle& particle = cachedParticles->particles[k];
             RandStream randStream;
             randStream.initseed(bounds->randSource.getStream(k).get());
-            simulator->runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, bounds->policyGraph.getInitPolicy(i), randStream);
+            simulator->runSingle(bounds->maxSimulLength, &sumDiscounted, particle.state, *bounds->policyGraph.getInitPolicy(i), &randStream);
             double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
             currPolicyVal += currValue;
         }
@@ -90,7 +90,7 @@ void ObsEdge::backupFromPolicyGraph()
             Particle& particle = cachedParticles->particles[k];
             RandStream randStream;
             randStream.initseed(bounds->randSource.getStream(k).get());
-            simulator->runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, *it, randStream);
+            simulator->runSingle(bounds->maxSimulLength, &sumDiscounted, particle.state, *(*it), &randStream);
             double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
             sumPolicyValue += currValue;
         }

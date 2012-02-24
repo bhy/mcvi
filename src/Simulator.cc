@@ -6,9 +6,9 @@
 
 using namespace std;
 
-void Simulator::runSingle(long length, double& sumReward,
-                          double& sumDiscounted, string trace_fn,
-                          State startState, RandStream& randStream,
+void Simulator::runSingle(long length, double* sumReward,
+                          double* sumDiscounted, string trace_fn,
+                          State startState, RandStream* randStream,
                           long rootIndex)
 {
     ofstream fp;
@@ -20,7 +20,7 @@ void Simulator::runSingle(long length, double& sumReward,
 
     // Variables for computing rewards
     double currReward;
-    sumReward = sumDiscounted = 0;
+    *sumReward = *sumDiscounted = 0;
     double currDiscount = 1;
 
     // States
@@ -52,11 +52,11 @@ void Simulator::runSingle(long length, double& sumReward,
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, randStream);
             currMacroActState = nextMacroActState;
         }
         else if (action->type == Macro){
-            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, randStream);
             currMacroActState = nextMacroActState;
 
             // exit macro action
@@ -75,12 +75,12 @@ void Simulator::runSingle(long length, double& sumReward,
             }
         }
         else{
-            currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
+            currReward = model.sample(*currState, *action, nextState, &obs, randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }
-        sumReward += currReward;
-        sumDiscounted += currDiscount * currReward;
+        *sumReward += currReward;
+        *sumDiscounted += currDiscount * currReward;
         currDiscount *= model.getDiscount();
 
         // swap 2 pointers
@@ -96,13 +96,13 @@ void Simulator::runSingle(long length, double& sumReward,
     delete nextState;
 }
 
-void Simulator::runSingle(long length, double& sumDiscounted,
-                          State startState, PolicyGraph::Node *currNode,
-                          RandStream& randStream)
+void Simulator::runSingle(long length, double* sumDiscounted,
+                          State startState, PolicyGraph::Node &currNode,
+                          RandStream* randStream)
 {
     // Variables for computing rewards
     double currReward;
-    sumDiscounted = 0;
+    *sumDiscounted = 0;
     double currDiscount = 1;
 
     // States
@@ -117,7 +117,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
     Obs obs; // observation
     obs.obs.resize(model.getNumObsVar(),0);
 
-    PolicyGraph::Node* currGraphNode = currNode, *nextGraphNode;
+    PolicyGraph::Node* currGraphNode = &currNode, *nextGraphNode;
 
     // Initialize simulation
 
@@ -131,11 +131,11 @@ void Simulator::runSingle(long length, double& sumDiscounted,
         }
 
         if (action->type == Initial){ // check node type
-            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, randStream);
             currMacroActState = nextMacroActState;
         }
         else if (action->type == Macro){
-            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, randStream);
             currMacroActState = nextMacroActState;
 
             // exit macro action
@@ -154,11 +154,11 @@ void Simulator::runSingle(long length, double& sumDiscounted,
             }
         }
         else{
-            currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
+            currReward = model.sample(*currState, *action, nextState, &obs, randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
             currGraphNode = nextGraphNode;
         }
-        sumDiscounted += currDiscount * currReward;
+        *sumDiscounted += currDiscount * currReward;
         currDiscount *= model.getDiscount();
 
         State* temp;

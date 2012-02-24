@@ -32,12 +32,12 @@ public:
      @param[in] length Simulation length
      @param[out] sumReward Sum of undiscounted reward
      @param[out] sumDiscounted Sum of discounted reward
-     @param[in] startState Initial state of simulation
-     @param[out] trace Simulation states in the simulation run
      @param[in] trace_fn Filename to record trace
+     @param[in] startState Initial state of simulation
+     @param[in*] randStream Stream of random numbers
      @param[in] rootIndex Which root to use
   */
-  void runSingle(long length, double& sumReward, double& sumDiscounted, std::string trace_fn, State startState,  RandStream& randStream, long rootIndex = 0);
+  void runSingle(long length, double* sumReward, double* sumDiscounted, std::string trace_fn, State startState,  RandStream* randStream, long rootIndex = 0);
 
   /**
      Runs a single simulation from \a startState.
@@ -46,9 +46,9 @@ public:
      @param[out] sumDiscounted Sum of discounted reward
      @param[in] startState Initial state of simulation
      @param[in] currNode starting controller node
-     @param[in] randSource Source of random numbers
+     @param[in*] randStream Stream of random numbers
   */
-  void runSingle(long length, double& sumDiscounted, State startState, PolicyGraph::Node *currNode, RandStream& randStream);
+  void runSingle(long length, double* sumDiscounted, State startState, PolicyGraph::Node &currNode, RandStream* randStream);
 
 private:
   Model& model;
