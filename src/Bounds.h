@@ -39,11 +39,13 @@ class Bounds
     // TODO: make singleton instance for this class
     Bounds(Model& model, PolicyGraph& policyGraph,
            RandSource& randSource,
-           long numRandStreams, long maxSimulLength):
+           long numRandStreams, long maxSimulLength,
+           long maxMacroActLength):
             model(model), policyGraph(policyGraph),
             randSource(randSource),
             numRandStreams(numRandStreams),
-            maxSimulLength(maxSimulLength)
+            maxSimulLength(maxSimulLength),
+            maxMacroActLength(maxMacroActLength)
     {}
 
     ~Bounds() {}
@@ -65,6 +67,7 @@ class Bounds
      */
     void backUpInitPolicies(Belief& belief);
     void backUpActions(Belief& belief);
+    void backUpMacroActions(Belief& belief);
 
     void buildActNodes(Belief& belief);
     void initBeliefForBackUp(Belief& belief);
@@ -74,6 +77,7 @@ class Bounds
     RandSource& randSource;
     long numRandStreams;
     long maxSimulLength;
+    long maxMacroActLength;
 };
 
 #endif //__BOUNDS_H

@@ -113,6 +113,7 @@ void BeliefTree::expandNodes(double target)
         assert(act->actNum != -1);
 
         if (currNode->beliefNode->actNodes[act->actNum] == NULL) {
+            cerr << "\nUpdate best Action\n";
             bounds.updateBestActions(*currNode);
             act = &(currNode->beliefNode->bestUBoundAct);
         }
@@ -131,8 +132,9 @@ void BeliefTree::expandNodes(double target)
             currNode->beliefNode->actNodes[act->actNum] = NULL;
             cerr << "Try to find another action that can generate "
                  << "nextBelief since all the "
-                 << "obs of this action is deleted\n";
+                 << "obs of this action are deleted\n";
 
+            cerr << "\nUpdate best Action\n";
             bounds.updateBestActions(*currNode);
             act = &(currNode->beliefNode->bestUBoundAct);
             while (act->actNum == -1) {
@@ -163,6 +165,7 @@ void BeliefTree::expandNodes(double target)
                      << " obs=" << iter->first.obs[0]
                      << "\n";
                 currNode->beliefNode->actNodes[act->actNum]->obsChildren.erase(iter);
+
                 iter = findBestObs(currNode, currTarget, excessUncertainty);
                 continue;
             }

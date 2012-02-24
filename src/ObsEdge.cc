@@ -32,15 +32,49 @@ void ObsEdge::backup()
         // addParticle() and fails the assert()
         lastUpdated = 0;
     } else {
-        if (lastUpdated == Never)
+        if (lastUpdated == Never) {
+            findBestInitPolicy();
             findInitUpper();
+            lastUpdated = 0;
+        }
 
-        if (nextBelief != NULL)
-            backupFromNextBelief();
+        if (bounds->model.getObsType(obs) != LoopObs) {
+            // LoopObs can only have init policies as child
+            if (nextBelief != NULL)
+                backupFromNextBelief();
 
-        addPolicyNodes();
-        backupFromPolicyGraph();
+            addPolicyNodes();
+            backupFromPolicyGraph();
+        } else {
+            // LoopObs
+            lower = upper = bestPolicyVal;
+        }
     }
+}
+
+void ObsEdge::findBestInitPolicy()
+{
+    bestPolicyVal = NegInf;
+    PolicyGraph::Node *currBestPol = bounds->policyGraph.getInitPolicy(0);
+
+    for (long i = 0; i < bounds->model.getNumInitPolicies(); i++) {
+        double currPolicyVal = cachedParticles->currSum;
+        for (long k = 0; k < count; ++k) {
+            double sumDiscounted;
+            Particle& particle = cachedParticles->particles[k];
+            RandStream randStream;
+            randStream.initseed(bounds->randSource.getStream(k).get());
+            simulator->runSingle(bounds->maxSimulLength, sumDiscounted, particle.state, bounds->policyGraph.getInitPolicy(i), randStream);
+            double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
+            currPolicyVal += currValue;
+        }
+
+        if (currPolicyVal > bestPolicyVal) {
+            bestPolicyVal = currPolicyVal;
+            bestPolicyNode = bounds->policyGraph.getInitPolicy(i);
+        }
+    }
+    lower = bestPolicyVal;
 }
 
 void ObsEdge::backupFromPolicyGraph()

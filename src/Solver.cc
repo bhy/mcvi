@@ -22,11 +22,12 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
             << "  -p targetPrecision (default: 0.1)\n"
             << "  -t maxtime (default: 3600s)\n"
             << "  -l maxSimulLength (default: 100 steps)\n"
+            << "  -c maxMacroActLength (default: 100 steps)\n"
             << "  -b numRandomStreamsForBackUp (default: 100)\n"
             << "  -n numRandomStreamsForNextBelief (default: 100)\n"
             << "  -d discountFactor (default: 0.95)\n"
             << "  -i depthMultiplier (default: 0.95)\n"
-            // << "  -u useMacro (default: 1)\n"
+            << "  -u useMacro (default: 1)\n"
             << "  -s randNumSeed (default: 0, uses time)\n"
             << "  -v displayInterval (default: 60)\n";
 
@@ -50,6 +51,9 @@ void Solver::input(int argc, char **argv, int noRequiredArgs)
                 break;
             case 'l':
                 maxSimulLength = atoi(argv[i]);
+                break;
+            case 'c':
+                maxMacroActLength = atoi(argv[i]);
                 break;
             case 'b':
                 numBackUpStreams = atoi(argv[i]);
@@ -149,16 +153,32 @@ void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
     RandSource currRandSource(numNextBeliefStreams);
 
     BeliefNode::initStatic(&currModel);
-    ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,0);
+    ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,maxMacroActLength);
 
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     Simulator currSim(currModel, policyGraph, maxSimulLength);
 
     ObsEdge::initStatic(&currSim);
 
-    Bounds bounds(currModel, policyGraph, currRandSource, numBackUpStreams, maxSimulLength);
+    Bounds bounds(currModel, policyGraph, currRandSource, numBackUpStreams, maxSimulLength, maxMacroActLength);
     BeliefTree currTree(currModel, currSet, root, policyGraph, bounds, currRandSource, numBackUpStreams, numNextBeliefStreams);
     currTree.search(targetPrecision, maxTime, iterDeepMult, displayInterval, policy_file);
 
     policyGraph.write(policy_file);
 }
+
+// void Solver::initStatic(Model& model, Simulator& simulator,
+//                         RandSource& randSouce,
+//                         PolicyGraph& policyGraph,
+//                         long maxSimulLength,
+//                         long numBackUpStreams,
+//                         logn maxMacroActLength)
+// {
+//     Model &CommonParams::model = model;
+//     Simulator &CommonParams::simulator = simulator;
+//     RandSource &CommonParams::randSource = currRandSource;
+//     PolicyGraph &CommonParams::policyGraph = policyGraph;
+//     const long CommonParams::maxSimulLength = maxSimulLength;
+//     const long CommonParams::numBackUpStreams = numBackUpStreams;
+//     const long CommonParams::maxMacroActLength = maxMacroActLength;
+// }

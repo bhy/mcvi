@@ -30,7 +30,7 @@ void Bounds::updateBestActions(Belief& belief)
     beliefNode.bestUBoundAct.setActNum(-1);
 
     for (long i = model.getNumInitPolicies();
-         i < model.getNumInitPolicies() + model.getNumActs();
+         i < model.getNumInitPolicies() + model.getNumMacroActs() + model.getNumActs();
          i++)
         if (beliefNode.actNodes[i] != NULL) {
             if (debug) {
@@ -81,6 +81,7 @@ void Bounds::backUp(Belief& belief)
         initBeliefForBackUp(belief);
         backUpInitPolicies(belief);
     }
+    backUpMacroActions(belief);
     backUpActions(belief);
 
     updateBestActions(belief);
@@ -116,7 +117,7 @@ void Bounds::backUp(Belief& belief)
         delete tempNode;
     }
     beliefNode.bestPolicyNode = outcome.first;
-    beliefNode.lastUpdated = policyGraph.getSize(model.getObsGrpFromObs(beliefNode.obs));
+//    beliefNode.lastUpdated = policyGraph.getSize(model.getObsGrpFromObs(beliefNode.obs));
 
     if (debug) {
         cout<<"Leaving backUp\n";
@@ -195,6 +196,33 @@ void Bounds::backUpInitPolicies(Belief& belief)
     }
 }
 
+void Bounds::backUpMacroActions(Belief& belief)
+{
+    bool debug = false;
+
+    if (debug) {
+        cout<<"Bounds::backUpMacroAction\n";
+    }
+
+    BeliefNode& beliefNode = *(belief.beliefNode);
+
+    Obs obs(vector<long>(model.getNumObsVar(), 0));
+    #pragma omp parallel for schedule(guided)
+    for (long i = model.getNumInitPolicies();
+         i < model.getNumInitPolicies() + model.getNumMacroActs();
+         i++) {
+        if (model.allowableAct(belief, Action(i))) {
+                if (beliefNode.actNodes[i] == NULL)
+                    beliefNode.actNodes[i] = new ActNode(*(new Action(i)),
+                                                         belief,
+                                                         this);
+                beliefNode.actNodes[i]->generateMacroObsPartitions();
+                beliefNode.actNodes[i]->backup();
+                beliefNode.actNodes[i]->clearObsPartitions();
+        }
+    }
+}
+
 void Bounds::backUpActions(Belief& belief)
 {
     bool debug = false;
@@ -209,8 +237,8 @@ void Bounds::backUpActions(Belief& belief)
     Obs obs(vector<long>(model.getNumObsVar(),0));
 
     #pragma omp parallel for schedule(guided)
-    for (long i = model.getNumInitPolicies();
-         i < model.getNumInitPolicies() + model.getNumActs();
+    for (long i = model.getNumInitPolicies() + model.getNumMacroActs();
+         i < model.getNumInitPolicies() + model.getNumMacroActs() + model.getNumActs();
          i++){
         if (model.allowableAct(belief, Action(i))){
             if (beliefNode.actNodes[i] == NULL)
@@ -232,7 +260,7 @@ void Bounds::backUpActions(Belief& belief)
 void Bounds::buildActNodes(Belief& belief)
 {
     BeliefNode& beliefNode = *(belief.beliefNode);
-    for (long i = 0; i < model.getNumInitPolicies() + model.getNumActs(); i++) {
+    for (long i = 0; i < model.getNumInitPolicies() + model.getNumMacroActs() + model.getNumActs(); i++) {
         Action* act = new Action(i);
         beliefNode.actNodes.push_back(new ActNode(*act, belief, this));
     }

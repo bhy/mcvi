@@ -18,6 +18,8 @@ class ActNode
     */
     void backup();
 
+    void generateMacroObsPartitions();
+
     /**
        Sample observations and create corresponding ObsEdge.
 

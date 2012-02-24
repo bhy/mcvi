@@ -48,6 +48,7 @@ class ObsEdge {
     void backupFromPolicyGraph();
     void backupFromNextBelief();
     void addPolicyNodes();
+    void findBestInitPolicy();
     double findInitUpper();
 
     void addParticle(const State& state, long pathLength, double immediateReward);

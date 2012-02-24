@@ -29,7 +29,7 @@ void Simulator::runSingle(long length, double& sumReward,
 
     // Macro action
     long currMacroActState = InitMacroActState, nextMacroActState;
-    //long numSelfLoops = 1;
+    long numSelfLoops = 1;
 
     // To keep track of policy graph state
     Obs obs(vector<long>(model.getNumObsVar(),0)); // observation
@@ -55,25 +55,25 @@ void Simulator::runSingle(long length, double& sumReward,
             currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
             currMacroActState = nextMacroActState;
         }
-        // else if (act.type == macro){
-        //     currReward = model.sample(currState, act, currMacroActState, nextState, nextMacroActState, obs, randSource);
-        //     currMacroActState = nextMacroActState;
+        else if (action->type == Macro){
+            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currMacroActState = nextMacroActState;
 
-        //     // exit macro action
-        //     if (model.getObsType(obs) == OtherObs){
-        //         nextGraphNode = policy.getNextState(currGraphNode, obs);
-        //         currGraphNode = nextGraphNode;
-        //         currMacroActState = InitMacroActState;
-        //         numSelfLoops = 1;
-        //     } else if (numSelfLoops == maxMacroActLength){
-        //         nextGraphNode = policy.getNextState(currGraphNode, obs);
-        //         currGraphNode = nextGraphNode;
-        //         currMacroActState = InitMacroActState;
-        //         numSelfLoops = 1;
-        //     } else{
-        //         numSelfLoops++;
-        //     }
-        // }
+            // exit macro action
+            if (model.getObsType(obs) == OtherObs){
+                nextGraphNode = policy.getNextState(currGraphNode, obs);
+                currGraphNode = nextGraphNode;
+                currMacroActState = InitMacroActState;
+                numSelfLoops = 1;
+            } else if (numSelfLoops == maxMacroActLength){
+                nextGraphNode = policy.getNextState(currGraphNode, obs);
+                currGraphNode = nextGraphNode;
+                currMacroActState = InitMacroActState;
+                numSelfLoops = 1;
+            } else{
+                numSelfLoops++;
+            }
+        }
         else{
             currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);
@@ -111,7 +111,7 @@ void Simulator::runSingle(long length, double& sumDiscounted,
 
     // Macro action
     long currMacroActState = InitMacroActState, nextMacroActState;
-    //long numSelfLoops = 1;
+    long numSelfLoops = 1;
 
     // To keep track of policy graph state
     Obs obs; // observation
@@ -134,25 +134,25 @@ void Simulator::runSingle(long length, double& sumDiscounted,
             currReward = model.initPolicy(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
             currMacroActState = nextMacroActState;
         }
-        // else if (act.type == macro){
-        //     currReward = model.sample(currState, act, currMacroActState, nextState, nextMacroActState, obs, randSource);
-        //     currMacroActState = nextMacroActState;
+        else if (action->type == Macro){
+            currReward = model.sample(*currState, *action, currMacroActState, nextState, &nextMacroActState, &obs, &randStream);
+            currMacroActState = nextMacroActState;
 
-        //     // exit macro action
-        //     if (model.getObsType(obs) == OtherObs){
-        //         nextGraphNode = policy.getNextState(currGraphNode, obs);
-        //         currGraphNode = nextGraphNode;
-        //         currMacroActState = InitMacroActState;
-        //         numSelfLoops = 1;
-        //     } else if (numSelfLoops == maxMacroActLength){
-        //         nextGraphNode = policy.getNextState(currGraphNode, obs);
-        //         currGraphNode = nextGraphNode;
-        //         currMacroActState = InitMacroActState;
-        //         numSelfLoops = 1;
-        //     } else{
-        //         numSelfLoops++;
-        //     }
-        // }
+            // exit macro action
+            if (model.getObsType(obs) == OtherObs){
+                nextGraphNode = policy.getNextState(currGraphNode, obs);
+                currGraphNode = nextGraphNode;
+                currMacroActState = InitMacroActState;
+                numSelfLoops = 1;
+            } else if (numSelfLoops == maxMacroActLength){
+                nextGraphNode = policy.getNextState(currGraphNode, obs);
+                currGraphNode = nextGraphNode;
+                currMacroActState = InitMacroActState;
+                numSelfLoops = 1;
+            } else{
+                numSelfLoops++;
+            }
+        }
         else{
             currReward = model.sample(*currState, *action, nextState, &obs, &randStream);
             nextGraphNode = policy.getNextState(currGraphNode, obs);

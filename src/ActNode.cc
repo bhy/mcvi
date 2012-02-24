@@ -57,6 +57,82 @@ void ActNode::clearObsPartitions()
     }
 }
 
+void ActNode::generateMacroObsPartitions(){
+    bool debug = false;
+
+    if (debug) {
+        cout<<"ActNode::generateMacroObsPartitions\n";
+    }
+
+    RandStream randStream;
+    randStream.initseed(randSeed);
+    // cout<<"\nRandSeed = "<<randSeed<<"\n";
+    // cout<<"Action = "<<this->action.actNum<<"\n";
+
+    for (Belief::const_iterator it = belief.begin(bounds->numRandStreams, randStream);
+         it != belief.end(); ++it) {
+        Particle const& currParticle = *it;
+        State currState = currParticle.state;
+        // cout<<"State = "<<currState[0]<< " " <<currState[1]<<"\n";
+
+        State nextState(bounds->model.getNumStateVar(), 0);
+        Obs obs(vector<long>(bounds->model.getNumObsVar(), 0));
+
+        long currMacroActState = InitMacroActState;
+        long nextMacroActState;
+        double currDiscount = 1,
+                sumDiscounted = 0;
+        long numSelfLoops = currParticle.pathLength;
+
+        // Run macro action
+        for (long k = 0; k < bounds->maxMacroActLength; k++) {
+            if (bounds->model.isTermState(currState)) {
+                bounds->model.setObsType(&obs, TermObs);
+                break;
+            }
+            double currReward = bounds->model.sample(currState,
+                                                     this->action,
+                                                     currMacroActState,
+                                                     &nextState,
+                                                     &nextMacroActState,
+                                                     &obs, &randStream);
+            currState = nextState;
+            // cout<<"State = "<<currState[0]<< " " <<currState[1]<<"\n";
+            currMacroActState = nextMacroActState;
+            sumDiscounted += currDiscount * currReward;
+            currDiscount *= bounds->model.getDiscount();
+            ++numSelfLoops;
+
+            // Exit macro action
+            if (bounds->model.getObsType(obs) != LoopObs)
+                break;
+        }
+        double discounted = power(bounds->model.getDiscount(), currParticle.pathLength) * sumDiscounted;
+
+        // cout << obs.obs[0] << " "
+        //      << obs.obs[1] << " "
+        //      << obs.obs[2] << "\n";
+
+        map<Obs, ObsEdge>::iterator obsIt = obsChildren.find(obs);
+
+        if (obsIt == obsChildren.end()) {
+            pair<map<Obs,ObsEdge>::iterator, bool> ret;
+            ret = obsChildren.insert(pair<Obs, ObsEdge>(obs,ObsEdge(obs,bounds)));
+            obsIt = ret.first;
+        }
+
+        obsIt->second.addParticle(nextState,
+                                  currParticle.pathLength + numSelfLoops,
+                                  discounted);
+    }
+
+    // cout<<"END\n\n";
+
+    if (debug) {
+        cout<<"Leaving ActNode::generateMacroObsPartition\n";
+    }
+}
+
 void ActNode::generateObsPartitions()
 {
     bool debug = false;
@@ -82,6 +158,7 @@ void ActNode::generateObsPartitions()
         State nextState(bounds->model.getNumStateVar(),0);
 
         double immediateReward = bounds->model.sample(currState, this->action, &nextState, &obs, &randStream);
+        double discounted = power(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
 
         map<Obs,ObsEdge>::iterator obsIt = obsChildren.find(obs);
 
@@ -92,8 +169,9 @@ void ActNode::generateObsPartitions()
             obsIt = ret.first;
         }
 
-        double discounted = power(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
-        obsIt->second.addParticle(nextState, currParticle.pathLength+1, discounted);
+        obsIt->second.addParticle(nextState,
+                                  currParticle.pathLength+1,
+                                  discounted);
     }
 
     if (debug) {

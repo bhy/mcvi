@@ -1,3 +1,4 @@
+
 #ifndef __SOLVER_H
 #define __SOLVER_H
 
@@ -16,8 +17,9 @@ class Solver {
   public:
     Solver(): maxTime(3600), discount(0.95), targetPrecision(0.1),
               numBackUpStreams(100), numNextBeliefStreams(100),
-              maxSimulLength(100), iterDeepMult(0.95),
-              useMacro(0), seed(0), displayInterval(60)
+              maxSimulLength(100), maxMacroActLength(100),
+              iterDeepMult(0.95),
+              useMacro(1), seed(0), displayInterval(60)
     {}
 
     void input(int argc, char **argv, int noRequiredArgs);
@@ -32,6 +34,13 @@ class Solver {
     void solve(Model& currModel, BeliefSet& currSet);
     void solve(Model& currModel, BeliefSet& currSet, Belief* root);
 
+    // void initStatic(Model& model, Simulator& simulator,
+    //                 RandSource& randSource,
+    //                 PolicyGraph& policyGraph,
+    //                 long maxSimulLength,
+    //                 long numBackUpStreams,
+    //                 long maxMacroActLength);
+
     std::ostringstream message;
     std::string policy_file;
     unsigned maxTime;
@@ -40,6 +49,7 @@ class Solver {
     long numBackUpStreams;
     long numNextBeliefStreams;
     long maxSimulLength;
+    long maxMacroActLength;
     double iterDeepMult;
     long useMacro;
     unsigned seed;
