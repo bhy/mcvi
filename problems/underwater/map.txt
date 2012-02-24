@@ -1,4 +1,4 @@
-52 51 0.95                                         
+52 51 0.95
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOD
 S                                                  D
 S                                                 RD
@@ -22,7 +22,7 @@ S                                                  D
 S                                                 RD
 S                                                  D
 S                                                 RD
-S                                                  D                          
+S                                                  D
 SS                                                RD
 SSS                                                D
 SS                                                RD
@@ -30,8 +30,6 @@ S                                                  D
 S                                                 RD
 S                                                  D
 S                                                 RD
-S                                                  D                     
-S                                                 RD
 S                                                  D
 S                                                 RD
 S                                                  D
@@ -49,8 +47,6 @@ S                                                 RD
 S                                                  D
 S                                                 RD
 S                                                  D
-OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOD  
-                                                                  
-
-
-
+S                                                 RD
+S                                                  D
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOD

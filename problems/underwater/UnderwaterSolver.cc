@@ -32,8 +32,8 @@ int main(int argc, char **argv)
     // HUY note - 1. Read problem from file
     UnderwaterModel::readProblem(map_file, &currProblem);
     bool useMacroBool = true;
-//    if (useMacro != 1)
-    useMacroBool = false;
+    if (solver.useMacro != 1)
+        useMacroBool = false;
 
     // HUY note - 2. Initialize UnderwaterModel
     UnderwaterModel currModel(currProblem, useMacroBool);

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-UnderwaterModel::UnderwaterModel(UnderwaterProblem const& problem, bool useMacro): useMacro(useMacro), Model(3, NumObsVars, NumActions, 0, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), navMap(problem.map), problem(problem)
+UnderwaterModel::UnderwaterModel(UnderwaterProblem const& problem, bool useMacro): useMacro(useMacro), Model(3, NumObsVars, NumActions, NumMacroActions, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), navMap(problem.map), problem(problem)
 {
     numStates = xSize * ySize + 1;
 }
@@ -241,7 +241,7 @@ double UnderwaterModel::sample(State const& currState, Action const& act, long c
         return 0;
     }
 
-    nextControllerState = 0;
+    *nextControllerState = 0;
     long actnum;
     if(macroAct < stay){//move in a direction
         actnum=macroAct;
@@ -267,7 +267,7 @@ double UnderwaterModel::sample(State const& currState, Action const& act, long c
         actnum = bestAct;
     }
 
-    double rwd = sample(currState, act, nextState, obs, randStream);
+    double rwd = sample(currState, Action(Act, actnum), nextState, obs, randStream);
     if (obs->obs[0] == TermObs)
         return rwd;
     else{
