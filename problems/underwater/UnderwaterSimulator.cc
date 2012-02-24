@@ -106,11 +106,14 @@ int main(int argc, char **argv)
     // vector<PolicyGraph::TypeActPair> actTrace;
     string str = "tracefile";
 
+    RandStream randStream;
+    randStream.initseed(currRandSource.get());
+
     if (numTrials == 1){
         for(long k=0;k<currProblem.initialBeliefStates.size();k++){
             //trace.clear();
             //actTrace.clear();
-            currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, str, currProblem.initialBeliefStates[k], currRandSource);
+            currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, str, currProblem.initialBeliefStates[k], &randStream);
             cout << "Average Reward: " << avgReward << "   Average Discounted Reward: " << avgDiscounted << "\n";
 
             // ofstream traceFileStream;
@@ -137,7 +140,7 @@ int main(int argc, char **argv)
 
 	for (long i= 0; i<numTrials; i++){
             long init =  currRandSource.get() % currProblem.initialBeliefStates.size();
-            currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, str, currProblem.initialBeliefStates[init], currRandSource);
+            currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, str, currProblem.initialBeliefStates[init], &randStream);
             sumReward += avgReward;
             sumDiscounted += avgDiscounted;
             rewardRecord.push_back(avgReward);
