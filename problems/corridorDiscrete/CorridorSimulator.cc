@@ -76,6 +76,9 @@ int main(int argc, char **argv) {
 
     RandSource currRandSource(numTrials);
 
+    RandStream randStream;
+    randStream.initseed(currRandSource.get());
+
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     policyGraph.read(policy_file);
 
@@ -83,7 +86,7 @@ int main(int argc, char **argv) {
     double avgReward, avgDiscounted;
     vector<State > trace;
     if (numTrials == 1){
-        currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, "trace.out", currModel.sampleInitState(), currRandSource);
+        currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, "trace.out", currModel.sampleInitState(), &randStream);
         if (display != -1)
             cout << "Average Reward: " << avgReward << "   Average Discounted Reward: " << avgDiscounted << "\n";
 
@@ -99,7 +102,7 @@ int main(int argc, char **argv) {
         double sumReward = 0;
         double sumDiscounted = 0;
         for (long i= 0; i<numTrials; i++){
-            currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, "trace.out", currModel.sampleInitState(), currRandSource);
+            currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, "trace.out", currModel.sampleInitState(), &randStream);
             sumReward += avgReward;
             sumDiscounted += avgDiscounted;
         }

@@ -93,6 +93,9 @@ int main(int argc, char **argv)
 
     RandSource currRandSource(numTrials);
 
+    RandStream randStream;
+    randStream.initseed(currRandSource.get());
+
     PolicyGraph policyGraph(1, currModel.getNumObsVar());
     policyGraph.read(policy_file);
 
@@ -103,7 +106,7 @@ int main(int argc, char **argv)
     string str = "tracefile";
 
     if (numTrials == 1){
-        currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, str, currProblem.initState, currRandSource);
+        currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, str, currProblem.initState, &randStream);
         if (display != -1)
             cout << "Average Reward: " << avgReward << "   Average Discounted Reward: " << avgDiscounted << "\n";
 
@@ -122,7 +125,7 @@ int main(int argc, char **argv)
         vector<double> discountedRecord;
 
         for (long i= 0; i<numTrials; i++){
-            currSim.runSingle(maxSimulLength, avgReward, avgDiscounted, str, currProblem.initState, currRandSource);
+            currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, str, currProblem.initState, &randStream);
             sumReward += avgReward;
             sumDiscounted += avgDiscounted;
             rewardRecord.push_back(avgReward);
