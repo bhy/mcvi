@@ -47,7 +47,7 @@ Action const& Controller::nextAction(Obs const& obs, int dummy)
             if (nextBelief == NULL) {
                 cout<<"\nCannot track the belief from now on!!\n";
                 cout<<"You will get a stale belief if you call currBelief()\n\n";
-            staleBelief = true;
+                staleBelief = true;
             } else {
                 delete currBel;
                 currBel = nextBelief;
@@ -58,7 +58,9 @@ Action const& Controller::nextAction(Obs const& obs, int dummy)
     return policy.getAction(currGraphNode);;
 }
 
-Belief const* Controller::currBelief() const
+BeliefDefine Controller::currBelief() const
 {
-    return currBel;
+    BeliefDefine result;
+    result.belief = currBel;
+    result.stale = staleBelief;
 }

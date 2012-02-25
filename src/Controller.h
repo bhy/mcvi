@@ -10,12 +10,16 @@
 // Some macros to adapt to the interface
 #define ActionDefine Action const&
 #define ObsDefine Obs const&
-#define BeliefDefine Belief const*
 
 class Model;
 class Belief;
 class Action;
 class Obs;
+
+typedef struct BeliefDefine {
+    Belief const* belief;
+    bool stale;
+};
 
 #include "ControllerInterface.h"
 #include "PolicyGraph.h"
