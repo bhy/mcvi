@@ -123,6 +123,7 @@ src/PolicyGraph                 Representation of policy graph
 src/Solver                      Simple Solver with necessary options
 src/Simulator                   Simple Simulator with necessary
                                 options
+src/Controller                  Controller class which supports nextBelief(obs)
 src/Utils                       Some simple utilities
 src/common.mk                   Make file
 src/ValueIteration              Simple value iteration (not used, for
@@ -182,9 +183,6 @@ observation and there is no probable next belief. This is not a
 problem as the program will back up and regenerate the observations if
 it runs out of next beliefs. You can also try to increase the number
 of particles to see if that helps.
-
-Macro-action is not supported in this version. There are plans to
-provide supports for it in the next version.
 
 The function signatures maybe changed without notice. For example,
 there are plans to change references to non-const objects to
