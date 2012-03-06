@@ -277,7 +277,7 @@ double Herding::sample(State const& currState, Action const& macroAction, long c
     }
 
     nextControllerState = 0;
-    double rwd = sample(currState, macroAction, nextState, obs, randStream);
+    double rwd = sample(currState, Action(Act, macroAct), nextState, obs, randStream);
     if (obs->obs[0] == TermObs)
         return rwd;
     else{

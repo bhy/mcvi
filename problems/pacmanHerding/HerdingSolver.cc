@@ -32,8 +32,8 @@ int main(int argc, char **argv)
 
     Herding::readProblem(map_file, &currProblem);
     bool useMacroBool = true;
-//    if (useMacro != 1)
-    useMacroBool = false;
+    if (solver.useMacro != 1)
+        useMacroBool = false;
 
     Herding currModel(currProblem, useMacroBool);
 
