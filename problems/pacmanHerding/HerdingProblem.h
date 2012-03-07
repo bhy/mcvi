@@ -8,7 +8,7 @@
    Constants and types used in pacman model. Take care in making any changes
    as they affect most of the pacman code.
 */
-const double Caught = 1; // Reward for catching ghost
+const double Caught = 10; // Reward for catching ghost
 const double MovementCost = 0; // Cost of any other actions
 enum regionType{junction, nonjunction}; // Region type
 enum stateVars{a1x, a1y, a2x, a2y, gx, gy}; // State variable names
