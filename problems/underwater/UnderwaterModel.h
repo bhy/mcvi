@@ -1,3 +1,16 @@
+/**
+ * An autonomous underwater vehicle (AUV) needs to navigate in a grid
+ * map from the left border to the right border while avoiding
+ * rocks. The AUV can only localize itself along the top and bottom
+ * borders where there are beacon signals.
+
+ * Underwater navigation in:
+ * 1/ "SARSOP: Efficient point-based POMDP
+ * planning by approximating optimally reachable belief spaces"
+ * (Kurniawati et al, Proc. Robotics: Science & Systems, 2008)
+ * 2/ "Monte Carlo Value Iteration with Macro-Actions" (Lim et al,
+ * NIPS 2011)
+ **/
 
 #ifndef __UNDERWATERMODEL_H
 #define __UNDERWATERMODEL_H
@@ -37,7 +50,7 @@ const long RelativeDirY[] = {-1, 1, 0, -1, 1, 0}; // Relative y movement for eac
 
 /**
    @class UnderwaterModel
-   @brief Underwater navigation example in SARSOP paper (RSS08)
+   @brief Underwater navigation example
    @author Lim Zhan Wei
    @date 30 Nov 2010
 */

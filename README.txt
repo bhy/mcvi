@@ -139,9 +139,13 @@ To model a problem, you need to extend the Model class.
 See examples in the problems directory. There are 5 toy problems now:
 1/ CorridorDiscrete
 2/ Corridor (continuous)
-3/ CorridorPorta (WAFR 2011)
-4/ Underwater (NIPS 2011)
-5/ PacmanHerding (NIPS 2011)
+3/ CorridorPorta (from Porta et al., "Point-based value iteration for
+continuous POMDPs", J. Machine Learning Research, 2006)
+4/ Underwater (from Kurniawati et al., "SARSOP: Efficient point-based
+POMDP planning by approximating optimally reachable belief spaces", Proc. Robotics:
+Science & Systems, 2008)
+5/ PacmanHerding (Collaborative Search and Capture, from Lim et al.,
+"Monte Carlo Value Iteration with Macro-Actions", NIPS 2011)
 
 The minimum configuration consists of a Model and a main function
 which calls the Solver.
