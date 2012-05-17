@@ -72,6 +72,8 @@ void ActNode::generateMacroObsPartitions(){
     for (Belief::const_iterator it = belief.begin(bounds->numRandStreams, randStream);
          it != belief.end(); ++it) {
         Particle const& currParticle = *it;
+        RandStream rStream;
+        rStream.initseed(randStream.get());
         State currState = currParticle.state;
         // cout<<"State = "<<currState[0]<< " " <<currState[1]<<"\n";
 
@@ -95,7 +97,7 @@ void ActNode::generateMacroObsPartitions(){
                                                      currMacroActState,
                                                      &nextState,
                                                      &nextMacroActState,
-                                                     &obs, &randStream);
+                                                     &obs, &rStream);
             currState = nextState;
             // cout<<"State = "<<currState[0]<< " " <<currState[1]<<"\n";
             currMacroActState = nextMacroActState;
@@ -152,12 +154,14 @@ void ActNode::generateObsPartitions()
     for (Belief::const_iterator it = belief.begin(bounds->numRandStreams,randStream);
          it != belief.end(); ++it){
         Particle const& currParticle = *it;
+        RandStream rStream;
+        rStream.initseed(randStream.get());
         State const& currState = currParticle.state;
 
         Obs obs(vector<long>(bounds->model.getNumObsVar(),0));
         State nextState(bounds->model.getNumStateVar(),0);
 
-        double immediateReward = bounds->model.sample(currState, this->action, &nextState, &obs, &randStream);
+        double immediateReward = bounds->model.sample(currState, this->action, &nextState, &obs, &rStream);
         double discounted = power(bounds->model.getDiscount(), currParticle.pathLength) * immediateReward;
 
         map<Obs,ObsEdge>::iterator obsIt = obsChildren.find(obs);

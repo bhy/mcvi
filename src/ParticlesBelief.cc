@@ -131,14 +131,18 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
     // Use the same seed as in generate(Macro)ObsPartition
 
     vector<Particle> particles;
+    vector<unsigned> seeds;
     for (Belief::const_iterator it = this->begin(numRandStreams, randStream);
          it != this->end(); ++it) {
         particles.push_back(*it);
+        seeds.push_back(randStream.get());
     }
 
     #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
     for (long i = 0; i < particles.size(); ++i) {
         Particle const& currParticle = particles[i];
+        RandStream rStream;
+        rStream.initseed(seeds[i]);
         State currState = currParticle.state;
 
         State nextState(BeliefNode::model->getNumStateVar(),0);
@@ -149,7 +153,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
                                                   action,
                                                   &nextState,
                                                   &currObs,
-                                                  &randStream),
+                                                  &rStream),
               obsProb = BeliefNode::model->getObsProb(action,
                                                       nextState,
                                                       obs);
@@ -191,7 +195,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
                                          currMacroActState,
                                          &nextState,
                                          &nextMacroActState,
-                                         &currObs, &randStream);
+                                         &currObs, &rStream);
 
                 currState = nextState;
                 currMacroActState = nextMacroActState;

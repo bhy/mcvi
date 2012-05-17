@@ -136,11 +136,12 @@ problems/                       Sample problems
 Each problem is located in a subdirectory of the "problems" directory.
 
 To model a problem, you need to extend the Model class.
-See examples in the problems directory. There are 4 toy problems now:
+See examples in the problems directory. There are 5 toy problems now:
 1/ CorridorDiscrete
 2/ Corridor (continuous)
-3/ Underwater
-4/ PacmanHerding
+3/ CorridorPorta (WAFR 2011)
+4/ Underwater (NIPS 2011)
+5/ PacmanHerding (NIPS 2011)
 
 The minimum configuration consists of a Model and a main function
 which calls the Solver.

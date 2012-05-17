@@ -12,8 +12,7 @@
 
 /**
    @class Herding
-   @brief
-   @details
+   @brief Collaborative Search and Capture (NIPS 2011)
    @author Wee Sun Lee
    @date 23 Sept 2009
 */

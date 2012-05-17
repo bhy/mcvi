@@ -1,6 +1,7 @@
 /**
-   This problem is the problem in the published paper
+   This is the problem in the paper
    "Monte Carlo Value Iteration for Continuous-State POMDPs".
+   (WAFR 2011)
 */
 
 #ifndef __CORRIDORMODEL_H
