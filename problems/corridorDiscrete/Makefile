@@ -14,6 +14,9 @@ SOLVERMAIN = $(PROB)CorridorSolver.cc
 # Main file of simulator
 SIMULATORMAIN = $(PROB)CorridorSimulator.cc
 
+# Main file of Controller
+CONTROLLERMAIN = $(PROB)testController.cc
+
 # Set compiler options for debugging etc.
 #CXXFLAGS = -Wall -ggdb -O0
 #CXXFLAGS = -Wall -ggdb -O0 -fopenmp

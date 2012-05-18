@@ -8,6 +8,7 @@ CXXFLAGS ?= -Wall -O2 -fopenmp
 
 SOLVERMAIN ?= Solver.cc
 SIMULATORMAIN ?= Simulator.cc
+CONTROLLERMAIN ?= Controller.cpp
 
 # include directories
 INCDIR = -I$(SRC) -I$(PROB)
@@ -20,6 +21,7 @@ PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
 
 SOLVERMAINOBJ = $(SOLVERMAIN:%.cc=%.o)
 SIMULATORMAINOBJ = $(SIMULATORMAIN:%.cc=%.o)
+CONTROLLERMAINOBJ = $(CONTROLLERMAIN:%.cc=%.o)
 
 HDRS = $(SOLVERHDR) $(MODELHDR)
 SRCS = $(SOLVERSRCS) $(MODELSRCS)
@@ -72,6 +74,8 @@ Solver: $(SOLVERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
 Simulator: $(SIMULATORMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
 	$(LINK.cc) -o $@ $^
 
+Controller: $(CONTROLLERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
+	$(LINK.cc) -o $@ $^
 
 # Automatic Dependency Generation
 # see  http://mad-scientist.net/make/autodep.html
