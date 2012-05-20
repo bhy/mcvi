@@ -55,7 +55,7 @@ Action const& Controller::nextAction(Obs const& obs, int dummy)
         }
     }
 
-    return policy.getAction(currGraphNode);;
+    return policy.getAction(currGraphNode);
 }
 
 BeliefDefine Controller::currBelief() const
@@ -63,4 +63,6 @@ BeliefDefine Controller::currBelief() const
     BeliefDefine result;
     result.belief = currBel;
     result.stale = staleBelief;
+
+    return result;
 }

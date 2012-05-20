@@ -22,4 +22,6 @@ CONTROLLERMAIN = $(PROB)testController.cc
 #CXXFLAGS = -Wall -ggdb -O0 -fopenmp
 CXXFLAGS = -Wall -g -O3 -fopenmp
 
+TARGETS = Solver Simulator Controller
+
 include $(SRC)common.mk
