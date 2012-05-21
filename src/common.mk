@@ -6,10 +6,6 @@ VPATH = $(SRC) $(PROB)
 
 CXXFLAGS ?= -Wall -O2 -fopenmp
 
-# Header and souce for the Controller
-CONTROLLERHDRS ?= Controller.h
-CONTROLLERSRCS ?= Controller.cc
-
 SOLVERMAIN ?= Solver.cc
 SIMULATORMAIN ?= Simulator.cc
 CONTROLLERMAIN ?= Controller.cc
@@ -28,8 +24,12 @@ SOLVERMAINOBJ = $(SOLVERMAIN:%.cc=%.o)
 SIMULATORMAINOBJ = $(SIMULATORMAIN:%.cc=%.o)
 CONTROLLERMAINOBJ = $(CONTROLLERMAIN:%.cc=%.o)
 
-HDRS = $(SOLVERHDR) $(MODELHDR)
-SRCS = $(SOLVERSRCS) $(MODELSRCS)
+HDRS = $(SOLVERHDR) $(MODELHDR) $(CONTROLLERHDR)
+SRCS = $(SOLVERSRCS) $(MODELSRCS) $(CONTROLLERSRCS)
+
+# Header and souce for the Controller
+CONTROLLERHDR ?= $(SRC)Controller.h
+CONTROLLERSRCS ?= $(SRC)Controller.cc
 
 SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)Obs.h \
