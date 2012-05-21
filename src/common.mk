@@ -6,9 +6,13 @@ VPATH = $(SRC) $(PROB)
 
 CXXFLAGS ?= -Wall -O2 -fopenmp
 
+# Header and souce for the Controller
+CONTROLLERHDRS ?= Controller.h
+CONTROLLERSRCS ?= Controller.cc
+
 SOLVERMAIN ?= Solver.cc
 SIMULATORMAIN ?= Simulator.cc
-CONTROLLERMAIN ?= Controller.cpp
+CONTROLLERMAIN ?= Controller.cc
 
 # include directories
 INCDIR = -I$(SRC) -I$(PROB)
@@ -18,6 +22,7 @@ TARGETS ?= Solver Simulator
 
 SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=%.o)
 PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
+CONTROLLEROBJ = $(CONTROLLERSRCS:$(SRC)%.cc=%.o)
 
 SOLVERMAINOBJ = $(SOLVERMAIN:%.cc=%.o)
 SIMULATORMAINOBJ = $(SIMULATORMAIN:%.cc=%.o)
@@ -38,7 +43,6 @@ SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)BeliefForest.h \
 		$(SRC)Model.h \
 		$(SRC)Bounds.h \
-		$(SRC)Controller.h \
 		$(SRC)PolicyGraph.h \
 		$(SRC)RandSource.h \
 		$(SRC)Simulator.h \
@@ -54,7 +58,6 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)BeliefTree.cc \
 		$(SRC)BeliefForest.cc \
 		$(SRC)Bounds.cc \
-		$(SRC)Controller.cc \
 		$(SRC)PolicyGraph.cc \
 		$(SRC)Simulator.cc \
 		$(SRC)ValueIteration.cc \
@@ -74,7 +77,7 @@ Solver: $(SOLVERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
 Simulator: $(SIMULATORMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
 	$(LINK.cc) -o $@ $^
 
-Controller: $(CONTROLLERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
+Controller: $(CONTROLLERMAINOBJ) $(CONTROLLEROBJ) $(SOLVEROBJ) $(PROBOBJ)
 	$(LINK.cc) -o $@ $^
 
 # Automatic Dependency Generation

@@ -16,7 +16,7 @@ class Belief;
 class Action;
 class Obs;
 
-typedef struct BeliefDefine {
+struct BeliefDefine {
     Belief const* belief;
     bool stale;
 };
