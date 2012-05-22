@@ -1,7 +1,9 @@
 # solver and problem directories
 SRC ?= ../../src/
 PROB ?= ./
+BUILD ?= ../../build/
 
+# No dupplicate names of source file
 VPATH = $(SRC) $(PROB)
 
 CXXFLAGS ?= -Wall -O2 -fopenmp
@@ -16,9 +18,9 @@ INCDIR = -I$(SRC) -I$(PROB)
 # files
 TARGETS ?= Solver Simulator
 
-SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=%.o)
+SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=$(BUILD)%.o)
 PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
-CONTROLLEROBJ = $(CONTROLLERSRCS:$(SRC)%.cc=%.o)
+CONTROLLEROBJ = $(CONTROLLERSRCS:$(SRC)%.cc=$(BUILD)%.o)
 
 SOLVERMAINOBJ = $(SOLVERMAIN:%.cc=%.o)
 SIMULATORMAINOBJ = $(SIMULATORMAIN:%.cc=%.o)
@@ -69,7 +71,7 @@ SOLVERSRCS =	$(SRC)Action.cc \
 all: $(TARGETS)
 
 clean:
-	rm -f *~ *.o *.obj $(TARGETS)
+	rm -f *~ *.o *.obj $(TARGETS) $(SOLVEROBJ) $(PROBOBJ) $(CONTROLLEROBJ)
 
 Solver: $(SOLVERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
 	$(LINK.cc) -o $@ $^
@@ -86,6 +88,16 @@ Controller: $(CONTROLLERMAINOBJ) $(CONTROLLEROBJ) $(SOLVEROBJ) $(PROBOBJ)
 DEPDIR = .deps
 df = $(DEPDIR)/$(*F)
 
+#$(COMPILE.cc) -MMD $(INCDIR) -o $@ $<
+$(BUILD)%.o : %.cc
+	@mkdir -p $(BUILD)
+	@mkdir -p $(BUILD)$(DEPDIR);
+	$(COMPILE.cc) -MMD -o $@ $<
+	@cp $(BUILD)$*.d $(BUILD)$(df).P; \
+	 sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	 -e '/^$$/ d' -e 's/$$/ :/' < $(BUILD)$*.d >> $(BUILD)$(df).P; \
+	 rm -f $(BUILD)$*.d
+
 %.o : %.cc
 	@mkdir -p $(DEPDIR);
 	$(COMPILE.cc) -MMD $(INCDIR) -o $@ $<
@@ -94,6 +106,7 @@ df = $(DEPDIR)/$(*F)
 	 -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $(df).P; \
 	 rm -f $*.d
 
-ALLSRCS = $(notdir $(SOLVERMAIN) $(SIMULATORMAIN) $(SRCS))
+ALLSRCS = $(notdir $(SOLVERMAIN) $(SIMULATORMAIN) $(CONTROLLERMAIN) $(SRCS))
 
+-include $(ALLSRCS:%.cc=$(BUILD)$(DEPDIR)/%.P)
 -include $(ALLSRCS:%.cc=$(DEPDIR)/%.P)
