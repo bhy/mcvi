@@ -70,7 +70,7 @@ class RandSource
     void initseed(unsigned seed)
     {
         #pragma omp parallel for
-        for(unsigned int i=0; i<numStream; ++i) {
+        for(int i=0; i<numStream; ++i) {
             seeds[i] = (seed ^ i);
             sources[i].initseed(seeds[i]);
         }

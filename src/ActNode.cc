@@ -27,7 +27,7 @@ void ActNode::backup()
          currIt != obsChildren.end(); ++currIt){
         // backup for each observation
         ObsEdge& obsEdge = currIt->second;
-        assert(obsEdge.count == obsEdge.cachedParticles->particles.size());
+        //assert(obsEdge.count == obsEdge.cachedParticles->particles.size());
         obsEdge.backup();
     }
 

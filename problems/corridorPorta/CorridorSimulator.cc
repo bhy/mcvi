@@ -15,7 +15,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
     ostringstream message;
-    double discount = 0.95;
     long maxSimulLength = 100;
     long numTrials = 1;
     unsigned seed=0;
@@ -24,7 +23,6 @@ int main(int argc, char **argv)
     message << "Usage:\n"
             << "  -o policyfile\n"
             << "  -l maxSimulLength (default: 100 steps)\n"
-            << "  -d discountFactor (default: 0.95)\n"
             << "  -n numTrials (default: 1)\n"
             << "  -x display (1 for show, 0 for not, -1 for csv, default: 0)\n"
             << "  -s randNumSeed (default: 0, uses time)\n";
@@ -53,9 +51,6 @@ int main(int argc, char **argv)
             break;
         case 'x':
             display = atoi(argv[i]);
-            break;
-        case 'd':
-            discount = atof(argv[i]);
             break;
         case 's':
             seed = (unsigned) atoi(argv[i]);

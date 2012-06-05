@@ -90,10 +90,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
     ParticlesBelief *nxt = NULL;
 
     if (!this->beliefNode->actNodes.empty())
-        ParticlesBelief *nxt =
-               safe_cast<ParticlesBelief*>(
-                   this->beliefNode->actNodes[action.actNum]
-                   ->obsChildren[obs].nextBelief);
+        nxt = safe_cast<ParticlesBelief*>(this->beliefNode->actNodes[action.actNum]->obsChildren[obs].nextBelief);
 
     if (nxt != NULL)
         return nxt;
@@ -139,7 +136,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
     }
 
     #pragma omp parallel for schedule(guided) reduction(+:weight_sum)
-    for (long i = 0; i < particles.size(); ++i) {
+    for (unsigned int i = 0; i < particles.size(); ++i) {
         Particle const& currParticle = particles[i];
         RandStream rStream;
         rStream.initseed(seeds[i]);
@@ -344,7 +341,7 @@ Particle ParticlesBelief::sample(RandStream& randStream) const
     double cum = randStream.getf();
     vector<double>::const_iterator low =
             lower_bound(cum_sum.begin(), cum_sum.end(), cum);
-    long index = low - cum_sum.begin();
+    unsigned int index = low - cum_sum.begin();
 
     assert(index <= belief.size());
     return belief[index];
@@ -421,7 +418,7 @@ Particle const& ParticlesBelief::ParticlesBeliefIterator::operator*()
     assert(current_particle_ <= num_particles_);
     if (cum_index_ < 0)
         throw 20;
-    assert(cum_index_ < belief_->size());
+    assert(cum_index_ < int(belief_->size()));
 
     new_particle_ = (*belief_)[cum_index_];
     new_particle_.weight = weight_interval_;
@@ -432,7 +429,7 @@ Particle const& ParticlesBelief::ParticlesBeliefIterator::operator*()
 Particle const* ParticlesBelief::ParticlesBeliefIterator::getPointer()
 {
     assert(current_particle_ <= num_particles_);
-    assert(cum_index_ < belief_->size());
+    assert(cum_index_ < int(belief_->size()));
 
     new_particle_ = (*belief_)[cum_index_];
     new_particle_.weight = weight_interval_;

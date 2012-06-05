@@ -167,17 +167,41 @@ Other files are implementations of the above structures.
 CREATE NEW PROBLEMS
 ========================================================================
 
-To create a new problem, we need to extend the Model and create a main
-function which calls Solver's functions. Take a look at the functions
-which Solver provides. There are several functions to provide convenience
-when dealing with simple problems as well as functions that are
-required when more customizations are needed.
+To create a new problem, we need to extend the Model (Mode.h) and
+create a main function which calls Solver's functions (Solver.h). Take
+a look at the functions which Solver provides. There are several
+functions to provide convenience when dealing with simple problems as
+well as functions that are required when more customizations are
+needed.
 
-Simulator provides 2 functions and you can cater to your needs.
+Simulator (Simulator.h) provides two functions and you can cater to
+your needs.
 
 The simplest setting are illustrated in CorridorDiscrete problem when
-we only provide a Model, a Simulator which only calculates the average
-(discounted) reward.
+we only provide a Model, a Solver which calls the `solve` function of
+Solver, and a Simulator which only calculates the average (discounted)
+reward.
+
+========================================================================
+CONTROLLER
+========================================================================
+
+The Controller interface (Controller.h) provides two functions to
+create a Controller (nextAction(obs), currBelief().)
+
+An example of an implementation of a Controller is given in corridorDiscrete.
+
+========================================================================
+HOW TO COMPILE
+========================================================================
+There are 2 ways to compile:
+1/ Go into the src/ folder and compile the MCVI into a library (in
+build/) and use the library to compile your Solver, Simulator, and
+Controller
+
+2/ Include the common.mk file in the src/ folder, and set the
+variables appropriately in your Makefile. See examples in the toy
+problems.
 
 ========================================================================
 NOTICE
@@ -185,7 +209,7 @@ NOTICE
 
 "Warning: no next belief" means that the program sampled a "bad"
 observation and there is no probable next belief. This is not a
-problem as the program will back up and regenerate the observations if
+problem as the program will go back and regenerate the observations if
 it runs out of next beliefs. You can also try to increase the number
 of particles to see if that helps.
 

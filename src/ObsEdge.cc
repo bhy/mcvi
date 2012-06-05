@@ -55,7 +55,6 @@ void ObsEdge::backup()
 void ObsEdge::findBestInitPolicy()
 {
     bestPolicyVal = NegInf;
-    PolicyGraph::Node *currBestPol = bounds->policyGraph.getInitPolicy(0);
 
     for (long i = 0; i < bounds->model.getNumInitPolicies(); i++) {
         double currPolicyVal = cachedParticles->currSum;
@@ -79,7 +78,7 @@ void ObsEdge::findBestInitPolicy()
 
 void ObsEdge::backupFromPolicyGraph()
 {
-    assert(count == cachedParticles->particles.size());
+    assert(count == int(cachedParticles->particles.size()));
     for (vector<PolicyGraph::Node*>::iterator it = nodes.begin();
          it != nodes.end(); ++it) {
         double sumPolicyValue = cachedParticles->currSum;
@@ -159,7 +158,7 @@ void ObsEdge::addParticle(const State& state, long pathLength, double immediateR
 
     if (lastUpdated == Never) {
         ++count;
-        assert(count == cachedParticles->particles.size());
+        assert(count == int(cachedParticles->particles.size()));
         cachedParticles->currSum += immediateReward;
     }
 }

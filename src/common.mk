@@ -15,9 +15,6 @@ CONTROLLERMAIN ?= Controller.cc
 # include directories
 INCDIR = -I$(SRC) -I$(PROB)
 
-# files
-TARGETS ?= Solver Simulator
-
 SOLVEROBJ = $(SOLVERSRCS:$(SRC)%.cc=$(BUILD)%.o)
 PROBOBJ = $(MODELSRCS:$(PROB)%.cc=%.o)
 CONTROLLEROBJ = $(CONTROLLERSRCS:$(SRC)%.cc=$(BUILD)%.o)
@@ -65,22 +62,32 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)ValueIteration.cc \
 		$(SRC)Solver.cc
 
+# build into a library
+TARGET_MCVI = $(BUILD)libmcvi.a
+LIBS = -lmcvi
+
+# files
+TARGETS ?= $(TARGET_MCVI) Solver Simulator
+
 # targets
 .PHONY : all clean
 
 all: $(TARGETS)
 
 clean:
-	rm -f *~ *.o *.obj $(TARGETS) $(SOLVEROBJ) $(PROBOBJ) $(CONTROLLEROBJ)
+	rm -f *~ *.o *.obj *.a $(TARGETS) $(TARGET_MCVI) $(SOLVEROBJ) $(PROBOBJ) $(CONTROLLEROBJ)
 
-Solver: $(SOLVERMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
-	$(LINK.cc) -o $@ $^
+$(TARGET_MCVI): $(SOLVEROBJ)
+	$(AR) $(ARFLAGS) -s $@ $^
 
-Simulator: $(SIMULATORMAINOBJ) $(SOLVEROBJ) $(PROBOBJ)
-	$(LINK.cc) -o $@ $^
+Solver: $(SOLVERMAINOBJ) $(PROBOBJ) $(TARGET_MCVI)
+	$(LINK.cc) $< $(PROBOBJ) -L$(BUILD) $(LIBS) -o $@
 
-Controller: $(CONTROLLERMAINOBJ) $(CONTROLLEROBJ) $(SOLVEROBJ) $(PROBOBJ)
-	$(LINK.cc) -o $@ $^
+Simulator: $(SIMULATORMAINOBJ) $(PROBOBJ) $(TARGET_MCVI)
+	$(LINK.cc) $< $(PROBOBJ) -L$(BUILD) $(LIBS) -o $@
+
+Controller: $(CONTROLLERMAINOBJ) $(CONTROLLEROBJ) $(PROBOBJ) $(TARGET_MCVI)
+	$(LINK.cc) $< $(CONTROLLEROBJ) $(PROBOBJ) -L$(BUILD) $(LIBS) -o $@
 
 # Automatic Dependency Generation
 # see  http://mad-scientist.net/make/autodep.html
