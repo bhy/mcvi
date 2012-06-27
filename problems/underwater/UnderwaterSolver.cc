@@ -37,17 +37,11 @@ int main(int argc, char **argv)
 
     // HUY note - 2. Initialize UnderwaterModel
     UnderwaterModel currModel(currProblem, useMacroBool);
+    Action::initStatic(&currModel);
 
     vector<long> pathLength(currProblem.initialBeliefStates.size(), 0);
+    Obs initialObs(vector<long>(currModel.getNumObsVar(),0));
+    initialObs.obs[1] = -1;
 
-    Obs obs(vector<long>(currModel.getNumObsVar(),0));
-    obs.obs[1] = -1;
-    Action::initStatic(&currModel);
-    currModel.setInitialBelief(
-        ParticlesBelief::beliefFromStateSet(
-            currProblem.initialBeliefStates,
-            obs,
-            pathLength));
-
-    solver.solve(currModel);
+    solver.solve(currModel, currProblem.initialBeliefStates, initialObs, pathLength);
 }

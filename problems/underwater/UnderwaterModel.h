@@ -45,10 +45,6 @@ class UnderwaterModel : public Model
   public:
     UnderwaterModel(UnderwaterProblem const& problem, bool useMacro = true);
 
-    Belief* initialBelief() const;
-
-    void setInitialBelief(Belief* root);
-
     double sample(State const& currState, Action const& act, State* nextState, Obs* obs, RandStream* randStream );
 
     double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );

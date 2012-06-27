@@ -93,11 +93,9 @@ int main(int argc, char **argv)
     UnderwaterModel::readProblem(map_file, &currProblem);
     UnderwaterModel currModel(currProblem, true);
 
-    Action::initStatic((Model*)(&currModel));
-
     RandSource currRandSource(numTrials);
 
-    PolicyGraph policyGraph(1, currModel.getNumObsVar());
+    PolicyGraph policyGraph(currModel, 1, currModel.getNumObsVar());
     policyGraph.read(policy_file);
 
     Simulator currSim(currModel, policyGraph, maxSimulLength);
@@ -110,7 +108,7 @@ int main(int argc, char **argv)
     randStream.initseed(currRandSource.get());
 
     if (numTrials == 1){
-        for(long k=0;k<currProblem.initialBeliefStates.size();k++){
+        for(int k = 0;k < int(currProblem.initialBeliefStates.size()); k++){
             //trace.clear();
             //actTrace.clear();
             currSim.runSingle(maxSimulLength, &avgReward, &avgDiscounted, str, currProblem.initialBeliefStates[k], &randStream);
@@ -132,7 +130,7 @@ int main(int argc, char **argv)
             // }
             // traceFileStream.close();
         }
-    }else{
+    } else {
 	double sumReward = 0;
 	double sumDiscounted = 0;
 	vector<double> rewardRecord;
@@ -169,5 +167,4 @@ int main(int argc, char **argv)
             cout << "Average Reward: " << avgReward << " (95\% conf " << confIntervalRew <<") Average Discounted Reward: " << avgDiscounted <<" (95\% conf "<< confIntervalDiscounted << ")\n";
 
     }
-
 };
