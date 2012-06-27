@@ -1,29 +1,46 @@
 #include "Controller.h"
 #include "Model.h"
-#include "Belief.h"
-#include "Action.h"
-#include "Obs.h"
+#include "Include.h"
+#include "BeliefNode.h"
+#include "ParticlesBelief.h"
 #include <iostream>
 
 using namespace std;
 
-Controller::Controller(PolicyGraph& policy, Belief* belief, bool trackBelief):
+Controller::Controller(PolicyGraph& policy, Model& model, Obs& rootObs, int numNextBeliefStreams, int maxMacroActLength, RandSource* randSource, bool trackBelief):
         policy(policy),
-        currBel(belief),
         firstAction(true),
         trackBelief(trackBelief),
         staleBelief(false)
 {
-    currGraphNode = policy.getRoot(0);
+    ParticlesBelief* rootBelief = new ParticlesBelief(new BeliefNode(rootObs));
+    double w = 1.0 / numNextBeliefStreams;
+    for (int i = 0; i < numNextBeliefStreams; ++i) {
+        State st = model.sampleInitState();
+        Particle temp(st, 0, w);
+        rootBelief->belief.push_back(temp);
+    }
+
+    init(model, rootBelief, randSource, numNextBeliefStreams, maxMacroActLength);
 }
 
-Controller::Controller(PolicyGraph& policy, Model const& model, bool trackBelief):
+Controller::Controller(PolicyGraph& policy, Model& model, Belief* belief, RandSource* randSource, bool trackBelief):
         policy(policy),
-        currBel(model.initialBelief()),
         firstAction(true),
         trackBelief(trackBelief),
         staleBelief(false)
 {
+    // dummy value for the last 2 params
+    init(model, belief, randSource, -1, -1);
+}
+
+void Controller::init(Model& model, Belief* belief, RandSource* randSource, int numNextBeliefStreams, int maxMacroActLength) {
+    currBel = belief;
+
+    Action::initStatic(&model);
+
+    BeliefNode::initStatic(&model);
+    ParticlesBelief::initStatic(randSource, numNextBeliefStreams, maxMacroActLength);
     currGraphNode = policy.getRoot(0);
 }
 

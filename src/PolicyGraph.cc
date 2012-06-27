@@ -33,8 +33,9 @@ bool PolicyGraph::nodeComparator::operator()(const PolicyGraph::Node *node1, con
     return false;
 }
 
-PolicyGraph::PolicyGraph(long numInitPolicies, long numObsVar, long numRoots): numInitPolicies(numInitPolicies), numObsVar(numObsVar), numRoots(numRoots)
+PolicyGraph::PolicyGraph(Model& model, long numInitPolicies, long numObsVar, long numRoots): numInitPolicies(numInitPolicies), numObsVar(numObsVar), numRoots(numRoots)
 {
+    Action::initStatic(&model);
     // insert all the initial policies
     for (long i = 0; i < numInitPolicies; i++){
         PolicyGraph::Node *tempNode = new PolicyGraph::Node(Action(i));

@@ -35,7 +35,7 @@ public:
      @param[in] trace_fn Filename to record trace
      @param[in] startState Initial state of simulation
      @param[in*] randStream Stream of random numbers
-     @param[in] rootIndex Which root to use
+     @param[in] rootIndex Which starting state in the policy graph to use
   */
   void runSingle(long length, double* sumReward, double* sumDiscounted, std::string trace_fn, State startState,  RandStream* randStream, long rootIndex = 0);
 

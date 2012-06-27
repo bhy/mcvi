@@ -145,41 +145,20 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
         State nextState(BeliefNode::model->getNumStateVar(),0);
         Obs currObs(vector<long>(BeliefNode::model->getNumObsVar(),0));
 
+        long currPathLength = currParticle.pathLength;
+
         if (action.type == Act){
-            double re = BeliefNode::model->sample(currState,
-                                                  action,
-                                                  &nextState,
-                                                  &currObs,
-                                                  &rStream),
-              obsProb = BeliefNode::model->getObsProb(action,
-                                                      nextState,
-                                                      obs);
-
-            if (obsProb != 0.0) {
-                if (debug) {
-                    cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<" "<<re<<"\n";
-                }
-
-                double new_weight = currParticle.weight * obsProb;
-
-                if (debug) {
-                    cout<<"currParticle.weight = "<<currParticle.weight<<"\n";
-                    cout<<"obsProb = "<<obsProb<<"\n";
-                    cout<<"new_weight = "<<new_weight<<"\n";
-                }
-
-                weight_sum += new_weight;
-                Particle tmp(nextState,
-                             currParticle.pathLength + 1,
-                             new_weight);
-
-                #pragma omp critical
-                {
-                    nxt->belief.push_back(tmp);
-                }
+            BeliefNode::model->sample(currState,
+                                      action,
+                                      &nextState,
+                                      &currObs,
+                                      &rStream);
+        } else if (action.type == Macro || action.type == Initial) {
+            double (Model::*sample)(State const&, Action const&, long, State*, long*, Obs*, RandStream*) = &Model::sample;
+            if (action.type == Initial) {
+                sample = &Model::initPolicy;
             }
-        } else if (action.type == Macro) {
-            long currPathLength = currParticle.pathLength;
+
             long currMacroActState = InitMacroActState;
             long nextMacroActState;
 
@@ -188,11 +167,11 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
                     BeliefNode::model->setObsType(&currObs, TermObs);
                     break;
                 }
-                BeliefNode::model->sample(currState, action,
-                                         currMacroActState,
-                                         &nextState,
-                                         &nextMacroActState,
-                                         &currObs, &rStream);
+                (BeliefNode::model->*sample)(currState, action,
+                                             currMacroActState,
+                                             &nextState,
+                                             &nextMacroActState,
+                                             &currObs, &rStream);
 
                 currState = nextState;
                 currMacroActState = nextMacroActState;
@@ -201,37 +180,37 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
                 if (BeliefNode::model->getObsType(currObs) != LoopObs)
                     break;
             }
-
-            double obsProb = BeliefNode::model->getObsProb(action,
-                                                    nextState,
-                                                    obs);
-
-            if (obsProb != 0.0) {
-                if (debug) {
-                    cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<"\n";
-                }
-
-                double new_weight = currParticle.weight * obsProb;
-
-                if (debug) {
-                    cout<<"currParticle.weight = "<<currParticle.weight<<"\n";
-                    cout<<"obsProb = "<<obsProb<<"\n";
-                    cout<<"new_weight = "<<new_weight<<"\n";
-                }
-
-                weight_sum += new_weight;
-                Particle tmp(nextState,
-                             currPathLength,
-                             new_weight);
-
-                #pragma omp critical
-                {
-                    nxt->belief.push_back(tmp);
-                }
-            }
-        }else {
+        } else {
             cerr << "Illegal actType in ParticlesBeliefSet::nextBelief. actType = " << action.type << "\n";
             exit(EXIT_FAILURE);
+        }
+
+        double obsProb = BeliefNode::model->getObsProb(action,
+                                                       nextState,
+                                                       obs);
+
+        if (obsProb != 0.0) {
+            if (debug) {
+                cout<<currState[1]<<" "<<action.actNum<<" "<<nextState[1]<<" "<<currObs.obs[0]<<"\n";
+            }
+
+            double new_weight = currParticle.weight * obsProb;
+
+            if (debug) {
+                cout<<"currParticle.weight = "<<currParticle.weight<<"\n";
+                cout<<"obsProb = "<<obsProb<<"\n";
+                cout<<"new_weight = "<<new_weight<<"\n";
+            }
+
+            weight_sum += new_weight;
+            Particle tmp(nextState,
+                         currPathLength,
+                         new_weight);
+
+            #pragma omp critical
+            {
+                nxt->belief.push_back(tmp);
+            }
         }
     }
 

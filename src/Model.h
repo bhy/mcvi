@@ -46,7 +46,6 @@ enum obsType{TermObs=-1, LoopObs, OtherObs}; // observation types
 
    Take note of the following global definitions that are defined in this file.
    - typedef std::vector<double> State; // shorthand for defining state
-   - typedef std::vector<long> Obs; // shorthand for defining observations
    - const long InitMacroActState = 0; // initial controller state for macro actions must take the value InitMacroActState
    - enum obsType{LoopObs, TermObs, OtherObs}; // observation types
    - enum actType{initial, macro, act}; // types of actions
@@ -80,7 +79,7 @@ class Model
     /**
        Return the initial belief
     */
-    virtual Belief* initialBelief() const = 0;
+    virtual State sampleInitState() const { return State(getNumStateVar(), 0); };
 
     /**
        Restricts allowable actions given an observation
@@ -93,8 +92,7 @@ class Model
        @return Reward of doing \a act in \a currState.
        @param[in] currState Current state
        @param[in] act Index of action to perform
-       @param[out] nextState Sampled next state. This is random and changes from
-       invocation to invocation.
+       @param[out] nextState Sampled next state. This is random and changes from invocation to invocation.
        @param[out] obs Observation
        @param[in] randSource Source of random numbers
     */

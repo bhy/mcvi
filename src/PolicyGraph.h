@@ -90,7 +90,7 @@ class PolicyGraph
        @param [in] numObsVar Number of variables in the observation vector
        @param [in] numRoots Number of roots for the graph
     */
-    PolicyGraph(long numInitPolicies, long numObsVar, long numRoots = 1);
+    PolicyGraph(Model& model, long numInitPolicies, long numObsVar, long numRoots = 1);
 
     ~PolicyGraph();
 

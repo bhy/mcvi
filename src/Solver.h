@@ -1,4 +1,3 @@
-
 #ifndef __SOLVER_H
 #define __SOLVER_H
 
@@ -24,22 +23,72 @@ class Solver {
 
     void input(int argc, char **argv, int noRequiredArgs);
 
+    /**
+       @param[in] currModel The model
+       @param[in] initialBeliefStates Initial states
+       @param[in] pathLength Pathlength of each state
+
+       Assume the initial observation is {0, -1, 0...}.
+       Assume a uniform distribution on the initialBeliefStates. Doesn't need to implement the sampleInitState function in the Model.
+    */
     void solve(Model& currModel, std::vector<State> &initialBeliefStates, std::vector<long> &pathLength);
+
+    /**
+       @param[in] currModel The model
+       @param[in] initialBeliefStates Initial states
+       @param[in] obs The initial observation
+       @param[in] pathLength Pathlength of each state
+
+       Assume a uniform distribution on the initialBeliefStates. Doesn't need to implement the sampleInitState function in the Model.
+    */
     void solve(Model& currModel, std::vector<State> &initialBeliefStates, Obs& obs, std::vector<long> &pathLength);
 
+    /**
+       @param[in] currModel The model
+       @param[in] initialBeliefStates Initial states
+       @param[in] pathLength Pathlength of all states
+
+       Assume the initial observation is {0, -1, 0...}.
+       Assume a uniform distribution on the initialBeliefStates. Doesn't need to implement the sampleInitState function in the Model.
+    */
     void solve(Model& currModel, State& initialBeliefState, long pathLength);
+
+    /**
+       @param[in] currModel The model
+       @param[in] initialBeliefStates Initial states
+       @param[in] obs The initial observation
+       @param[in] pathLength Pathlength of all states
+
+       Assume a uniform distribution on the initialBeliefStates. Doesn't need to implement the sampleInitState function in the Model.
+    */
     void solve(Model& currModel, State& initialBeliefState, Obs& obs, long pathLength);
 
-    void solve(Model& currModel);
-    void solve(Model& currModel, BeliefSet& currSet);
-    void solve(Model& currModel, BeliefSet& currSet, Belief* root);
+    /**
+       @param[in] currModel The model
+       @param[in] initialObs The initial observation
 
-    // void initStatic(Model& model, Simulator& simulator,
-    //                 RandSource& randSource,
-    //                 PolicyGraph& policyGraph,
-    //                 long maxSimulLength,
-    //                 long numBackUpStreams,
-    //                 long maxMacroActLength);
+       Assume the BeliefSet is empty.
+       Need to implement the sampleInitState in the Model.
+    */
+    void solve(Model& currModel, Obs& initialObs);
+
+    /**
+       @param[in] currModel The model
+       @param[in] currSet The initial BeliefSet
+       @param[in] initialObs The initial observation
+
+       Need to implement the sampleInitState in the Model.
+    */
+    void solve(Model& currModel, BeliefSet& currSet, Obs& initialObs);
+
+    /**
+       @param[in] currModel The model
+       @param[in] currSet The initial BeliefSet
+       @param[in] root The initial belief
+
+       Need to implement the sampleInitState in the Model.
+    */
+    void solve(Model& currModel, BeliefSet& currSet, Belief* root);
 
     std::ostringstream message;
     std::string policy_file;

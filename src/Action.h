@@ -15,7 +15,7 @@ class Action
     // this type)
     long actNum, actNumUser;
     actType type;
-    static Model* model;
+    static Model const* model;
 
     explicit Action(long actNum);
     Action(actType type, long actNumUser);
@@ -61,13 +61,13 @@ class Action
        @param [in] aNum  : actNumUser number
        @return actNum
     */
-    static long getBeliefAct(Model& model, actType aType, long aNum);
+    static long getBeliefAct(Model const& model, actType aType, long aNum);
 
     /**
        Set the model for querying number of InitActs, MacroActs
        @param [in] model
     */
-    static void initStatic(Model* model);
+    static void initStatic(Model const* model);
 };
 
 #endif

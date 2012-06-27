@@ -94,10 +94,9 @@ void Solver::solve(Model& currModel, vector<State> &initialBeliefStates, vector<
 
 void Solver::solve(Model& currModel, vector<State> &initialBeliefStates, Obs& obs, vector<long> &pathLength)
 {
-    Action::initStatic(&currModel);
-
     ParticlesBeliefSet currSet;
 
+    Action::initStatic(&currModel);
     Belief* root = ParticlesBelief::beliefFromStateSet(initialBeliefStates,obs,pathLength);
 
     this->solve(currModel, currSet, root);
@@ -111,29 +110,35 @@ void Solver::solve(Model& currModel, State& initialBeliefState, long pathLength)
     this->solve(currModel, initialBeliefState, obs, pathLength);
 }
 
-void Solver::solve(Model& currModel, State& initialBeliefState, Obs& obs, long pathLength)
+void Solver::solve(Model& currModel, State& initialBeliefState, Obs& initialObs, long pathLength)
 {
-    Action::initStatic(&currModel);
-
     ParticlesBeliefSet currSet;
-
+    Action::initStatic(&currModel);
     Belief* root = ParticlesBelief::beliefFromState(initialBeliefState,
-                                                    obs,
+                                                    initialObs,
                                                     pathLength);
 
     this->solve(currModel, currSet, root);
 }
 
-void Solver::solve(Model& currModel)
+void Solver::solve(Model& currModel, Obs& rootObs)
 {
-    Action::initStatic(&currModel);
     ParticlesBeliefSet currSet;
-    this->solve(currModel, currSet, currModel.initialBelief());
+    this->solve(currModel, currSet, rootObs);
 }
 
-void Solver::solve(Model& currModel, BeliefSet& currSet)
+void Solver::solve(Model& currModel, BeliefSet& currSet, Obs& rootObs)
 {
-    this->solve(currModel, currSet, currModel.initialBelief());
+    Action::initStatic(&currModel);
+    ParticlesBelief* rootBelief = new ParticlesBelief(new BeliefNode(rootObs));
+    double w = 1.0 / numNextBeliefStreams;
+    for (int i = 0; i < numNextBeliefStreams; i++) {
+        State st = currModel.sampleInitState();
+        Particle temp(st, 0, w);
+        rootBelief->belief.push_back(temp);
+    }
+
+    this->solve(currModel, currSet, rootBelief);
 }
 
 void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
@@ -155,7 +160,7 @@ void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
     BeliefNode::initStatic(&currModel);
     ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,maxMacroActLength);
 
-    PolicyGraph policyGraph(1, currModel.getNumObsVar());
+    PolicyGraph policyGraph(currModel, 1, currModel.getNumObsVar());
     Simulator currSim(currModel, policyGraph, maxSimulLength);
 
     ObsEdge::initStatic(&currSim);

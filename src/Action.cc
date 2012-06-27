@@ -3,9 +3,9 @@
 #include "Action.h"
 using namespace std;
 
-Model* Action::model;
+Model const* Action::model;
 
-void Action::initStatic(Model* model)
+void Action::initStatic(Model const* model)
 {
     Action::model = model;
 }
@@ -85,7 +85,7 @@ void Action::computeType()
     else type = Initial; // initial action
 }
 
-long Action::getBeliefAct(Model& model, actType aType, long aNum)
+long Action::getBeliefAct(Model const& model, actType aType, long aNum)
 {
     if (aType == Act)
         return aNum + model.getNumInitPolicies() + model.getNumMacroActs();
