@@ -2,6 +2,7 @@
 #include "Action.h"
 #include "Solver.h"
 #include "ParticlesBeliefSet.h"
+#include "Obs.h"
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
@@ -16,8 +17,8 @@ int main(int argc, char **argv)
     solver.input(argc, argv, 2);
 
     CorridorModel currModel(solver.numNextBeliefStreams);
-    ParticlesBeliefSet currSet;
-    Action::initStatic(&currModel);
+    Obs initialObs(vector<long>(currModel.getNumObsVar(),0));
+    initialObs.obs[1] = -1;
 
-    solver.solve(currModel, currSet);
+    solver.solve(currModel, initialObs);
 }

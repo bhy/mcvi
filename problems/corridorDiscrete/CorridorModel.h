@@ -7,7 +7,7 @@
 const double Discount = 0.95;
 
 const int NumDoors = 4;
-const double Noise = 0.01;
+const double Noise = 0.1;
 const double EnterReward = 10;
 const double WrongPenalty = -2;
 
@@ -39,7 +39,6 @@ class CorridorModel : public Model
     double initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream);
 
     State sampleInitState() const;
-    Belief* initialBelief() const;
 
     double getObsProb(Action const& action, State const& state, Obs const& obs);
 
