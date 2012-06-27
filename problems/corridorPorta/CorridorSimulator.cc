@@ -67,14 +67,13 @@ int main(int argc, char **argv)
         srand ( seed);
 
     CorridorModel currModel;
-    Action::initStatic(&currModel);
 
     RandSource currRandSource(numTrials);
 
     RandStream randStream;
     randStream.initseed(currRandSource.get());
 
-    PolicyGraph policyGraph(1, currModel.getNumObsVar());
+    PolicyGraph policyGraph(currModel, 1, currModel.getNumObsVar());
     policyGraph.read(policy_file);
 
     Simulator currSim(currModel, policyGraph, maxSimulLength);
@@ -86,13 +85,6 @@ int main(int argc, char **argv)
             cout << "Average Reward: " << avgReward << "   Average Discounted Reward: " << avgDiscounted << "\n";
 
         if (display == 1) cin.get();
-/*
-  for (long i=0; i< trace.size(); i++){
-  if (display == 1) system("clear");
-  currModel.displayState(trace[i],display);
-  if (display == 1) cin.get();
-  }*/
-
     }else{
         double sumReward = 0;
         double sumDiscounted = 0;

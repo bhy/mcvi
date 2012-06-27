@@ -205,20 +205,6 @@ State CorridorModel::sampleInitState() const
     return st;
 }
 
-Belief* CorridorModel::initialBelief() const
-{
-    Obs obs(vector<long>(getNumObsVar(), 0));
-    obs.obs[0]=ObsCorridor;
-    ParticlesBelief *pb = new ParticlesBelief(new BeliefNode(obs));
-    double w = 1.0 / numParticles;
-    for (long i = 0; i < numParticles; i++){
-        State st = sampleInitState();
-        Particle temp(st,0, w);
-        pb->belief.push_back(temp);
-    }
-    return pb;
-}
-
 /* Should be a tight upper bound, right? */
 double CorridorModel::upperBound(State const& state)
 {

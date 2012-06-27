@@ -62,8 +62,6 @@ class CorridorModel : public Model
     double initPolicy(const State& currState, const Action& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
     State sampleInitState() const;
-    Belief* initialBelief() const;
-
 
     /* actually do not need to be real prob, any kind of weight is ok */
     double getObsProb(const Action& action, const State& state, const Obs& obs);
