@@ -10,10 +10,10 @@ Herding::Herding(HerdingProblem const& problem, bool useMacro):
         useMacro(useMacro),
         xSize(problem.xSize), ySize(problem.ySize),
         numRegionPerAgent(problem.numRegionPerAgent),
-        grid(problem.grid),
-        probRandom(problem.probRandom),
+        numGhosts(problem.numGhosts),
         numStateVars(problem.numStateVars),
-        numGhosts(problem.numGhosts)
+        probRandom(problem.probRandom),
+        grid(problem.grid)
 {
    // Figure out the topology - which region is connected to which
     connectivity.resize(numRegionPerAgent);
@@ -72,11 +72,6 @@ Herding::Herding(HerdingProblem const& problem, bool useMacro):
     findConstraints(&constraints);
 }
 
-void Herding::setInitialBelief(Belief* root)
-{
-    this->root = root;
-}
-
 bool Herding::allowableAct(Belief const& belief, Action const& action)
 {
     actType type = action.type;
@@ -85,7 +80,7 @@ bool Herding::allowableAct(Belief const& belief, Action const& action)
 
     bool ok = false;
     long temp = belief.beliefNode->obs.obs[1] % agentMStateCt;
-    for (long i=0; i< constraints[temp].size(); i++){
+    for (int i=0; i < int(constraints[temp].size()); i++){
         if (constraints[temp][i] == action.getActNumUser()){
             ok = true;
             break;
@@ -291,11 +286,6 @@ double Herding::sample(State const& currState, Action const& macroAction, long c
     return rwd;
 }
 
-Belief* Herding::initialBelief() const
-{
-    return root;
-}
-
 long Herding::computeGhostIndex(State const& state)
 {
     long a1NEnum = 0, a1SEnum = 0, a1SWnum = 0, a1NWnum = 0;
@@ -400,7 +390,7 @@ void Herding::findConstraints(std::vector<std::vector<long> >* constraints)
 
 double Herding::initPolicy(State const& currState, Action const& initAction, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream )
 {
-    long policyIndex = initAction.getActNumUser();
+    //long policyIndex = initAction.getActNumUser();
     if (currState[0] == TermState){
         (*nextState) = currState;
         return 0;
@@ -443,7 +433,7 @@ double Herding::initPolicy(State const& currState, Action const& initAction, lon
         }
     }
 
-    long index = 0;
+    //long index = 0;
     if (a1NEnum != 0) a1NEnum = (a1NEnum == totalGhosts) ? GhostCtQuant : (a1NEnum * GhostCtQuant)/totalGhosts + 1;
     if (a1NWnum != 0) a1NWnum = (a1NWnum == totalGhosts) ? GhostCtQuant :(a1NWnum * GhostCtQuant)/totalGhosts + 1;
     if (a1SEnum != 0) a1SEnum = (a1SEnum == totalGhosts) ? GhostCtQuant :(a1SEnum * GhostCtQuant)/totalGhosts + 1;

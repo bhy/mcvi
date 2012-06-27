@@ -27,8 +27,6 @@ class Herding : public Model
 
     double sample(State const& currState, Action const& macroAct, long controllerState, State* nextState, long* nextControllerState, Obs* obs, RandStream* randStream );
 
-    Belief* initialBelief() const;
-
     /**
        Greedy policy
     */
@@ -107,8 +105,6 @@ class Herding : public Model
     std::vector<long> ghostMStateMap;
     long ghostMStateCt;
     long agentMStateCt;
-
-    Belief* root;
 
     // vector indexed by macrostate grp containing
     // macrostate grp on the east, south, west, north of a macro state grp

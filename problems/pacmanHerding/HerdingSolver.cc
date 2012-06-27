@@ -36,15 +36,13 @@ int main(int argc, char **argv)
         useMacroBool = false;
 
     Herding currModel(currProblem, useMacroBool);
+    Action::initStatic(&currModel);
+
 
     long obsGrp = currModel.getObsGrpFromState(currProblem.initState);
-    Obs obs(vector<long>(currModel.getNumObsVar(),0));
-    obs.obs[1] = obsGrp;
+    Obs initialObs(vector<long>(currModel.getNumObsVar(),0));
+    initialObs.obs[1] = obsGrp;
 
-    Action::initStatic(&currModel);
-    currModel.setInitialBelief(
-        ParticlesBelief::beliefFromState(currProblem.initState, obs, 0));
-
-    solver.solve(currModel);
+    solver.solve(currModel, currProblem.initState, initialObs, 0);
     currModel.writeMapping(obsGroup_file);
 }
