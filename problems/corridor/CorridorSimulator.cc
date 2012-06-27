@@ -72,14 +72,13 @@ int main(int argc, char **argv)
         srand ( seed);
 
     CorridorModel currModel;
-    Action::initStatic(&currModel);
 
     RandSource currRandSource(numTrials);
 
     RandStream randStream;
     randStream.initseed(currRandSource.get());
 
-    PolicyGraph policyGraph(1, currModel.getNumObsVar());
+    PolicyGraph policyGraph(currModel, 1, currModel.getNumObsVar());
     policyGraph.read(policy_file);
 
     Simulator currSim(currModel, policyGraph, maxSimulLength);
