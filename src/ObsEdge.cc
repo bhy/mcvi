@@ -89,8 +89,13 @@ void ObsEdge::backupFromPolicyGraph()
             Particle& particle = cachedParticles->particles[k];
             RandStream randStream;
             randStream.initseed(bounds->randSource.getStream(k).get());
-            simulator->runSingle(bounds->maxSimulLength, &sumDiscounted, particle.state, *(*it), &randStream);
-            double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sumDiscounted;
+            double sum = 0.0;
+            for (int t = 0; t < 1; t++) {
+                simulator->runSingle(bounds->maxSimulLength, &sumDiscounted, particle.state, *(*it), &randStream);
+                sum += sumDiscounted;
+            }
+            double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sum / 1;
+
             sumPolicyValue += currValue;
         }
 
@@ -117,8 +122,8 @@ void ObsEdge::backupFromNextBelief()
         lower = nextLower;
         bestPolicyVal = nextLower;
         bestPolicyNode = nextBelief->beliefNode->bestPolicyNode;
-        //lastUpdated = nextBelief->beliefNode->lastUpdated;
     }
+    //lastUpdated = nextBelief->beliefNode->lastUpdated;
 
     if (nextUpper < upper)
         upper = nextUpper;
