@@ -40,7 +40,7 @@ void ActNode::backup()
         lower += currIt->second.lower;
         upper += currIt->second.upper;
         count += currIt->second.count;
-        lastUpdated = (lastUpdated < currIt->lastUpdated) ? lastUpdated : currIt->lastUpdated;
+        lastUpdated = (lastUpdated < currIt->second.lastUpdated) ? lastUpdated : currIt->second.lastUpdated;
     }
 
     avgLower = lower / count;

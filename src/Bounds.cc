@@ -44,7 +44,7 @@ void Bounds::updateBestActions(Belief& belief)
                     cout<<"Bounds::updateBestActions Change bestLBoundAct to "<<i<<"\n";
                 }
                 beliefNode.bestLBoundAct.setActNum(i);
-                beliefNode.lastUpdated = beliefNode.actNodes[i].lastUpdated;
+                beliefNode.lastUpdated = beliefNode.actNodes[i]->lastUpdated;
             }
 
             if (debug) {
