@@ -94,7 +94,7 @@ void ObsEdge::backupFromPolicyGraph()
                 simulator->runSingle(bounds->maxSimulLength, &sumDiscounted, particle.state, *(*it), &randStream);
                 sum += sumDiscounted;
             }
-            double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sum / 1;
+            double currValue = power(bounds->model.getDiscount(), particle.pathLength) * sum;
 
             sumPolicyValue += currValue;
         }
@@ -123,7 +123,7 @@ void ObsEdge::backupFromNextBelief()
         bestPolicyVal = nextLower;
         bestPolicyNode = nextBelief->beliefNode->bestPolicyNode;
     }
-    //lastUpdated = nextBelief->beliefNode->lastUpdated;
+    lastUpdated = (nextBelief->beliefNode->lastUpdated > lastUpdated) ? nextBelief->beliefNode->lastUpdated : lastUpdated;
 
     if (nextUpper < upper)
         upper = nextUpper;

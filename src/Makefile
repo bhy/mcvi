@@ -56,7 +56,7 @@ clean:
 	rm -f *~ *.o *.obj *.a $(TARGETS) $(SOLVEROBJ)
 
 $(TARGET_MCVI): $(SOLVEROBJ)
-	$(AR) $(ARFLAGS) -s $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 # Automatic Dependency Generation
 # see  http://mad-scientist.net/make/autodep.html

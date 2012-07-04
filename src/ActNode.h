@@ -45,6 +45,7 @@ class ActNode
     // The randSeed for generateing ObsEdge, so if we redo the
     // generation, it will be the same
     unsigned long randSeed;
+    long lastUpdated;
     std::map<Obs, ObsEdge> obsChildren;
 };
 
