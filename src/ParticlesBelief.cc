@@ -153,6 +153,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
                                       &nextState,
                                       &currObs,
                                       &rStream);
+            ++currPathLength;
         } else if (action.type == Macro || action.type == Initial) {
             double (Model::*sample)(State const&, Action const&, long, State*, long*, Obs*, RandStream*) = &Model::sample;
             if (action.type == Initial) {
@@ -175,7 +176,7 @@ Belief* ParticlesBelief::nextBelief(const Action& action, const Obs& obs, bool u
 
                 currState = nextState;
                 currMacroActState = nextMacroActState;
-                currPathLength++;
+                ++currPathLength;
 
                 if (BeliefNode::model->getObsType(currObs) != LoopObs)
                     break;

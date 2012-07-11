@@ -17,7 +17,6 @@ int main(int argc, char **argv)
     solver.input(argc, argv, 2);
 
     CorridorModel currModel(solver.numNextBeliefStreams);
-    Action::initStatic(&currModel);
 
     Obs initialObs(vector<long>(currModel.getNumObsVar(), 0));
     initialObs.obs[0]=ObsCorridor;

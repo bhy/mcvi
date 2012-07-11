@@ -100,6 +100,70 @@ set the duration by the "-t" option.
 "Warning: no next belief" ===> See Notice
 
 ========================================================================
+PROBLEM EXAMPLES
+========================================================================
+
+Each problem is located in a subdirectory of the "problems" directory.
+
+To model a problem, you need to extend the Model class.
+See examples in the problems directory. There are 5 toy problems now:
+1/ CorridorDiscrete
+2/ Corridor (continuous)
+3/ CorridorPorta (from Porta et al., "Point-based value iteration for
+continuous POMDPs", J. Machine Learning Research, 2006)
+4/ Underwater (from Kurniawati et al., "SARSOP: Efficient point-based
+POMDP planning by approximating optimally reachable belief spaces", Proc. Robotics:
+Science & Systems, 2008)
+5/ PacmanHerding (Collaborative Search and Capture, from Lim et al.,
+"Monte Carlo Value Iteration with Macro-Actions", NIPS 2011)
+
+The minimum configuration consists of a Model and a main function
+which calls the Solver.
+
+
+========================================================================
+CREATE NEW PROBLEMS
+========================================================================
+
+To create a new problem, we need to extend the Model (Model.h) and
+create a main function which calls Solver's functions (Solver.h). Take
+a look at the functions which Solver provides. There are several
+functions to provide convenience when dealing with simple problems as
+well as functions that are required when more customizations are
+needed.
+
+Simulator (Simulator.h) provides two functions and you can cater to
+your needs.
+
+The simplest setting are illustrated in CorridorDiscrete problem when
+we only provide a Model, a Solver which calls the `solve` function of
+Solver, and a Simulator which only calculates the average (discounted)
+reward.
+
+========================================================================
+CONTROLLER
+========================================================================
+
+The Controller class (Controller.h) provides a convenient abstraction to make
+use of MCVI's policy to control external systems (for e.g. physical robots).
+Given an observation from the system, it returns the corresponding control
+action according to the policy provided to it.
+
+An example of an implementation of a Controller is given in corridorDiscrete.
+
+========================================================================
+HOW TO COMPILE
+========================================================================
+There are 2 ways to compile:
+1/ Go into the src/ folder and compile the MCVI into a library (in
+build/) and use the library to compile your Solver, Simulator, and
+Controller
+
+2/ Include the common.mk file in the src/ folder, and set the
+variables appropriately in your Makefile. See examples in the toy
+problems.
+
+========================================================================
 PACKAGE CONTENTS
 ========================================================================
 
@@ -133,23 +197,6 @@ src/History                     Representation of History (has not
                                 purpose)
 problems/                       Sample problems
 
-Each problem is located in a subdirectory of the "problems" directory.
-
-To model a problem, you need to extend the Model class.
-See examples in the problems directory. There are 5 toy problems now:
-1/ CorridorDiscrete
-2/ Corridor (continuous)
-3/ CorridorPorta (from Porta et al., "Point-based value iteration for
-continuous POMDPs", J. Machine Learning Research, 2006)
-4/ Underwater (from Kurniawati et al., "SARSOP: Efficient point-based
-POMDP planning by approximating optimally reachable belief spaces", Proc. Robotics:
-Science & Systems, 2008)
-5/ PacmanHerding (Collaborative Search and Capture, from Lim et al.,
-"Monte Carlo Value Iteration with Macro-Actions", NIPS 2011)
-
-The minimum configuration consists of a Model and a main function
-which calls the Solver.
-
 To modify the solver, you need to change the code in the src
 directory. The structure is as follow:
 + Model
@@ -162,46 +209,6 @@ observation
 + PolicyGraph is the output graph
 
 Other files are implementations of the above structures.
-
-========================================================================
-CREATE NEW PROBLEMS
-========================================================================
-
-To create a new problem, we need to extend the Model (Mode.h) and
-create a main function which calls Solver's functions (Solver.h). Take
-a look at the functions which Solver provides. There are several
-functions to provide convenience when dealing with simple problems as
-well as functions that are required when more customizations are
-needed.
-
-Simulator (Simulator.h) provides two functions and you can cater to
-your needs.
-
-The simplest setting are illustrated in CorridorDiscrete problem when
-we only provide a Model, a Solver which calls the `solve` function of
-Solver, and a Simulator which only calculates the average (discounted)
-reward.
-
-========================================================================
-CONTROLLER
-========================================================================
-
-The Controller interface (Controller.h) provides two functions to
-create a Controller (nextAction(obs), currBelief().)
-
-An example of an implementation of a Controller is given in corridorDiscrete.
-
-========================================================================
-HOW TO COMPILE
-========================================================================
-There are 2 ways to compile:
-1/ Go into the src/ folder and compile the MCVI into a library (in
-build/) and use the library to compile your Solver, Simulator, and
-Controller
-
-2/ Include the common.mk file in the src/ folder, and set the
-variables appropriately in your Makefile. See examples in the toy
-problems.
 
 ========================================================================
 NOTICE

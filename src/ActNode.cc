@@ -125,7 +125,7 @@ void ActNode::generateMacroObsPartitions(){
         }
 
         obsIt->second.addParticle(nextState,
-                                  currParticle.pathLength + numSelfLoops,
+                                  numSelfLoops,
                                   discounted);
     }
 

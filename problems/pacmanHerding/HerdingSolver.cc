@@ -36,8 +36,6 @@ int main(int argc, char **argv)
         useMacroBool = false;
 
     Herding currModel(currProblem, useMacroBool);
-    Action::initStatic(&currModel);
-
 
     long obsGrp = currModel.getObsGrpFromState(currProblem.initState);
     Obs initialObs(vector<long>(currModel.getNumObsVar(),0));
