@@ -58,19 +58,11 @@ A total of 2 executables are generated in the current directory.
   "Simulator" is the policy simulator.
 
 Please read the argument options for each problems. Below, we will run
-pacmanHerding as an example. Texts in quotes (`) are output of the
+corridorPorta as an example. Texts in quotes (`) are output of the
 command.
 
 - Try solving pacmanHerding problem. Type the command:
     ./Solver
-
-    `-m <mapfile> as the first argument
-     -g <obsgroupfile> as the second argument`
-
-  So we need to supply a map file for input and an obsgroup file for output
-
-- Type:
-    ./Solver -m 10by10.txt -g obsgroup10by10
 
     `Usage:
         -o policyfile
@@ -85,14 +77,13 @@ command.
         -s randNumSeed (default: 0, uses time)
         -v displayInterval (default: 60)`
 
-  So we need to supply another policy file for output
+  So we need to supply policy file name for output
 
 - Type:
-    ./Solver -m 10by10.txt -g obsgroup10by10 -o policy10by10
+    ./Solver -o policy
 
 - Try simulating a policy. Type:
-    ./Simulator -m 10by10.txt -g obsgroup10by10 -o policy10by10 -n
-    <number of times to run simulation>
+    ./Simulator -o policy -n <number of times to run simulation>
 
 Most of the examples will take more than 1 hour to converge, you can
 set the duration by the "-t" option.
