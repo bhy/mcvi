@@ -61,7 +61,7 @@ Please read the argument options for each problems. Below, we will run
 corridorPorta as an example. Texts in quotes (`) are output of the
 command.
 
-- Try solving pacmanHerding problem. Type the command:
+- Try solving corridorPorta problem. Type the command:
     ./Solver
 
     `Usage:
