@@ -82,7 +82,7 @@ class Belief
         virtual bool operator!=(BeliefItImpl const& right) = 0;
         virtual Particle const& operator*() = 0;
         virtual Particle const* getPointer() = 0;
-        virtual ~BeliefItImpl();
+        virtual ~BeliefItImpl() {}
     };
 
     class Iterator:
