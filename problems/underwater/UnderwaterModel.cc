@@ -8,19 +8,9 @@
 
 using namespace std;
 
-UnderwaterModel::UnderwaterModel(UnderwaterProblem const& problem, bool useMacro): useMacro(useMacro), Model(3, NumObsVars, NumActions, NumMacroActions, NumInitPolicies, problem.discount), xSize(problem.xSize), ySize(problem.ySize), navMap(problem.map), problem(problem)
+UnderwaterModel::UnderwaterModel(UnderwaterProblem const& problem, bool useMacro): Model(3, NumObsVars, NumActions, NumMacroActions, NumInitPolicies, problem.discount), useMacro(useMacro), xSize(problem.xSize), ySize(problem.ySize), problem(problem), navMap(problem.map)
 {
     numStates = xSize * ySize + 1;
-}
-
-Belief* UnderwaterModel::initialBelief() const
-{
-    return root;
-}
-
-void UnderwaterModel::setInitialBelief(Belief* root)
-{
-    this->root = root;
 }
 
 bool UnderwaterModel::allowableAct(Belief const& belief, Action const& action)
@@ -165,7 +155,6 @@ void UnderwaterModel::readProblem(std::string filename, UnderwaterProblem* probl
 double UnderwaterModel::sample(State const& currState, Action const& act, State* nextState, Obs* obs, RandStream* randStream )
 {
     long actnum = act.getActNumUser();
-
     double reward = 0;
     (*nextState) = currState;
     if (isTermState(currState)){ // terminal state

@@ -53,7 +53,7 @@ class UnderwaterModel : public Model
 
     double upperBound(State const& state);
 
-    double getMaxReward() { return TerminalReward;};
+    double getMaxReward() { return TerminalReward;}
 
     //return the probability of receiving observation, given next state and action
     double getObsProb(Action const& act, State const& nextstate, Obs const& obs);
@@ -61,22 +61,22 @@ class UnderwaterModel : public Model
     //return the next belief vector (via nextState) given current belief, obs and action
     double beliefTransition(State const& currState, long act, State* nextState, Obs* obs);
 
-    double getMinReward() { return HitRockPenalty;};
+    double getMinReward() { return HitRockPenalty;}
 
     bool allowableAct(Belief const& belief, Action const& action );
 
-    long getObsGrpFromState(State const& state) {return 0;};
+    long getObsGrpFromState(State const& state) {return 0;}
 
-    inline long getObsGrpFromObs(Obs const& obs) {return 0;};
+    inline long getObsGrpFromObs(Obs const& obs) {return 0;}
 
-    inline obsType getObsType(Obs const& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; };
+    inline obsType getObsType(Obs const& obs) { return (obs.obs[0]==LoopObs? LoopObs : (obs.obs[0]==TermObs? TermObs: OtherObs)) ; }
 
-    inline void setObsType(Obs* obs, obsType type) { obs->obs[0] = type; } ;
+    inline void setObsType(Obs* obs, obsType type) { obs->obs[0] = type; }
 
     //get approximate flat state representation from current state
     State getFlatState(State const& state);
 
-    inline bool isTermState(State const& state) { return state[rx] == -1;};
+    inline bool isTermState(State const& state) { return state[rx] == -1;}
     /**
        Reads in problem parameters from file.
        @warning No error checking currently done - file format need to be exactly right.

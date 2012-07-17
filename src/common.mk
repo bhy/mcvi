@@ -3,6 +3,9 @@ SRC ?= ../../src/
 PROB ?= ./
 BUILD ?= ../../build/
 
+# AR
+ARFLAGS = rvs
+
 # No dupplicate names of source file
 VPATH = $(SRC) $(PROB)
 
@@ -78,7 +81,7 @@ clean:
 	rm -f *~ *.o *.obj *.a $(TARGETS) $(TARGET_MCVI) $(SOLVEROBJ) $(PROBOBJ) $(CONTROLLEROBJ)
 
 $(TARGET_MCVI): $(SOLVEROBJ)
-	$(AR) $(ARFLAGS) -s $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 Solver: $(SOLVERMAINOBJ) $(PROBOBJ) $(TARGET_MCVI)
 	$(LINK.cc) $< $(PROBOBJ) -L$(BUILD) $(LIBS) -o $@
