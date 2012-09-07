@@ -24,7 +24,8 @@ SOLVERHDR = 	$(SRC)Action.h \
 		$(SRC)RandSource.h \
 		$(SRC)Simulator.h \
 		$(SRC)ValueIteration.h \
-		$(SRC)Solver.h
+		$(SRC)Solver.h \
+		$(SRC)signalHandler.h
 
 SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)Obs.cc \
@@ -38,7 +39,8 @@ SOLVERSRCS =	$(SRC)Action.cc \
 		$(SRC)PolicyGraph.cc \
 		$(SRC)Simulator.cc \
 		$(SRC)ValueIteration.cc \
-		$(SRC)Solver.cc
+		$(SRC)Solver.cc \
+		$(SRC)signalHandler.cc
 
 # build into a library
 TARGET_MCVI = $(BUILD)libmcvi.a

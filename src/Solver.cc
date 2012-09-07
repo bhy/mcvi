@@ -150,12 +150,11 @@ void Solver::solve(Model& currModel, BeliefSet& currSet, Belief* root)
     }
 
     if (seed == 0)
-        srand ( time(NULL) );
-    else
-        srand ( seed);
+        seed = ( time(NULL) );
 
     // Set random source, which stores streams of random numbers to be reused
     RandSource currRandSource(numNextBeliefStreams);
+    currRandSource.initseed(seed);
 
     BeliefNode::initStatic(&currModel);
     ParticlesBelief::initStatic(&currRandSource,numNextBeliefStreams,maxMacroActLength);

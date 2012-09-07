@@ -15,6 +15,7 @@
 #include "PolicyGraph.h"
 #include "RandSource.h"
 #include "Bounds.h"
+#include "signalHandler.h"
 
 #ifdef DEBUG
 #define DEBUGMSG 1
@@ -39,19 +40,24 @@ void BeliefTree::search(double targetGap, unsigned maxTime, double targetMultipl
     time(&curr);
     cout << "\n";
 
-    while (root->beliefNode->uBound - root->beliefNode->lBound > targetGap){
+    try {
+
+      SignalHandler signalHandler;
+      signalHandler.setupSignalHandlers();
+    
+      while (root->beliefNode->uBound - root->beliefNode->lBound > targetGap){
         // for display
         double temp = difftime(curr,start);
         if (temp - timeSoFar >= displayInterval){
-            timeSoFar = temp;
-            cout << "time: " << difftime(curr,start)
-                 << " uBound: " << root->beliefNode->uBound
-                 << " lBound: " << root->beliefNode->lBound
-                 << " diff: "
-                 << root->beliefNode->uBound - root->beliefNode->lBound
-                 << " numBeliefs: " << beliefSet.numBeliefs()
-                 << " numPolicyNodes: " << policyGraph.getNumPolicyNodes()
-                 << "\n";
+          timeSoFar = temp;
+          cout << "time: " << difftime(curr,start)
+               << " uBound: " << root->beliefNode->uBound
+               << " lBound: " << root->beliefNode->lBound
+               << " diff: "
+               << root->beliefNode->uBound - root->beliefNode->lBound
+               << " numBeliefs: " << beliefSet.numBeliefs()
+               << " numPolicyNodes: " << policyGraph.getNumPolicyNodes()
+               << "\n";
         }
 
         double currTarget = (root->beliefNode->uBound - root->beliefNode->lBound) * targetMultiplier;
@@ -59,13 +65,18 @@ void BeliefTree::search(double targetGap, unsigned maxTime, double targetMultipl
         backUpNodes();
         time(&curr);
         if (DEBUGMSG) {
-            // dump policy
-            std::ostringstream fn;
-            fn << policy_filename << '_' << int(difftime(curr,start));
-            policyGraph.write(fn.str());
+          // dump policy
+          std::ostringstream fn;
+          fn << policy_filename << '_' << int(difftime(curr,start));
+          policyGraph.write(fn.str());
         }
-        if (difftime(curr,start) > maxTime)
-            break;
+        if (difftime(curr,start) > maxTime ||  signalHandler.gotExitSignal())
+          break;
+      }
+
+    }
+    catch (SignalException &e) {
+      cerr << "SignalException: " << e.what() << endl;
     }
 
     cout << "time: " << difftime(curr,start)
