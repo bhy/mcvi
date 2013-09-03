@@ -36,6 +36,8 @@ void ActNode::backup()
     double upper = 0;
     long count = 0;
 
+    // `lastUpdated` should be the minimum over all obsChildren
+    lastUpdated = numeric_limits<long>::max();
     for (map<Obs,ObsEdge>::iterator currIt = obsChildren.begin(); currIt != obsChildren.end(); ++currIt) {
         lower += currIt->second.lower;
         upper += currIt->second.upper;
